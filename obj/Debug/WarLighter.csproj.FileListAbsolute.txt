@@ -1,0 +1,15 @@
+C:\Users\filipecruz\Downloads\ps_warlighter\bin\Debug\WarLightStarterBot.exe
+C:\Users\filipecruz\Downloads\ps_warlighter\bin\Debug\WarLightStarterBot.pdb
+C:\Users\filipecruz\Downloads\ps_warlighter\obj\Debug\WarLighter.csprojResolveAssemblyReference.cache
+C:\Users\filipecruz\Downloads\ps_warlighter\obj\Debug\WarLightStarterBot.exe
+C:\Users\filipecruz\Downloads\ps_warlighter\obj\Debug\WarLightStarterBot.pdb
+C:\Users\filipecruz\Downloads\WarLighter\obj\Debug\WarLightStarterBot.exe
+C:\Users\filipecruz\Downloads\WarLighter\obj\Debug\WarLightStarterBot.pdb
+C:\Users\filipecruz\Downloads\WarLighter\bin\Debug\WarLightStarterBot.exe
+C:\Users\filipecruz\Downloads\WarLighter\bin\Debug\WarLightStarterBot.pdb
+C:\Users\filipecruz\Downloads\WarLighter\obj\Debug\WarLighter.csprojResolveAssemblyReference.cache
+C:\Users\filipecruz\Documents\Warlighter\obj\Debug\WarLightStarterBot.exe
+C:\Users\filipecruz\Documents\Warlighter\obj\Debug\WarLightStarterBot.pdb
+C:\Users\filipecruz\Documents\Warlighter\bin\Debug\WarLightStarterBot.exe
+C:\Users\filipecruz\Documents\Warlighter\bin\Debug\WarLightStarterBot.pdb
+C:\Users\filipecruz\Documents\Warlighter\obj\Debug\Warlighter.csprojResolveAssemblyReference.cache

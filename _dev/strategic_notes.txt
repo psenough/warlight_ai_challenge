@@ -1,0 +1,43 @@
+
+
+picking stage:
+
+1) get list of all mega regions
+2) sort by order of which ones can be finished faster, (later: for each, calculate if it can be countered, use ratio to influence decision)
+3) (later: pick order can shift to make sure you always have one safe area and a foot in the most likely starting position)
+
+
+
+
+first round:
+
+1) get list of mega regions
+2) calculate where opponent could be (mega regions by order of which ones can be finished faster)
+3) (later: include ratio for areas where opponent could have picked to counter your starting positions, if high turn on defensive mode)
+4) (later: if opponent is in fast finishing area and you are in position to counter it turn on breaker mode)
+5) play
+- in defensive mode, play to keep a big stack on sensitive area, while expanding slowly on safest location, until you confirm player is nearby (then reasses)
+- in normal mode, expand into fastest growing area
+- in breaker mode, invest all to attack into breaking a mega bonus, slowly expand on safest location
+
+
+
+
+next rounds:
+
+1) if dont know all opponent starting positions, re-estimate where he could be (based on income and direct vision of opponent + number of turns)
+2) estimate opponent's income (based on number of turns and best possible expansion)
+
+3) if in break mode and breaker mode objective complete, turn to normal mode
+
+if you are bordering opponent, for each region {
+- if opponent is bordering one of your mega regions, play defensively on that region (deploy most of it there, expand slowly on safe place if there is one)
+- if higher estimated income then opponent, play aggressively (attack with all where he is closest to your areas, expand slowly on safe place if there is one)
+- if unknown or lower estimated income, play defensively, hold position and try to flank
+(later: long term strategic vision: if 2 multiple areas are threatned, figure out which one is closer to main income of opponent and prioritize it)
+} else {
+- defensive mode, determine if opponent is likely to attack a megabonus you can finish now
+- normal mode, expand fast
+- breaker mode, invest all to attack into breaking a megabonus, slowly expand on safest location
+}
+

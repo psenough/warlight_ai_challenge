@@ -1,0 +1,7 @@
+C:\Users\filipecruz\Downloads\warlight-starterbot-cs\bin\Debug\WarLightStarterBot.exe
+C:\Users\filipecruz\Downloads\warlight-starterbot-cs\bin\Debug\WarLightStarterBot.pdb
+C:\Users\filipecruz\Downloads\warlight-starterbot-cs\obj\Debug\WarLightStarterBot.csprojResolveAssemblyReference.cache
+C:\Users\filipecruz\Downloads\warlight-starterbot-cs\obj\Debug\WarLightStarterBot.exe
+C:\Users\filipecruz\Downloads\warlight-starterbot-cs\obj\Debug\WarLightStarterBot.pdb
+C:\Users\filipecruz\Downloads\ps_warlighter\obj\Debug\WarLightStarterBot.exe
+C:\Users\filipecruz\Downloads\ps_warlighter\obj\Debug\WarLightStarterBot.pdb
