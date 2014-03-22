@@ -34,6 +34,11 @@ namespace bot
             state.FullMap.SuperRegions.Sort(new SuperRegionsLowerArmiesSorter());
             state.PickableStartingRegions.Sort(new RegionsImportanceSorter(state.FullMap.SuperRegions));
             //state.PickableStartingRegions.RemoveRange(6, state.PickableStartingRegions.Length-6);
+
+            // assume opponent will also choose optimum picks
+            // this will be useful later when we need to predict where opponent started
+            state.OpponentStartRegions = state.PickableStartingRegions;
+
             return state.PickableStartingRegions;
         }
 

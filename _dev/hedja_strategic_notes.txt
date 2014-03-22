@@ -1,0 +1,23 @@
+Picks:
+
+Always pick Australia picks first and second, south America picks third and fourth, then Africa if pick is in North Africa, followed by Central America, followed by Egypt, East Africa, Congo, Siam, West Us, East US,West Europe, South Europe India, China, South Africa, Madagascar
+
+Moves:
+
+1. If only 1 neutral away from taking bonus, and enemy is on the bonus of said bonus, take neutral with 4 armies, deploying armies onto territory next to neutral which has most troops on it before deployment, all other troops to be used protecting against enemy if on the border of that bonus.
+
+2. If only 1 neutral away from taking a bonus, and bordering enemy but not on said bonus, take neutral with 4 armies, deploying armies onto territory next to neutral which has most troops on it before deployment, and all other troops used protecting against enemy on the border. If 1 more army than enemy at beginning of turn, attack at the very end, if troop number equal or less, do not attack.
+
+3. If only 1 neutral away from taking a bonus, and not bordering enemy anywhere on map, take neutral with 4 armies, deploying armies onto territory next to neutral which has most troops on it before deployment, and then use rest of troops to either take neutrals of a bonus with 3 or less neutrals less, or scout for enemy, starting from neutrals which border bonuses already taken and then from the one about to be taken. These attacks must be 3vs2 minimum, but 4vs2 if there are extra armies to add on, if not that many troops on particular territory, do not attack.
+
+4. If enemy is bordering bonus, and you are not 1 territory away from taking other bonus, deploy all income to border with enemy. Move troops which are not on border with enemy towards border with enemy if there is a way to without having to take a neutral. If number or armies at beginning of turn is only 1 less than enemy, equal, or more than the enemies armies, then at the end of the turn attack enemy with all armies. If enemy has 2 or more than defending troops at beginning of turn, move troops and do not attack.
+
+5. If next to enemy with equal or less troops, but not 1 territory from finishing a bonus, deploy all income and hit with all armies.
+
+6. If 2 neutrals away from bonus, and no enemy bordering said bonus, but bordering enemy elsewhere, hit 1 neutral with 3vs2, deploying on territory already with troops on preferably, and use all other income to deploy next to enemy, not moving.
+
+7. If 2 neutrals away from bonus, and no border with enemy, deploy to take both neutrals with 3vs2, any leftover income to be used to increase one of these to 4vs2, and then the other, then to 5vs2, and then the other and so on.
+AI: 3/20/2014 19:22:28
+
+
+8. If bordering 2 enemy territories, and no bonus, deploy all income next to enemy in bonus with least neutral troops to take for bonus. if same number, flick coin. attack with all troops.

@@ -27,6 +27,12 @@ namespace bot
 
         private int roundNumber;
 
+
+
+        private List<Region> opponentStartRegions;
+
+
+
         public BotState()
         {
             pickableStartingRegions = new List<Region>();
@@ -158,6 +164,18 @@ namespace bot
                     unknownRegions.Add(region);
             foreach (Region unknownRegion in unknownRegions)
                 visibleMap.Regions.Remove(unknownRegion);
+
+
+            if (RoundNumber == 1) // start of round 1
+            {
+                UpdateOpponentStartRegions();
+            }
+            else // start of other rounds
+            {
+                //todo: define startegy
+            }
+
+
         }
 
         // Parses a list of the opponent's moves every round. 
@@ -245,6 +263,56 @@ namespace bot
         {
             get { return pickableStartingRegions; }
         }
+
+
+
+        
+
+        public void UpdateOpponentStartRegions()
+        {
+
+            // regions to remove from OpponentStartRegions
+            List<Region> remRegions = new List<Region>();
+
+            // if there is a region on the opponent start regions list whose player is me on the current state
+            // then that means i got the pick, so we can remove it from the prediction list
+            foreach (Region reg in opponentStartRegions)
+            {
+                foreach (Region mapreg in VisibleMap.Regions)
+                {
+                    if (mapreg.Id == reg.Id)
+                    {
+                        switch (mapreg.PlayerName)
+                        {
+                            case "player1":
+                            case "neutral":
+                                remRegions.Add(reg);
+                                break;
+                            case "player2":
+                                reg.PlayerName = "player2";
+                                break;
+                            case "unknown":
+                            default:
+                                break;
+                        }
+                    }
+                }
+            }
+
+            foreach (Region remRegion in remRegions)
+                opponentStartRegions.Remove(remRegion);
+        }
+
+        public List<Region> OpponentStartRegions
+        {
+            get { return opponentStartRegions; }
+            set
+            {
+                opponentStartRegions = value;
+            }
+        }
+
+
     }
 
 }
