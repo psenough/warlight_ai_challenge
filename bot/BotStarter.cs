@@ -31,29 +31,9 @@ namespace bot
          */
         public List<Region> GetPreferredStartingRegions(BotState state, long timeOut)
         {
-            /*int m = 6;
-            List<Region> preferredStartingRegions = new List<Region>();
-            for (int i = 0; i < m; i++)
-            {
-                double rand = Random.NextDouble();
-                int r = (int)(rand * state.PickableStartingRegions.Count);
-                int regionId = state.PickableStartingRegions[r].Id;
-                Region region = state.FullMap.GetRegion(regionId);
-
-                if (!preferredStartingRegions.Contains(region))
-                    preferredStartingRegions.Add(region);
-                else
-                    i--;
-            }
-             
-            return preferredStartingRegions;*/
-
-            //Console.WriteLine("hello world");
-
             state.FullMap.SuperRegions.Sort(new SuperRegionsLowerArmiesSorter());
-            state.PickableStartingRegions.Sort(new RegionsSorter(state.FullMap.SuperRegions));
+            state.PickableStartingRegions.Sort(new RegionsImportanceSorter(state.FullMap.SuperRegions));
             //state.PickableStartingRegions.RemoveRange(6, state.PickableStartingRegions.Length-6);
-
             return state.PickableStartingRegions;
         }
 
@@ -64,6 +44,9 @@ namespace bot
          */
         public List<PlaceArmiesMove> GetPlaceArmiesMoves(BotState state, long timeOut)
         {
+
+            //todo: check your placings, define strategy and store them in global vars to access from attack/move 
+
 
             List<PlaceArmiesMove> placeArmiesMoves = new List<PlaceArmiesMove>();
             String myName = state.MyPlayerName;

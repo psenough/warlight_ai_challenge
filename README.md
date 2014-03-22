@@ -2,6 +2,7 @@ Warlighter
 ==========
 
 My bot for "The AI Games Warlight Challenge"
+http://theaigames.com/competitions/warlight-ai-challenge
 
 Based out of Fizzer's StarterBot.
 

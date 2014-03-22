@@ -17,20 +17,47 @@ namespace main
         }
     }
 
-    class RegionsSorter : System.Collections.Generic.IComparer<Region>
+
+
+    class RegionsImportanceSorter : System.Collections.Generic.IComparer<Region>
     {
         private List<SuperRegion> list;
 
-        public RegionsSorter(List<SuperRegion> _list) {
+        public RegionsImportanceSorter(List<SuperRegion> _list) {
             list = _list;
         }
 
-        //todo: if a region is neighbouring a good superregion, push it up
+        public int Compare(Region a, Region b)
+        {
+            a.Neighbors.Sort(new RegionsNeighbouringSuperRegionSorter(list));
+          
+            // if neighbouring a higher ranked superregion
+            if (a.SuperRegion.Id != a.Neighbors[0].Id)
+            {
+                // prioritize neighbouring a good superregion
+                b.Neighbors.Sort(new RegionsNeighbouringSuperRegionSorter(list));
+                return a.Neighbors[0].SuperRegion.ArmiesReward - b.Neighbors[0].SuperRegion.ArmiesReward;
+            } else {
+                // prioritize regions within higher ranked superregion
+                return list.IndexOf(a.SuperRegion) - list.IndexOf(b.SuperRegion);
+            }
+        }
+    }
+
+    class RegionsNeighbouringSuperRegionSorter : System.Collections.Generic.IComparer<Region>
+    {
+        private List<SuperRegion> list;
+
+        public RegionsNeighbouringSuperRegionSorter(List<SuperRegion> _list)
+        {
+            list = _list;
+        }
 
         public int Compare(Region a, Region b)
         {
             return list.IndexOf(a.SuperRegion) - list.IndexOf(b.SuperRegion);
         }
     }
+
 
 }
