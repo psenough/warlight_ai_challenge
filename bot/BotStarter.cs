@@ -52,6 +52,7 @@ namespace bot
 
             var finishableSuperRegion = state.ExpansionTargets[0].IsFinishable(state.StartingArmies);
 
+            //todo: check with rules if player1 is always us and player2 always enemy, or if it should be extracted somehow
             var enemySighted = false;
             foreach (Region reg in state.VisibleMap.regions)
             {
@@ -61,6 +62,8 @@ namespace bot
                 }
             }
 
+            List<PlaceArmiesMove> placeArmiesMoves = new List<PlaceArmiesMove>();
+            String myName = state.MyPlayerName;
             int armiesLeft = state.StartingArmies;
 
             if (finishableSuperRegion)
@@ -71,11 +74,12 @@ namespace bot
                 {
                     // find the player1 neighbour with highest available armies
                     reg.Neighbors.Sort(new RegionsAvailableArmiesSorter());
-                    //todo: implement this sorter
 
                     if (reg.OwnedByPlayer("neutral"))
                     {
-                        armiesLeft -= state.ScheduleNeutralAttack(reg, reg.Neighbors[0], armiesLeft);     
+                        int deployed = state.ScheduleNeutralAttack(reg, reg.Neighbors[0], armiesLeft);
+                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, deployed));
+                        armiesLeft -= deployed;
                     }
                 }
 
