@@ -56,6 +56,41 @@ namespace main
             get { return subRegions; }
         }
 
+        public bool IsFinishable(int income){
+
+            int nn = 0;
+            int nc = 0;
+            int p1n = 0;
+            int p1c = income;
+
+            foreach (Region reg in SubRegions)
+            {
+                switch(reg.PlayerName) {
+                    case "neutral":
+                        nn++;
+                        nc += reg.Armies;
+                        break;
+                    case "player1":
+                        p1n++;
+                        p1c += reg.Armies-1; //-1 because you cant attack with your last army, it needs to stay to secure region
+                        break;
+                    case "player2":
+                        return false;
+                        break;
+                    case "unknown":
+                        return false;
+                        break;
+                }
+            }
+
+            // if player1 + income has double number of armies of neutrals, we can finish this territory
+            if (p1n > nn * 2) return true;
+
+            //todo: might be worth to refactor this to return or store an array of deployment and move instruction
+            //todo: might be worth to refactor this later to create strategy to attack player2
+
+            return true;
+        }
     }
 
 }

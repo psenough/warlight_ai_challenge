@@ -31,6 +31,7 @@ namespace bot
 
         private List<Region> opponentStartRegions;
 
+        private List<SuperRegion> expansionTargetSuperRegions;
 
 
         public BotState()
@@ -149,6 +150,12 @@ namespace bot
 
                     region.PlayerName = playerName;
                     region.Armies = armies;
+
+                    // clean up temporary variables
+                    region.ReservedArmies = 0;
+                    region.PledgedArmies = 0;
+                    region.scheduledAttack.Clear();
+                    
                     i += 2;
                 }
                 catch (Exception e)
@@ -169,10 +176,15 @@ namespace bot
             if (RoundNumber == 1) // start of round 1
             {
                 UpdateOpponentStartRegions();
+
+                expansionTargetSuperRegions = FullMap.SuperRegions;
+                expansionTargetSuperRegions.Sort(new SuperRegionsExpansionTargetSorter(pickableStartingRegions));
+
+                //todo: define global strategic traits (aggressive, normal expansion, defensive)
             }
             else // start of other rounds
             {
-                //todo: define startegy
+                //todo: update expansion target
             }
 
 
@@ -299,6 +311,8 @@ namespace bot
                 }
             }
 
+            //todo: check if there is any "unknown" pick that was picked by me in a lower position then my last gotten pick                            
+
             foreach (Region remRegion in remRegions)
                 opponentStartRegions.Remove(remRegion);
         }
@@ -312,7 +326,32 @@ namespace bot
             }
         }
 
+        public List<SuperRegion> ExpansionTargets
+        {
+            get { return expansionTargetSuperRegions; }
+        }
 
+        public int ScheduleNeutralAttack(Region target, Region attacker, int armiesAvailable)
+        {
+            int usedArmies = 0;
+
+            // armies needed to attack neutral
+            int neededToAttack = target.Armies * 2;
+            int neededToDeploy = neededToAttack - attacker.Armies + attacker.PledgedArmies - attacker.ReservedArmies;
+
+            if (neededToDeploy > armiesAvailable) {
+                // there must have been a mistake somewhere on the algo
+                //return 0;
+            } else {
+                attacker.PledgedArmies += neededToDeploy;
+                usedArmies += neededToDeploy;
+
+                attacker.ReservedArmies += neededToAttack;
+                attacker.scheduledAttack.Add(new Tuple<Region,int>(target, neededToAttack));
+            }
+
+            return usedArmies;
+        }
     }
 
 }

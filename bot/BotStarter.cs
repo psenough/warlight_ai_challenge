@@ -50,10 +50,57 @@ namespace bot
         public List<PlaceArmiesMove> GetPlaceArmiesMoves(BotState state, long timeOut)
         {
 
-            //todo: check your placings, define strategy and store them in global vars to access from attack/move 
+            var finishableSuperRegion = state.ExpansionTargets[0].IsFinishable(state.StartingArmies);
+
+            var enemySighted = false;
+            foreach (Region reg in state.VisibleMap.regions)
+            {
+                if (reg.OwnedByPlayer("player2")) {
+                    enemySighted = true;
+                    break;
+                }
+            }
+
+            int armiesLeft = state.StartingArmies;
+
+            if (finishableSuperRegion)
+            {
+                // if you have enough income to finish an area this turn, deploy for it
+
+                foreach (Region reg in state.ExpansionTargets[0].SubRegions)
+                {
+                    // find the player1 neighbour with highest available armies
+                    reg.Neighbors.Sort(new RegionsAvailableArmiesSorter());
+                    //todo: implement this sorter
+
+                    if (reg.OwnedByPlayer("neutral"))
+                    {
+                        armiesLeft -= state.ScheduleNeutralAttack(reg, reg.Neighbors[0], armiesLeft);     
+                    }
+                }
+
+                if (armiesLeft < 0) Console.Error.WriteLine("exceeded army deployment!");
+
+                //todo: deploy rest of armies randomly
 
 
-            List<PlaceArmiesMove> placeArmiesMoves = new List<PlaceArmiesMove>();
+                //todo: later: calculate if we should be attacking a particular region strongly (in case there is chance of counter)
+            }
+            else if (enemySighted)
+            {
+                //todo: deploy half your income bordering your enemy and rest on expansion for best target
+
+            }
+            else
+            {
+                //todo: deploy all on the two main expansion targets
+                //todo: need to decide if should be done with stack or scatter, depending on how likely enemy is close
+
+            }
+
+
+
+            /*List<PlaceArmiesMove> placeArmiesMoves = new List<PlaceArmiesMove>();
             String myName = state.MyPlayerName;
             int armies = 2;
             int armiesLeft = state.StartingArmies;
@@ -70,7 +117,7 @@ namespace bot
                     placeArmiesMoves.Add(new PlaceArmiesMove(myName, region, armies));
                     armiesLeft -= armies;
                 }
-            }
+            }*/
 
             return placeArmiesMoves;
         }
@@ -82,6 +129,8 @@ namespace bot
          */
         public List<AttackTransferMove> GetAttackTransferMoves(BotState state, long timeOut)
         {
+            //todo: for each region, process scheduledattacks
+
             List<AttackTransferMove> attackTransferMoves = new List<AttackTransferMove>();
             String myName = state.MyPlayerName;
             int armies = 5;

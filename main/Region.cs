@@ -18,6 +18,11 @@ namespace main
         private int armies;
         private String playerName;
 
+        // temp variables
+        private int reservedArmies; // reserved for an attack
+        private int pledgedArmies; // pledged being added at this turn
+        public List<Tuple<Region,int>> scheduledAttack; // target area, armies to attack with
+
         public Region(int id, SuperRegion superRegion)
         {
             this.id = id;
@@ -96,6 +101,19 @@ namespace main
         public SuperRegion SuperRegion
         {
             get { return superRegion; }
+        }
+
+
+        public int ReservedArmies
+        {
+            set { reservedArmies = value; }
+            get { return reservedArmies; }
+        }
+
+        public int PledgedArmies
+        {
+            set { pledgedArmies = value; }
+            get { return pledgedArmies; }
         }
 
     }
