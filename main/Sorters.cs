@@ -134,4 +134,34 @@ namespace main
     }
 
 
+
+
+
+
+    class RegionsMinimumExpansionSorter : System.Collections.Generic.IComparer<Region>
+    {
+
+        public RegionsMinimumExpansionSorter()
+        {
+        }
+
+        public int Count(Region a)
+        {
+            int count = 0;
+            
+            //todo: if neighbour has enemy return 0;
+            //todo: if neighbour has neutral belonging to target superregion count++
+            //todo: if that neutral has 1 army only, count++
+
+            //todo: if armies of this region are enough to take neutral count++ for every spare army (check pledged and reserved)
+
+            return count;
+        }
+
+        public int Compare(Region a, Region b)
+        {
+            return Count(a) - Count(b);
+        }
+    }
+
 }

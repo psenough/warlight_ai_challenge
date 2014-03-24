@@ -15,6 +15,8 @@ namespace bot
 
         List<Region> GetPreferredStartingRegions(BotState state, long timeOut);
 
+        List<PlaceArmiesMove> DeployAtRandom(BotState state, int armiesLeft);
+
         List<PlaceArmiesMove> GetPlaceArmiesMoves(BotState state, long timeOut);
 
         List<AttackTransferMove> GetAttackTransferMoves(BotState state, long timeOut);

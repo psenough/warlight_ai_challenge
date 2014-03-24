@@ -42,6 +42,27 @@ namespace bot
             return state.PickableStartingRegions;
         }
 
+        public List<PlaceArmiesMove> DeployAtRandom(BotState state, int armiesLeft) {
+            List<PlaceArmiesMove> placeArmiesMoves = new List<PlaceArmiesMove>();
+            String myName = state.MyPlayerName;
+            int armies = 2;
+            var visibleRegions = state.VisibleMap.Regions;
+
+            while (armiesLeft > 0)
+            {
+                double rand = Random.NextDouble();
+                int r = (int)(rand * visibleRegions.Count);
+                var region = visibleRegions.ElementAt(r);
+
+                if (region.OwnedByPlayer(myName))
+                {
+                    placeArmiesMoves.Add(new PlaceArmiesMove(myName, region, armies));
+                    armiesLeft -= armies;
+                }
+            }
+            return placeArmiesMoves;
+        }
+
         /**
          * This method is called for at first part of each round. This example puts two armies on random regions
          * until he has no more armies left to place.
@@ -68,8 +89,9 @@ namespace bot
 
             if (finishableSuperRegion)
             {
-                // if you have enough income to finish an area this turn, deploy for it
+                //todo: later: calculate if we should be attacking a particular region strongly (in case there is chance of counter or defensive positioning)
 
+                // if you have enough income to finish an area this turn, deploy for it
                 foreach (Region reg in state.ExpansionTargets[0].SubRegions)
                 {
                     // find the player1 neighbour with highest available armies
@@ -84,15 +106,36 @@ namespace bot
                 }
 
                 if (armiesLeft < 0) Console.Error.WriteLine("exceeded army deployment!");
+            
+                // deploy the rest of our armies randomly
+                if (armiesLeft > 0)
+                {
+                    List<PlaceArmiesMove> placings = DeployAtRandom(state, armiesLeft);
+                    foreach (PlaceArmiesMove pl in placings)
+                    {
+                        placeArmiesMoves.Add(pl);
+                    }
+                }
 
-                //todo: deploy rest of armies randomly
-
-
-                //todo: later: calculate if we should be attacking a particular region strongly (in case there is chance of counter)
             }
             else if (enemySighted)
             {
-                //todo: deploy half your income bordering your enemy and rest on expansion for best target
+                //todo: later: dont bother expanding on areas that might have enemy in a few turns
+
+                // do minimum expansion on our best found expansion target
+                state.ExpansionTargets[0].SubRegions.Sort(new RegionsMinimumExpansionSorter());
+                //todo: finish this sorter function
+                Region target = state.ExpansionTargets[0].SubRegions[0].Neighbors[0];
+                Region attacker = state.ExpansionTargets[0].SubRegions[0];
+                int deployed = state.ScheduleNeutralAttack( target, attacker, armiesLeft);
+                placeArmiesMoves.Add(new PlaceArmiesMove(myName, attacker, deployed));
+                armiesLeft -= deployed;
+
+
+                //todo: find all regions where we border enemy
+                //todo: deploy rest of your income bordering the enemy
+                
+                //todo: later: decide if we should deploy all in one place and attack hard or not
 
             }
             else
@@ -103,25 +146,6 @@ namespace bot
             }
 
 
-
-            /*List<PlaceArmiesMove> placeArmiesMoves = new List<PlaceArmiesMove>();
-            String myName = state.MyPlayerName;
-            int armies = 2;
-            int armiesLeft = state.StartingArmies;
-            var visibleRegions = state.VisibleMap.Regions;
-
-            while (armiesLeft > 0)
-            {
-                double rand = Random.NextDouble();
-                int r = (int)(rand * visibleRegions.Count);
-                var region = visibleRegions.ElementAt(r);
-
-                if (region.OwnedByPlayer(myName))
-                {
-                    placeArmiesMoves.Add(new PlaceArmiesMove(myName, region, armies));
-                    armiesLeft -= armies;
-                }
-            }*/
 
             return placeArmiesMoves;
         }
