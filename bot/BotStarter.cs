@@ -71,20 +71,22 @@ namespace bot
         public List<PlaceArmiesMove> GetPlaceArmiesMoves(BotState state, long timeOut)
         {
 
-            var finishableSuperRegion = state.ExpansionTargets[0].IsFinishable(state.StartingArmies);
+            String myName = state.MyPlayerName;
 
-            //todo: check with rules if player1 is always us and player2 always enemy, or if it should be extracted somehow
+            var finishableSuperRegion = state.ExpansionTargets[0].IsFinishable(state.StartingArmies, myName);
+
             var enemySighted = false;
+            List<Region> enemyBorders = new List<Region>();
             foreach (Region reg in state.VisibleMap.regions)
             {
-                if (reg.OwnedByPlayer("player2")) {
+                if (reg.OwnedByPlayer(state.OpponentPlayerName))
+                {
                     enemySighted = true;
-                    break;
+                    enemyBorders.Add(reg);
                 }
             }
 
             List<PlaceArmiesMove> placeArmiesMoves = new List<PlaceArmiesMove>();
-            String myName = state.MyPlayerName;
             int armiesLeft = state.StartingArmies;
 
             if (finishableSuperRegion)
@@ -94,7 +96,7 @@ namespace bot
                 // if you have enough income to finish an area this turn, deploy for it
                 foreach (Region reg in state.ExpansionTargets[0].SubRegions)
                 {
-                    // find the player1 neighbour with highest available armies
+                    // find our neighbour with highest available armies
                     reg.Neighbors.Sort(new RegionsAvailableArmiesSorter());
 
                     if (reg.OwnedByPlayer("neutral"))
@@ -124,24 +126,50 @@ namespace bot
 
                 // do minimum expansion on our best found expansion target
                 state.ExpansionTargets[0].SubRegions.Sort(new RegionsMinimumExpansionSorter());
-                //todo: finish this sorter function
+                state.ExpansionTargets[0].SubRegions[0].Neighbors.Sort(new RegionsBestExpansionNeighborSorter());
                 Region target = state.ExpansionTargets[0].SubRegions[0].Neighbors[0];
                 Region attacker = state.ExpansionTargets[0].SubRegions[0];
                 int deployed = state.ScheduleNeutralAttack( target, attacker, armiesLeft);
                 placeArmiesMoves.Add(new PlaceArmiesMove(myName, attacker, deployed));
                 armiesLeft -= deployed;
 
-
-                //todo: find all regions where we border enemy
-                //todo: deploy rest of your income bordering the enemy
+                // deploy rest of your income bordering the enemy
+                while (armiesLeft > 0)
+                {
+                    foreach (Region reg in enemyBorders)
+                    {
+                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, armiesLeft--));
+                        if (armiesLeft == 0) break;
+                    }
+                }
                 
-                //todo: later: decide if we should deploy all in one place and attack hard or not
+                //todo: later: decide if we should deploy all in one place and attack hard, or spread out the deployments and sit
 
             }
             else
             {
-                //todo: deploy all on the two main expansion targets
-                //todo: need to decide if should be done with stack or scatter, depending on how likely enemy is close
+                // deploy all on the two main expansion targets
+                List<Region> deployingPlaces = new List<Region>();
+                
+                foreach (Region reg in state.ExpansionTargets[0].SubRegions)
+                {
+                    if (reg.OwnedByPlayer(myName)) deployingPlaces.Add(reg);
+                }
+                foreach (Region reg in state.ExpansionTargets[1].SubRegions)
+                {
+                    if (reg.OwnedByPlayer(myName)) deployingPlaces.Add(reg);
+                }
+                while (armiesLeft > 0)
+                {
+                    foreach (Region reg in deployingPlaces)
+                    {
+                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, armiesLeft--));
+                        if (armiesLeft == 0) break;
+                    }
+                }
+
+
+                //todo: later: need to decide if should be done with stack or scatter, depending on how likely enemy is close
 
             }
 

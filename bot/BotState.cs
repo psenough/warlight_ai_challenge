@@ -241,7 +241,7 @@ namespace bot
             get { return myName; }
         }
 
-        public String GetOpponentPlayerName
+        public String OpponentPlayerName
         {
             get { return opponentName; }
         }
@@ -297,11 +297,15 @@ namespace bot
                         switch (mapreg.PlayerName)
                         {
                             case "player1":
-                            case "neutral":
-                                remRegions.Add(reg);
+                                if (myName == "player1") remRegions.Add(reg);
+                                else reg.PlayerName = "player1";
                                 break;
                             case "player2":
-                                reg.PlayerName = "player2";
+                                if (myName == "player2") remRegions.Add(reg);
+                                else reg.PlayerName = "player2";
+                                break;
+                            case "neutral":
+                                remRegions.Add(reg);
                                 break;
                             case "unknown":
                             default:

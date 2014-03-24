@@ -56,7 +56,7 @@ namespace main
             get { return subRegions; }
         }
 
-        public bool IsFinishable(int income){
+        public bool IsFinishable(int income, string myName){
 
             int nn = 0;
             int nc = 0;
@@ -71,11 +71,20 @@ namespace main
                         nc += reg.Armies;
                         break;
                     case "player1":
-                        p1n++;
-                        p1c += reg.Armies-1; //-1 because you cant attack with your last army, it needs to stay to secure region
-                        break;
+                        if (myName == "player1")
+                        {
+                            p1n++;
+                            p1c += reg.Armies - 1; //-1 because you cant attack with your last army, it needs to stay to secure region
+                        }
+                        else return false;
+                       break;
                     case "player2":
-                        return false;
+                       if (myName == "player2")
+                       {
+                           p1n++;
+                           p1c += reg.Armies - 1; //-1 because you cant attack with your last army, it needs to stay to secure region
+                       }
+                       else return false;
                         break;
                     case "unknown":
                         return false;

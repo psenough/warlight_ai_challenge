@@ -21,20 +21,22 @@ namespace main
     class SuperRegionsExpansionTargetSorter : System.Collections.Generic.IComparer<SuperRegion>
     {
         List<Region> picks;
+        string myName;
 
-        public SuperRegionsExpansionTargetSorter(List<Region> _picks) {
+        public SuperRegionsExpansionTargetSorter(List<Region> _picks, string _myName) {
             picks = _picks;
+            myName = _myName;
         }
 
         public int Count(SuperRegion a)
         {
-            // superregion is considered safe if player1 has all the strategic starting picks (in or neighbouring) the superregion
+            // superregion is considered safe if we have all the strategic starting picks (in or neighbouring) the superregion
             // this function quantifies how safe it really is
 
             int count = 0;
 
             // no need to consider expanding into areas you already own
-            if (a.OwnedByPlayer() == "player1") return 0; 
+            if (a.OwnedByPlayer() == myName) return 0; 
             
             // get list of all starting picks of this region
             bool redflag = false;
@@ -45,10 +47,20 @@ namespace main
                         switch (reg.PlayerName)
                         {
                             case "player1":
-                                count += 2;
+                                if (myName == "player1")
+                                {
+                                    count += 2;
+                                } else { 
+                                    redflag = true;
+                                }
                                 break;
                             case "player2":
-                                redflag = true;
+                                if (myName == "player2")
+                                {
+                                    count += 2;
+                                } else { 
+                                    redflag = true;
+                                }
                                 break;
                             case "neutral":
                                 count++;
@@ -148,12 +160,52 @@ namespace main
         public int Count(Region a)
         {
             int count = 0;
-            
-            //todo: if neighbour has enemy return 0;
-            //todo: if neighbour has neutral belonging to target superregion count++
-            //todo: if that neutral has 1 army only, count++
 
-            //todo: if armies of this region are enough to take neutral count++ for every spare army (check pledged and reserved)
+            foreach (Region neigh in a.Neighbors)
+            {
+                if (neigh.OwnedByPlayer("player2")) {
+                    return 0;
+                }
+                if (neigh.OwnedByPlayer("neutral")) count++;
+                if (neigh.Armies == 1) count++;
+
+                // boost if this territory can take this neighbour without deploying
+                int armyCount = a.Armies + a.PledgedArmies - a.ReservedArmies - neigh.Armies*2;
+                if (armyCount > 0) count += armyCount;
+            }
+           
+            return count;
+        }
+
+        public int Compare(Region a, Region b)
+        {
+            return Count(a) - Count(b);
+        }
+    }
+
+
+    class RegionsBestExpansionNeighborSorter : System.Collections.Generic.IComparer<Region>
+    {
+
+        public RegionsBestExpansionNeighborSorter()
+        {
+        }
+
+        public int Count(Region a)
+        {
+            int count = 0;
+
+            // best neutral neighbor to expand into is the one with less armies
+            if (a.Armies == 1) count++;
+
+            //todo: later: actually, for maps with wastelands, it might be the other way around
+
+            // we can also give a little bonus if it's expanding into an area that will help finish the superregion
+            foreach (Region neigh in a.Neighbors)
+            {
+                if (neigh.OwnedByPlayer("unknown") && (neigh.SuperRegion.Id == a.SuperRegion.Id)) count++;
+
+            }
 
             return count;
         }
@@ -163,5 +215,6 @@ namespace main
             return Count(a) - Count(b);
         }
     }
+
 
 }
