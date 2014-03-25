@@ -154,7 +154,7 @@ namespace bot
                     // clean up temporary variables
                     region.ReservedArmies = 0;
                     region.PledgedArmies = 0;
-                    region.scheduledAttack.Clear();
+                    region.scheduledAttack = new List<Tuple<Region, int>>();
                     
                     i += 2;
                 }
@@ -178,7 +178,7 @@ namespace bot
                 UpdateOpponentStartRegions();
 
                 expansionTargetSuperRegions = FullMap.SuperRegions;
-                expansionTargetSuperRegions.Sort(new SuperRegionsExpansionTargetSorter(pickableStartingRegions));
+                expansionTargetSuperRegions.Sort(new SuperRegionsExpansionTargetSorter(pickableStartingRegions, myName));
 
                 //todo: define global strategic traits (aggressive, normal expansion, defensive)
             }
@@ -315,7 +315,7 @@ namespace bot
                 }
             }
 
-            //todo: check if there is any "unknown" pick that was picked by me in a lower position then my last gotten pick                            
+            //todo: check if there is any "unknown" pick that was picked by us in a lower position then our last gotten pick                            
 
             foreach (Region remRegion in remRegions)
                 opponentStartRegions.Remove(remRegion);
