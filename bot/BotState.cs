@@ -179,14 +179,12 @@ namespace bot
 
                 expansionTargetSuperRegions = FullMap.SuperRegions;
                 expansionTargetSuperRegions.Sort(new SuperRegionsExpansionTargetSorter(pickableStartingRegions, myName));
-
-                //todo: define global strategic traits (aggressive, normal expansion, defensive)
             }
             else // start of other rounds
             {
-                //todo: update expansion target
+                //todo: update expansion target, have to refactor to reuse
+                //todo: make sure we are not trying to expand on a superregion we already own
             }
-
 
         }
 

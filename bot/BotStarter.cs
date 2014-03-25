@@ -168,12 +168,9 @@ namespace bot
                     }
                 }
 
-
-                //todo: later: need to decide if should be done with stack or scatter, depending on how likely enemy is close
+                //todo: later: need to decide if expansion should be done with stack or scatter, depending on how likely enemy is close
 
             }
-
-
 
             return placeArmiesMoves;
         }
@@ -185,7 +182,13 @@ namespace bot
          */
         public List<AttackTransferMove> GetAttackTransferMoves(BotState state, long timeOut)
         {
-            //todo: for each region, process scheduledattacks
+            //todo: for each region we own, process already scheduled attacks
+
+            //todo: move leftovers (not bordering an enemy) to where they can border an enemy or finish the highest ranked expansion target superregion
+
+            //todo: if we are neighbouring the enemy and their expected army count (current armies + half our current income) is lower then ours, attack
+
+            //todo: later: if we have multiple areas bordering a neighbour, decide if we should attack with all or sit, delay a lot and attack with 2
 
             List<AttackTransferMove> attackTransferMoves = new List<AttackTransferMove>();
             String myName = state.MyPlayerName;
