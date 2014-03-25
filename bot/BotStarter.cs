@@ -125,6 +125,16 @@ namespace bot
 
                 // do minimum expansion on our best found expansion target
                 state.ExpansionTargets[0].SubRegions.Sort(new RegionsMinimumExpansionSorter());
+                // neighbours only has the id's, not the updates army count and playername
+                // need to update it or ScheduleNeutralAttack will go b0nkers
+                /*foreach (Region reg in state.ExpansionTargets[0].SubRegions[0].Neighbors)
+                {
+                    Region regent = state.FullMap.GetRegion(reg.Id);
+                    reg.Armies = regent.Armies;
+                    reg.PlayerName = regent.PlayerName;
+                    reg.PledgedArmies = regent.PledgedArmies;
+                    reg.ReservedArmies = regent.ReservedArmies;
+                }*/
                 state.ExpansionTargets[0].SubRegions[0].Neighbors.Sort(new RegionsBestExpansionNeighborSorter());
                 Region target = state.ExpansionTargets[0].SubRegions[0].Neighbors[0];
                 Region attacker = state.ExpansionTargets[0].SubRegions[0];
@@ -137,7 +147,8 @@ namespace bot
                 {
                     foreach (Region reg in enemyBorders)
                     {
-                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, armiesLeft--));
+                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, 1));
+                        armiesLeft--;
                         if (armiesLeft == 0) break;
                     }
                 }
@@ -168,7 +179,8 @@ namespace bot
                     {
                         foreach (Region reg in deployingPlaces)
                         {
-                            placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, armiesLeft--));
+                            placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, 1));
+                            armiesLeft--;
                             if (armiesLeft == 0) break;
                         }
                     }
@@ -176,6 +188,9 @@ namespace bot
                 //todo: later: need to decide if expansion should be done with stack or scatter, depending on how likely enemy is close
 
             }
+
+
+            //todo: FIX BUG: trying to deploy on location that is owned by opponent
 
             return placeArmiesMoves;
         }
@@ -192,18 +207,21 @@ namespace bot
             string myName = state.MyPlayerName;
             string opponentName = state.OpponentPlayerName;
 
+            // process already scheduled attacks (during the place armies phase)
+            if (state.scheduledAttack.Count > 0)
+            {
+                foreach (Tuple<int, int, int> tup in state.scheduledAttack)
+                {
+                    Region from = state.FullMap.GetRegion(tup.Item1);
+                    Region to = state.FullMap.GetRegion(tup.Item2);
+                    attackTransferMoves.Add(new AttackTransferMove(myName, from, to, tup.Item3));
+                }
+            }
+
             foreach (Region fromRegion in state.VisibleMap.Regions)
             {
                 if (fromRegion.OwnedByPlayer(myName))
-                {
-                    // process already scheduled attacks (during the place armies phase)
-                    if (fromRegion.scheduledAttack.Count > 0)
-                    {
-                        foreach (Tuple<Region, int> tup in fromRegion.scheduledAttack)
-                        {
-                            attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, tup.Item1, tup.Item2));
-                        }
-                    }
+                {      
 
                     bool borderingEnemy = false;
                     List<Region> enemyBorders = new List<Region>();

@@ -33,6 +33,8 @@ namespace bot
 
         private List<SuperRegion> expansionTargetSuperRegions;
 
+        public List<Tuple<int, int, int>> scheduledAttack; // attacker region id, target region id, armies to attack with
+
 
         public BotState()
         {
@@ -41,6 +43,7 @@ namespace bot
 
             opponentStartRegions = new List<Region>();
             expansionTargetSuperRegions = new List<SuperRegion>();
+            this.scheduledAttack = new List<Tuple<int, int, int>>();
 
             roundNumber = 0;
         }
@@ -158,25 +161,11 @@ namespace bot
                     // clean up temporary variables
                     region.ReservedArmies = 0;
                     region.PledgedArmies = 0;
-                    region.scheduledAttack = new List<Tuple<Region, int>>();
                     
                     // update fullmap (fog of war)
                     Region region2 = fullMap.GetRegion(region.Id);
                     region2.PlayerName = playerName;
                     region2.Armies = armies;
-
-                    if (expansionTargetSuperRegions.Count > 0)
-                    {
-                        Region region3 = fullMap.GetRegion(region.Id);
-                        region3.PlayerName = playerName;
-                        region3.Armies = armies;
-                    }
-                    if (expansionTargetSuperRegions.Count > 1)
-                    {
-                        Region region3 = fullMap.GetRegion(region.Id);
-                        region3.PlayerName = playerName;
-                        region3.Armies = armies;
-                    }
 
                     i += 2;
                 }
@@ -193,6 +182,9 @@ namespace bot
                     unknownRegions.Add(region);
             foreach (Region unknownRegion in unknownRegions)
                 visibleMap.Regions.Remove(unknownRegion);
+
+
+            scheduledAttack.Clear();
 
 
             if (RoundNumber == 1) // start of round 1
@@ -372,13 +364,13 @@ namespace bot
 
             if (neededToDeploy > armiesAvailable) {
                 // there must have been a mistake somewhere on the algo
-                //return 0;
+                return 0;
             } else {
                 attacker.PledgedArmies += neededToDeploy;
                 usedArmies += neededToDeploy;
 
                 attacker.ReservedArmies += neededToAttack;
-                attacker.scheduledAttack.Add(new Tuple<Region,int>(target, neededToAttack));
+                scheduledAttack.Add(new Tuple<int, int ,int>(attacker.Id, target.Id, neededToAttack));
             }
 
             return usedArmies;

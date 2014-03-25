@@ -21,7 +21,6 @@ namespace main
         // temp variables
         private int reservedArmies; // reserved for an attack
         private int pledgedArmies; // pledged being added at this turn
-        public List<Tuple<Region,int>> scheduledAttack; // target area, armies to attack with
 
         public Region(int id, SuperRegion superRegion)
         {
@@ -33,7 +32,6 @@ namespace main
 
             this.reservedArmies = 0;
             this.pledgedArmies = 0;
-            this.scheduledAttack = new List<Tuple<Region,int>>();
 
             superRegion.AddSubRegion(this);
         }
@@ -48,8 +46,7 @@ namespace main
 
             this.reservedArmies = 0;
             this.pledgedArmies = 0;
-            this.scheduledAttack = new List<Tuple<Region, int>>();
-
+            
             superRegion.AddSubRegion(this);
         }
 

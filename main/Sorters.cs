@@ -275,6 +275,9 @@ namespace main
             // best neutral neighbor to expand into is the one with less armies
             if (a.Armies == 1) count++;
 
+            // dont consider unknown land
+            if (a.OwnedByPlayer("unknown")) return 0;
+
             //todo: later: actually, for maps with wastelands, it might be the other way around
 
             // we can also give a little bonus if it's expanding into an area that will help finish the superregion
