@@ -45,7 +45,6 @@ namespace bot
         public List<PlaceArmiesMove> DeployAtRandom(BotState state, int armiesLeft) {
             List<PlaceArmiesMove> placeArmiesMoves = new List<PlaceArmiesMove>();
             String myName = state.MyPlayerName;
-            int armies = 2;
             var visibleRegions = state.VisibleMap.Regions;
 
             while (armiesLeft > 0)
@@ -56,8 +55,8 @@ namespace bot
 
                 if (region.OwnedByPlayer(myName))
                 {
-                    placeArmiesMoves.Add(new PlaceArmiesMove(myName, region, armies));
-                    armiesLeft -= armies;
+                    placeArmiesMoves.Add(new PlaceArmiesMove(myName, region, 1));
+                    armiesLeft -= 1;
                 }
             }
             return placeArmiesMoves;
