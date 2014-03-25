@@ -16,7 +16,7 @@ namespace bot
         private String myName = "";
         private String opponentName = "";
 
-        private readonly Map fullMap = new Map(); // This map is known from the start, contains all the regions and how they are connected, doesn't change after initialization
+        private readonly Map fullMap = new Map(); // This map is known from the start, contains all the regions and how they are connected
         private Map visibleMap; // This map represents everything the player can see, updated at the end of each round.
 
         private List<Region> pickableStartingRegions; // 2 randomly chosen regions from each superregion are given, which the bot can chose to start with
@@ -38,6 +38,10 @@ namespace bot
         {
             pickableStartingRegions = new List<Region>();
             opponentMoves = new List<Move>();
+
+            opponentStartRegions = new List<Region>();
+            expansionTargetSuperRegions = new List<SuperRegion>();
+
             roundNumber = 0;
         }
 
@@ -156,6 +160,24 @@ namespace bot
                     region.PledgedArmies = 0;
                     region.scheduledAttack = new List<Tuple<Region, int>>();
                     
+                    // update fullmap (fog of war)
+                    Region region2 = fullMap.GetRegion(region.Id);
+                    region2.PlayerName = playerName;
+                    region2.Armies = armies;
+
+                    if (expansionTargetSuperRegions.Count > 0)
+                    {
+                        Region region3 = fullMap.GetRegion(region.Id);
+                        region3.PlayerName = playerName;
+                        region3.Armies = armies;
+                    }
+                    if (expansionTargetSuperRegions.Count > 1)
+                    {
+                        Region region3 = fullMap.GetRegion(region.Id);
+                        region3.PlayerName = playerName;
+                        region3.Armies = armies;
+                    }
+
                     i += 2;
                 }
                 catch (Exception e)
@@ -177,7 +199,7 @@ namespace bot
             {
                 UpdateOpponentStartRegions();
 
-                expansionTargetSuperRegions = FullMap.SuperRegions;
+                expansionTargetSuperRegions = fullMap.SuperRegions;
                 expansionTargetSuperRegions.Sort(new SuperRegionsExpansionTargetSorter(pickableStartingRegions, myName));
             }
             else // start of other rounds

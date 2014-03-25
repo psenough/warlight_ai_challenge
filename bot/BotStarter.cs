@@ -150,7 +150,10 @@ namespace bot
             {
                 // deploy all on the two main expansion targets
                 List<Region> deployingPlaces = new List<Region>();
+
+                int id1 = state.ExpansionTargets[0].Id;
                 
+                //todo: FIX these subregions are all unknown, probably not updated on botstate
                 foreach (Region reg in state.ExpansionTargets[0].SubRegions)
                 {
                     if (reg.OwnedByPlayer(myName)) deployingPlaces.Add(reg);
@@ -159,15 +162,18 @@ namespace bot
                 {
                     if (reg.OwnedByPlayer(myName)) deployingPlaces.Add(reg);
                 }
-                while (armiesLeft > 0)
+
+                if (deployingPlaces.Count > 0)
                 {
-                    foreach (Region reg in deployingPlaces)
+                    while (armiesLeft > 0)
                     {
-                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, armiesLeft--));
-                        if (armiesLeft == 0) break;
+                        foreach (Region reg in deployingPlaces)
+                        {
+                            placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, armiesLeft--));
+                            if (armiesLeft == 0) break;
+                        }
                     }
                 }
-
                 //todo: later: need to decide if expansion should be done with stack or scatter, depending on how likely enemy is close
 
             }

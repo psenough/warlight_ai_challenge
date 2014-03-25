@@ -84,7 +84,7 @@ namespace main
 
         public int Compare(SuperRegion a, SuperRegion b)
         {
-            return Count(a) - Count(b);
+            return Count(b) - Count(a);
         }
     }
 
@@ -224,7 +224,7 @@ namespace main
             int aArmies = a.Armies + a.PledgedArmies - a.ReservedArmies;
             int bArmies = b.Armies + b.PledgedArmies - b.ReservedArmies;
 
-            return aArmies - bArmies;
+            return bArmies - aArmies;
         }
     }
 
@@ -257,7 +257,7 @@ namespace main
 
         public int Compare(Region a, Region b)
         {
-            return Count(a) - Count(b);
+            return Count(b) - Count(a);
         }
     }
 
@@ -289,7 +289,7 @@ namespace main
 
         public int Compare(Region a, Region b)
         {
-            return Count(a) - Count(b);
+            return Count(b) - Count(a);
         }
     }
 
@@ -335,7 +335,7 @@ namespace main
 
         public int Compare(Region a, Region b)
         {
-            return Count(a) - Count(b);
+            return Count(b) - Count(a);
         }
     }
 
