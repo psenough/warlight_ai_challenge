@@ -31,6 +31,10 @@ namespace main
             this.playerName = "unknown";
             this.armies = 0;
 
+            this.reservedArmies = 0;
+            this.pledgedArmies = 0;
+            this.scheduledAttack = new List<Tuple<Region,int>>();
+
             superRegion.AddSubRegion(this);
         }
 
@@ -41,6 +45,10 @@ namespace main
             this.neighbors = new List<Region>();
             this.playerName = playerName;
             this.armies = armies;
+
+            this.reservedArmies = 0;
+            this.pledgedArmies = 0;
+            this.scheduledAttack = new List<Tuple<Region, int>>();
 
             superRegion.AddSubRegion(this);
         }
