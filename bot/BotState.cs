@@ -182,8 +182,15 @@ namespace bot
             }
             else // start of other rounds
             {
-                //todo: update expansion target, have to refactor to reuse
-                //todo: make sure we are not trying to expand on a superregion we already own
+                // update our expansion target
+                // make sure we are not trying to expand on a superregion we already own
+                if (expansionTargetSuperRegions[0].OwnedByPlayer() == MyPlayerName)
+                {
+                    expansionTargetSuperRegions.RemoveAt(0);
+                }
+
+                //todo: later: make sure we are not trying to expand on a region where enemy is
+                //todo: foolproof Project not to try to access expansionTargetSuperRegions[0] when it's empty
             }
 
         }

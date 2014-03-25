@@ -182,47 +182,61 @@ namespace bot
          */
         public List<AttackTransferMove> GetAttackTransferMoves(BotState state, long timeOut)
         {
-            //todo: for each region we own, process already scheduled attacks
-
-            //todo: move leftovers (not bordering an enemy) to where they can border an enemy or finish the highest ranked expansion target superregion
-
-            //todo: if we are neighbouring the enemy and their expected army count (current armies + half our current income) is lower then ours, attack
-
-            //todo: later: if we have multiple areas bordering a neighbour, decide if we should attack with all or sit, delay a lot and attack with 2
-
+          
             List<AttackTransferMove> attackTransferMoves = new List<AttackTransferMove>();
-            String myName = state.MyPlayerName;
-            int armies = 5;
+            string myName = state.MyPlayerName;
+            string opponentName = state.OpponentPlayerName;
 
-            foreach (var fromRegion in state.VisibleMap.Regions)
+            foreach (Region fromRegion in state.VisibleMap.Regions)
             {
-                if (fromRegion.OwnedByPlayer(myName)) //do an attack
+                if (fromRegion.OwnedByPlayer(myName))
                 {
-                    List<Region> possibleToRegions = new List<Region>();
-                    possibleToRegions.AddRange(fromRegion.Neighbors);
-
-                    while (possibleToRegions.Any())
+                    // process already scheduled attacks (during the place armies phase)
+                    if (fromRegion.scheduledAttack.Count > 0)
                     {
-                        double rand = Random.NextDouble();
-                        int r = (int)(rand * possibleToRegions.Count);
-                        Region toRegion = possibleToRegions[r];
-
-                        if (toRegion.PlayerName != myName && fromRegion.Armies > 6) //do an attack
+                        foreach (Tuple<Region, int> tup in fromRegion.scheduledAttack)
                         {
-                            attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, toRegion, armies));
-                            break;
+                            attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, tup.Item1, tup.Item2));
                         }
-                        else if (toRegion.PlayerName == myName && fromRegion.Armies > 1) //do a transfer
-                        {
-                            attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, toRegion, armies));
-                            break;
-                        }
-                        else
-                            possibleToRegions.Remove(toRegion);
                     }
+
+                    bool borderingEnemy = false;
+                    List<Region> enemyBorders = new List<Region>();
+
+                    foreach (Region reg in fromRegion.Neighbors)
+                    {
+                        if (reg.OwnedByPlayer(opponentName))
+                        {
+                            borderingEnemy = true;
+                            enemyBorders.Add(reg);
+                        }
+                    }
+
+                    int armiesLeft = fromRegion.Armies + fromRegion.PledgedArmies - fromRegion.ReservedArmies - 1;
+
+                    if (borderingEnemy) {
+                        // if their expected army count (current armies + half our current income) is lower then ours, attack
+                        if (armiesLeft > enemyBorders[0].Armies + state.StartingArmies * .5)
+                        {
+                            attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, enemyBorders[0], armiesLeft));
+                        }
+
+                        //todo: refactor this code to handle attacking multiple enemy borders on same turn
+
+                        //todo: later: if we have multiple areas bordering an enemy, decide if we should attack with all or sit, delay a lot and attack with 2
+
+                    } else {
+                        // move leftovers to where they can border an enemy or finish the highest ranked expansion target superregion
+                        if (armiesLeft > 0)
+                        {
+                            fromRegion.Neighbors.Sort(new RegionsMoveLeftoversTargetSorter(myName, opponentName, state.ExpansionTargets[0].Id));
+                            attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, fromRegion.Neighbors[0], armiesLeft));
+                        }
+                    }
+
                 }
             }
-
+           
             return attackTransferMoves;
         }
 

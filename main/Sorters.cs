@@ -17,7 +17,7 @@ namespace main
         }
     }
 
-    //todo: this is only meant for round 0 analysis atm, might need refactoring for reuse on other rounds
+    // this is only meant for round 0 analysis
     class SuperRegionsExpansionTargetSorter : System.Collections.Generic.IComparer<SuperRegion>
     {
         List<Region> picks;
@@ -88,6 +88,89 @@ namespace main
         }
     }
 
+
+    //todo: refactor this sorter to use on other rounds
+   /* class SuperRegionsExpansionTargetSorter : System.Collections.Generic.IComparer<SuperRegion>
+    {
+        List<Region> picks;
+        string myName;
+
+        public SuperRegionsExpansionTargetSorter(List<Region> _picks, string _myName)
+        {
+            picks = _picks;
+            myName = _myName;
+        }
+
+        public int Count(SuperRegion a)
+        {
+            // superregion is considered safe if we have all the strategic starting picks (in or neighbouring) the superregion
+            // this function quantifies how safe it really is
+
+            int count = 0;
+
+            // no need to consider expanding into areas you already own
+            if (a.OwnedByPlayer() == myName) return 0;
+
+            // get list of all starting picks of this region
+            bool redflag = false;
+            foreach (Region reg in picks)
+            {
+                foreach (Region neighbour in reg.Neighbors)
+                {
+                    if (neighbour.SuperRegion.Id == a.Id)
+                    {
+                        switch (reg.PlayerName)
+                        {
+                            case "player1":
+                                if (myName == "player1")
+                                {
+                                    count += 2;
+                                }
+                                else
+                                {
+                                    redflag = true;
+                                }
+                                break;
+                            case "player2":
+                                if (myName == "player2")
+                                {
+                                    count += 2;
+                                }
+                                else
+                                {
+                                    redflag = true;
+                                }
+                                break;
+                            case "neutral":
+                                count++;
+                                break;
+                            case "unknown":
+                                //todo: check if the pick was picked by me in lower position then my last gotten pick
+                                count--;
+                                //todo: instead of giving it lower priority, it could also be worth increasing the aggressivity
+                                break;
+                        }
+
+                        continue; //we only need to check one of the found neighbours
+                    }
+                }
+            }
+
+            if (redflag) count = 0;
+
+            return count;
+        }
+
+        public int Compare(SuperRegion a, SuperRegion b)
+        {
+            return Count(a) - Count(b);
+        }
+    }*/
+
+
+
+
+
     class RegionsImportanceSorter : System.Collections.Generic.IComparer<Region>
     {
         private List<SuperRegion> list;
@@ -145,11 +228,6 @@ namespace main
         }
     }
 
-
-
-
-
-
     class RegionsMinimumExpansionSorter : System.Collections.Generic.IComparer<Region>
     {
 
@@ -183,7 +261,6 @@ namespace main
         }
     }
 
-
     class RegionsBestExpansionNeighborSorter : System.Collections.Generic.IComparer<Region>
     {
 
@@ -216,5 +293,50 @@ namespace main
         }
     }
 
+
+    
+    class RegionsMoveLeftoversTargetSorter : System.Collections.Generic.IComparer<Region>
+    {
+
+        string myName;
+        string opponentName;
+        int expansionTarget;
+
+        public RegionsMoveLeftoversTargetSorter( string _myname, string _opponentName, int _expansionTarget )
+        {
+            myName = _myname;
+            opponentName = _opponentName;
+            expansionTarget = _expansionTarget;
+        }
+
+        public int Count(Region a)
+        {
+            int count = 0;
+
+            // if not bordering an enemy
+            // move leftover to where they can border an enemy
+            // or finish the highest ranked expansion target superregion more easily
+
+            // we can also give a little bonus if it's expanding into an area that will help finish the superregion
+            foreach (Region neigh in a.Neighbors)
+            {
+                if (neigh.OwnedByPlayer(opponentName)) return 0;
+
+                foreach (Region nextborder in neigh.Neighbors)
+                {
+                    if (nextborder.OwnedByPlayer(opponentName)) count += 2;
+
+                    if (nextborder.OwnedByPlayer("neutral") && (nextborder.SuperRegion.Id == expansionTarget)) count++;
+                }
+            }
+
+            return count;
+        }
+
+        public int Compare(Region a, Region b)
+        {
+            return Count(a) - Count(b);
+        }
+    }
 
 }
