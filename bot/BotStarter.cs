@@ -50,18 +50,26 @@ namespace bot
             String myName = state.MyPlayerName;
             var visibleRegions = state.VisibleMap.Regions;
 
-            while (armiesLeft > 0)
+            int maxcycles = 20;
+            for (int i = 0; i < maxcycles; i++)
             {
-                double rand = Random.NextDouble();
-                int r = (int)(rand * visibleRegions.Count);
-                var region = visibleRegions.ElementAt(r);
-
-                if (region.OwnedByPlayer(myName))
+                //while (armiesLeft > 0)
                 {
-                    placeArmiesMoves.Add(new PlaceArmiesMove(myName, region, 1));
-                    armiesLeft -= 1;
+                    double rand = Random.NextDouble();
+                    int r = (int)(rand * visibleRegions.Count);
+                    var region = visibleRegions.ElementAt(r);
+
+                    if (region.OwnedByPlayer(myName))
+                    {
+                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, region, 1));
+                        armiesLeft -= 1;
+                    }
+
                 }
+
+                if (armiesLeft <= 0) break;
             }
+
             return placeArmiesMoves;
         }
 
@@ -147,16 +155,23 @@ namespace bot
                 armiesLeft -= deployed;
 
                 // deploy rest of your income bordering the enemy
-                while (armiesLeft > 0)
+                int maxcycles = 20;
+                for (int i = 0; i < maxcycles; i++)
                 {
-                    foreach (Region reg in enemyBorders)
+
+                    //while (armiesLeft > 0)
                     {
-                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, 1));
-                        armiesLeft--;
-                        if (armiesLeft == 0) break;
+                        foreach (Region reg in enemyBorders)
+                        {
+                            placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, 1));
+                            armiesLeft--;
+                            if (armiesLeft == 0) break;
+                        }
                     }
+
+                    if (armiesLeft <= 0) break;
+                    
                 }
-                
                 //todo: later: decide if we should deploy all in one place and attack hard, or spread out the deployments and sit
 
             }
@@ -179,44 +194,50 @@ namespace bot
 
                 if (deployingPlaces.Count > 0)
                 {
-                    while (armiesLeft > 0)
+                    int maxcycles = 20;
+                    for (int i = 0; i < maxcycles; i++)
                     {
-                        foreach (Region reg in deployingPlaces)
+                        // while (armiesLeft > 0)
                         {
-                            bool alreadyDeployed = false;
-                            reg.Neighbors.Sort(new RegionsBestExpansionNeighborSorter());
-                            Region target = reg.Neighbors[0];
-                            foreach (Tuple<int, int, int> tp in state.scheduledAttack)
+                            foreach (Region reg in deployingPlaces)
                             {
-                                if ((reg.Id == tp.Item1) && (target.Id == tp.Item2))
+                                bool alreadyDeployed = false;
+                                reg.Neighbors.Sort(new RegionsBestExpansionNeighborSorter());
+                                Region target = reg.Neighbors[0];
+                                foreach (Tuple<int, int, int> tp in state.scheduledAttack)
                                 {
-                                    alreadyDeployed = true;
-                                    break;
+                                    if ((reg.Id == tp.Item1) && (target.Id == tp.Item2))
+                                    {
+                                        alreadyDeployed = true;
+                                        break;
+                                    }
                                 }
-                            }
 
-                            if (!alreadyDeployed)
-                            {
-                                int deployed = state.ScheduleNeutralAttack(target, reg, armiesLeft);
-                                if ((deployed < armiesLeft) && (deployed > 0))
+                                if (!alreadyDeployed)
                                 {
-                                    placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, deployed));
-                                    armiesLeft -= deployed;
+                                    int deployed = state.ScheduleNeutralAttack(target, reg, armiesLeft);
+                                    if ((deployed < armiesLeft) && (deployed > 0))
+                                    {
+                                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, deployed));
+                                        armiesLeft -= deployed;
+                                    }
+                                    else
+                                    {
+                                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, 1));
+                                        armiesLeft--;
+                                    }
                                 }
                                 else
                                 {
                                     placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, 1));
                                     armiesLeft--;
                                 }
-                            }                           
-                            else
-                            {
-                                placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, 1));
-                                armiesLeft--;
+
+                                if (armiesLeft == 0) break;
                             }
-                            
-                            if (armiesLeft == 0) break;
                         }
+
+                        if (armiesLeft <= 0) break;
                     }
                 }
                 //todo: later: need to decide if expansion should be done with stack or scatter, depending on how likely enemy is close
