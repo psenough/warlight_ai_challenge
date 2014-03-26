@@ -318,6 +318,12 @@ namespace main
         {
             int count = 0;
 
+
+            if (a.OwnedByPlayer("neutral") || a.OwnedByPlayer(opponentName))
+            {
+                return 0;
+            }  
+
             // if not bordering an enemy
             // move leftover to where they can border an enemy
             // or finish the highest ranked expansion target superregion more easily

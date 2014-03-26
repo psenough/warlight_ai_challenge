@@ -283,8 +283,10 @@ namespace bot
                         if (armiesLeft > 0)
                         {
                             fromRegion.Neighbors.Sort(new RegionsMoveLeftoversTargetSorter(myName, opponentName, state.ExpansionTargets[0].Id));
-                            attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, fromRegion.Neighbors[0], armiesLeft));
-                            //todo: debug this, seems to be attacking with 1, not transfering
+                            if (fromRegion.Neighbors[0].OwnedByPlayer(state.MyPlayerName))
+                            {
+                                attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, fromRegion.Neighbors[0], armiesLeft));
+                            }
                         }
                     }
 
