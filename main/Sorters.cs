@@ -194,6 +194,8 @@ namespace main
                 // prioritize regions within higher ranked superregion
                 return list.IndexOf(a.SuperRegion) - list.IndexOf(b.SuperRegion);
             }
+
+            //todo: prioritize regions that are alone in good superregions, or we might not be there at all
         }
     }
     

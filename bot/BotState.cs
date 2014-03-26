@@ -27,12 +27,8 @@ namespace bot
 
         private int roundNumber;
 
-
-
         private List<Region> opponentStartRegions;
-
         private List<SuperRegion> expansionTargetSuperRegions;
-
         public List<Tuple<int, int, int>> scheduledAttack; // attacker region id, target region id, armies to attack with
 
 
@@ -176,7 +172,7 @@ namespace bot
             }
             List<Region> unknownRegions = new List<Region>();
 
-            // Remove regions which are unknown.
+            // Remove regions from visible map which are unknown
             foreach (var region in visibleMap.Regions)
                 if (region.PlayerName == "unknown")
                     unknownRegions.Add(region);
@@ -190,8 +186,7 @@ namespace bot
             if (RoundNumber == 1) // start of round 1
             {
                 UpdateOpponentStartRegions();
-
-                expansionTargetSuperRegions = fullMap.SuperRegions;
+                expansionTargetSuperRegions = FullMap.GetMapCopy().SuperRegions;
                 expansionTargetSuperRegions.Sort(new SuperRegionsExpansionTargetSorter(pickableStartingRegions, myName));
             }
             else // start of other rounds

@@ -69,8 +69,18 @@ namespace main
             }
             foreach (Region r in regions) //copy regions
             {
-                Region newRegion = new Region(r.Id, newMap.GetSuperRegion(r.SuperRegion.Id), r.PlayerName, r.Armies);
-                newMap.Add(newRegion);
+                try
+                {
+                    Region newRegion = new Region(r.Id, newMap.GetSuperRegion(r.SuperRegion.Id), r.PlayerName, r.Armies);
+                    newMap.Add(newRegion);
+                }
+                catch (Exception exc) { 
+                    Console.Error.WriteLine("couldn't copy region");
+                    Console.Error.WriteLine("id: " + r.Id);
+                    Console.Error.WriteLine("parent: " + r.SuperRegion.Id);
+                    Console.Error.WriteLine("playername: " + r.PlayerName);
+                    Console.Error.WriteLine("armies: " + r.Armies);
+                }
             }
             foreach (Region r in regions) //Add neighbors to copied regions
             {
@@ -90,6 +100,8 @@ namespace main
             foreach (Region region in regions)
                 if (region.Id == id)
                     return region;
+
+            Console.Error.WriteLine("couldn't find Region with id " + id);
             return null;
         }
 
@@ -102,6 +114,8 @@ namespace main
             foreach (SuperRegion superRegion in superRegions)
                 if (superRegion.Id == id)
                     return superRegion;
+
+            Console.Error.WriteLine("couldn't find SuperRegion with id " + id);
             return null;
         }
 

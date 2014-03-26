@@ -163,7 +163,7 @@ namespace bot
 
                 int id1 = state.ExpansionTargets[0].Id;
                 
-                //todo: FIX these subregions are all unknown, probably not updated on botstate
+                //todo: test this
                 foreach (Region reg in state.ExpansionTargets[0].SubRegions)
                 {
                     if (reg.OwnedByPlayer(myName)) deployingPlaces.Add(reg);
@@ -179,14 +179,43 @@ namespace bot
                     {
                         foreach (Region reg in deployingPlaces)
                         {
-                            placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, 1));
-                            armiesLeft--;
+                            bool alreadyDeployed = false;
+                            reg.Neighbors.Sort(new RegionsBestExpansionNeighborSorter());
+                            Region target = reg.Neighbors[0];
+                            foreach (Tuple<int, int, int> tp in state.scheduledAttack)
+                            {
+                                if ((reg.Id == tp.Item1) && (target.Id == tp.Item2))
+                                {
+                                    alreadyDeployed = true;
+                                    break;
+                                }
+                            }
+
+                            if (!alreadyDeployed)
+                            {
+                                int deployed = state.ScheduleNeutralAttack(target, reg, armiesLeft);
+                                if ((deployed < armiesLeft) && (deployed > 0))
+                                {
+                                    placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, deployed));
+                                    armiesLeft -= deployed;
+                                }
+                                else
+                                {
+                                    placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, 1));
+                                    armiesLeft--;
+                                }
+                            }                           
+                            else
+                            {
+                                placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, 1));
+                                armiesLeft--;
+                            }
+                            
                             if (armiesLeft == 0) break;
                         }
                     }
                 }
                 //todo: later: need to decide if expansion should be done with stack or scatter, depending on how likely enemy is close
-
             }
 
 
@@ -237,6 +266,7 @@ namespace bot
 
                     int armiesLeft = fromRegion.Armies + fromRegion.PledgedArmies - fromRegion.ReservedArmies - 1;
 
+                    // if this region is bordering the enemy
                     if (borderingEnemy) {
                         // if their expected army count (current armies + half our current income) is lower then ours, attack
                         if (armiesLeft > enemyBorders[0].Armies + state.StartingArmies * .5)
@@ -254,6 +284,7 @@ namespace bot
                         {
                             fromRegion.Neighbors.Sort(new RegionsMoveLeftoversTargetSorter(myName, opponentName, state.ExpansionTargets[0].Id));
                             attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, fromRegion.Neighbors[0], armiesLeft));
+                            //todo: debug this, seems to be attacking with 1, not transfering
                         }
                     }
 
