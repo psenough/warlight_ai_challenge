@@ -30,20 +30,21 @@ namespace main
 
         public int Count(SuperRegion a)
         {
-            // superregion is considered safe if we have all the strategic starting picks (in or neighbouring) the superregion
+            // superregion is considered safe if we have all the strategic starting picks (in, or neighbouring) the superregion
             // this function quantifies how safe it really is
 
             int count = 0;
 
-            // no need to consider expanding into areas you already own
-            if (a.OwnedByPlayer() == myName) return 0; 
-            
-            // get list of all starting picks of this region
-            bool redflag = false;
+            bool redflag = false; //redflag when there is enemy or unknown on a starting pick in or neighbouring
             foreach (Region reg in picks)
             {
+                bool found = false;
+
+                // check if we have any neighbour bordering this superregion (this selection includes picks in or countering)
                 foreach(Region neighbour in reg.Neighbors) {
+                    
                     if (neighbour.SuperRegion.Id == a.Id) {
+                        //if it is neighboring an area of this superregion, check who the pick was assigned to
                         switch (reg.PlayerName)
                         {
                             case "player1":
@@ -67,23 +68,32 @@ namespace main
                                 break;
                             case "unknown":
                                 //todo: check if the pick was picked by me in lower position then my last gotten pick
-                                count--;
+                                //count--;
                                 //todo: instead of giving it lower priority, it could also be worth increasing the aggressivity
+                                count--;
                                 break;
                         }
                     
-                        continue; //we only need to check one of the found neighbours
+                        // we only need to check one of the found neighbours to know this is a relevant pick, skip the rest
+                        found = true;
+                        break;
                     }
                 }
+
+                if (found) break;
             }
 
-            if (redflag) count = 0;
+            if (redflag) count = -1;
             
             return count;
         }
 
         public int Compare(SuperRegion a, SuperRegion b)
         {
+            int ac = Count(a);
+            int bc = Count(b);
+            //Console.WriteLine(a.Id + " " + ac + " : " + b.Id + " " + bc);
+
             return Count(b) - Count(a);
         }
     }
@@ -233,8 +243,11 @@ namespace main
     class RegionsMinimumExpansionSorter : System.Collections.Generic.IComparer<Region>
     {
 
-        public RegionsMinimumExpansionSorter()
+        string opponentName;
+
+        public RegionsMinimumExpansionSorter(string _opponentName)
         {
+            opponentName = _opponentName;
         }
 
         public int Count(Region a)
@@ -259,6 +272,10 @@ namespace main
 
         public int Compare(Region a, Region b)
         {
+            // push down region with enemy
+            if (a.OwnedByPlayer(opponentName) || a.OwnedByPlayer("unknown")) return 1;
+
+            // sort
             return Count(b) - Count(a);
         }
     }

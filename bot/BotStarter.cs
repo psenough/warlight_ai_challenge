@@ -37,7 +37,10 @@ namespace bot
 
             // assume opponent will also choose optimum picks
             // this will be useful later when we need to predict where opponent started
-            state.OpponentStartRegions = state.PickableStartingRegions;
+            foreach (Region reg in state.PickableStartingRegions)
+            {
+                state.OpponentStartRegions.Add(new Region(reg.Id, reg.SuperRegion));
+            }
 
             return state.PickableStartingRegions;
         }
@@ -70,7 +73,8 @@ namespace bot
         public List<PlaceArmiesMove> GetPlaceArmiesMoves(BotState state, long timeOut)
         {
 
-            String myName = state.MyPlayerName;
+            string myName = state.MyPlayerName;
+            string opponentName = state.OpponentPlayerName;
 
             var finishableSuperRegion = state.ExpansionTargets[0].IsFinishable(state.StartingArmies, myName);
 
@@ -98,7 +102,7 @@ namespace bot
                     // find our neighbour with highest available armies
                     reg.Neighbors.Sort(new RegionsAvailableArmiesSorter());
 
-                    if (reg.OwnedByPlayer("neutral"))
+                    if (reg.OwnedByPlayer(myName) && reg.Neighbors[0].OwnedByPlayer("neutral"))
                     {
                         int deployed = state.ScheduleNeutralAttack(reg, reg.Neighbors[0], armiesLeft);
                         placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, deployed));
@@ -124,7 +128,7 @@ namespace bot
                 //todo: later: dont bother expanding on areas that might have enemy in a few turns
 
                 // do minimum expansion on our best found expansion target
-                state.ExpansionTargets[0].SubRegions.Sort(new RegionsMinimumExpansionSorter());
+                state.ExpansionTargets[0].SubRegions.Sort(new RegionsMinimumExpansionSorter(opponentName));
                 // neighbours only has the id's, not the updates army count and playername
                 // need to update it or ScheduleNeutralAttack will go b0nkers
                 /*foreach (Region reg in state.ExpansionTargets[0].SubRegions[0].Neighbors)

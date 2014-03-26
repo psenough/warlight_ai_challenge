@@ -163,6 +163,16 @@ namespace bot
                     region2.PlayerName = playerName;
                     region2.Armies = armies;
 
+                    // update pickable regions
+                    foreach (Region reg in pickableStartingRegions)
+                    {
+                        if (reg.Id == region.Id)
+                        {
+                            reg.Armies = region.Armies;
+                            reg.PlayerName = region.PlayerName;
+                        }
+                    }
+
                     i += 2;
                 }
                 catch (Exception e)
