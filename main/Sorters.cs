@@ -332,7 +332,7 @@ namespace main
         {
             int ca = Count(a);
             int cb = Count(b);
-            Console.WriteLine(a.Id + " " + ca + " : " + b.Id + " " + cb);
+            //Console.WriteLine(a.Id + " " + ca + " : " + b.Id + " " + cb);
 
             return Count(b) - Count(a);
         }
