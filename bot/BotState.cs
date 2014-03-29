@@ -359,7 +359,7 @@ namespace bot
             get { return expansionTargetSuperRegions; }
         }
 
-        public int ScheduleNeutralAttack(Region target, Region attacker, int armiesAvailable)
+        public int ScheduleNeutralAttack(Region attacker, Region target, int armiesAvailable)
         {
             int usedArmies = 0;
 

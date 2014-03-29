@@ -80,8 +80,12 @@ namespace main
                     }
                 }
 
-                if (found) break;
+                //if (found) break;
+
             }
+
+            if (a.SubRegions.Count <= 4) count += 2;
+            else if (a.SubRegions.Count <= 5) count++;
 
             if (redflag) count = -1;
             
@@ -93,6 +97,7 @@ namespace main
             int ac = Count(a);
             int bc = Count(b);
             //Console.WriteLine(a.Id + " " + ac + " : " + b.Id + " " + bc);
+            //if ((ac == -1) || (bc == -1)) return -1;
 
             return Count(b) - Count(a);
         }
@@ -240,13 +245,16 @@ namespace main
         }
     }
 
+    
     class RegionsMinimumExpansionSorter : System.Collections.Generic.IComparer<Region>
     {
 
+        string myName;
         string opponentName;
 
-        public RegionsMinimumExpansionSorter(string _opponentName)
+        public RegionsMinimumExpansionSorter(string _myName, string _opponentName)
         {
+            myName = _myName;
             opponentName = _opponentName;
         }
 
@@ -256,14 +264,29 @@ namespace main
 
             foreach (Region neigh in a.Neighbors)
             {
-                if (neigh.OwnedByPlayer("player2")) {
-                    return 0;
+                // if neighbor is the enemy, we shouldnt be thinking of expansion, we want to keep our stack close to the enemy
+                if (neigh.OwnedByPlayer(opponentName)) {
+                    count -= 5;
                 }
-                if (neigh.OwnedByPlayer("neutral")) count++;
+
+                // the more neighbours belong to me the better
+                if (neigh.OwnedByPlayer(myName))
+                {
+                    count += 3;
+                }
+
+                // if it has neutrals on the target superregion its good
+                if (neigh.OwnedByPlayer("neutral") && (neigh.SuperRegion.Id == a.SuperRegion.Id)) count++;
+
+                // if it has unknowns on the target superregion its even better (means we will be able to finish it faster)
+                if (neigh.OwnedByPlayer("unknown") && (neigh.SuperRegion.Id == a.SuperRegion.Id)) count += 2;
+
+                // if it has only has 1 army it costs less to take, so its better
                 if (neigh.Armies == 1) count++;
 
-                // boost if this territory can take this neighbour without deploying
+                // boost if this territory can take this neighbour without deploying, at all
                 int armyCount = a.Armies + a.PledgedArmies - a.ReservedArmies - neigh.Armies*2;
+                // the more armies we'll have left the better
                 if (armyCount > 0) count += armyCount;
             }
            
@@ -272,49 +295,48 @@ namespace main
 
         public int Compare(Region a, Region b)
         {
-            // push down region with enemy
-            if (a.OwnedByPlayer(opponentName) || a.OwnedByPlayer("unknown")) return 1;
+            // push down region which is not a neutral
+            if (!a.OwnedByPlayer("neutral")) return 1;
 
             // sort
             return Count(b) - Count(a);
         }
     }
+    
 
-    class RegionsBestExpansionNeighborSorter : System.Collections.Generic.IComparer<Region>
+    class RegionsBestExpansionAttackerSorter : System.Collections.Generic.IComparer<Region>
     {
 
-        public RegionsBestExpansionNeighborSorter()
+        string myName;
+
+        public RegionsBestExpansionAttackerSorter(string _myName)
         {
+            myName = _myName;
         }
 
         public int Count(Region a)
         {
             int count = 0;
 
-            // best neutral neighbor to expand into is the one with less armies
-            if (a.Armies == 1) count++;
+            // if it's not our territory, don't bother
+            if (!a.OwnedByPlayer(myName)) return -1;
 
-            // dont consider unknown land
-            if (a.OwnedByPlayer("unknown")) return 0;
-
-            //todo: later: actually, for maps with wastelands, it might be the other way around
-
-            // we can also give a little bonus if it's expanding into an area that will help finish the superregion
-            foreach (Region neigh in a.Neighbors)
-            {
-                if (neigh.OwnedByPlayer("unknown") && (neigh.SuperRegion.Id == a.SuperRegion.Id)) count++;
-
-            }
-
+            // best attacker is the one with more armies available
+            int armyCount = a.Armies + a.PledgedArmies - a.ReservedArmies;
+            if (armyCount > 0) count += armyCount;
+           
             return count;
         }
 
         public int Compare(Region a, Region b)
         {
+            int ca = Count(a);
+            int cb = Count(b);
+            Console.WriteLine(a.Id + " " + ca + " : " + b.Id + " " + cb);
+
             return Count(b) - Count(a);
         }
     }
-
 
     
     class RegionsMoveLeftoversTargetSorter : System.Collections.Generic.IComparer<Region>
