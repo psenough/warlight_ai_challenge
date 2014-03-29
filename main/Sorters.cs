@@ -231,15 +231,19 @@ namespace main
 
     class RegionsAvailableArmiesSorter : System.Collections.Generic.IComparer<Region>
     {
+        string myName;
 
-        public RegionsAvailableArmiesSorter()
+        public RegionsAvailableArmiesSorter(string _myName)
         {
+            myName = _myName;
         }
 
         public int Compare(Region a, Region b)
         {
             int aArmies = a.Armies + a.PledgedArmies - a.ReservedArmies;
             int bArmies = b.Armies + b.PledgedArmies - b.ReservedArmies;
+
+            if (!a.OwnedByPlayer(myName)) return -1;
 
             return bArmies - aArmies;
         }

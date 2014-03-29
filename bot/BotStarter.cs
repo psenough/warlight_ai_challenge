@@ -105,13 +105,13 @@ namespace bot
                     }
 
                     // find our neighbour with highest available armies
-                    reg.Neighbors.Sort(new RegionsAvailableArmiesSorter());
+                    reg.Neighbors.Sort(new RegionsAvailableArmiesSorter(myName));
 
                     // make sure the attacking neighbour is owned by us, so we can deploy on it
                     if (reg.Neighbors[0].OwnedByPlayer(myName))
                     {
                         int deployed = state.ScheduleNeutralAttack(reg.Neighbors[0], reg, armiesLeft);
-                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, deployed));
+                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg.Neighbors[0], deployed));
                         armiesLeft -= deployed;
                     }
                    
@@ -205,13 +205,13 @@ namespace bot
                     }
 
                     // find our neighbour with highest available armies
-                    reg.Neighbors.Sort(new RegionsAvailableArmiesSorter());
+                    reg.Neighbors.Sort(new RegionsAvailableArmiesSorter(myName));
 
                     // make sure the attacking neighbour is owned by us, so we can deploy on it
                     if (reg.Neighbors[0].OwnedByPlayer(myName))
                     {
                         int deployed = state.ScheduleNeutralAttack(reg.Neighbors[0], reg, armiesLeft);
-                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, deployed));
+                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg.Neighbors[0], deployed));
                         armiesLeft -= deployed;
                     }
 
@@ -234,13 +234,13 @@ namespace bot
                     }
 
                     // find our neighbour with highest available armies
-                    reg.Neighbors.Sort(new RegionsAvailableArmiesSorter());
+                    reg.Neighbors.Sort(new RegionsAvailableArmiesSorter(myName));
 
                     // make sure the attacking neighbour is owned by us, so we can deploy on it
                     if (reg.Neighbors[0].OwnedByPlayer(myName))
                     {
                         int deployed = state.ScheduleNeutralAttack(reg.Neighbors[0], reg, armiesLeft);
-                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg, deployed));
+                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg.Neighbors[0], deployed));
                         armiesLeft -= deployed;
                     }
 
