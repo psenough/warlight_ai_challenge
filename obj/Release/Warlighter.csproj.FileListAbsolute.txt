@@ -1,5 +1,0 @@
-C:\Users\filipecruz\Documents\Warlighter\bin\Release\WarLightStarterBot.exe
-C:\Users\filipecruz\Documents\Warlighter\bin\Release\WarLightStarterBot.pdb
-C:\Users\filipecruz\Documents\Warlighter\obj\Release\Warlighter.csprojResolveAssemblyReference.cache
-C:\Users\filipecruz\Documents\Warlighter\obj\Release\WarLightStarterBot.exe
-C:\Users\filipecruz\Documents\Warlighter\obj\Release\WarLightStarterBot.pdb

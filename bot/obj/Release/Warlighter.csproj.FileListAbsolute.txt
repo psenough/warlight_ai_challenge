@@ -1,0 +1,15 @@
+C:\Users\filipecruz\Documents\Warlighter\bin\Release\WarLightStarterBot.exe
+C:\Users\filipecruz\Documents\Warlighter\bin\Release\WarLightStarterBot.pdb
+C:\Users\filipecruz\Documents\Warlighter\obj\Release\Warlighter.csprojResolveAssemblyReference.cache
+C:\Users\filipecruz\Documents\Warlighter\obj\Release\WarLightStarterBot.exe
+C:\Users\filipecruz\Documents\Warlighter\obj\Release\WarLightStarterBot.pdb
+C:\Users\filipecruz\Documents\warlight_ai_challenge\WarlighterBot\obj\Release\WarLightStarterBot.exe
+C:\Users\filipecruz\Documents\warlight_ai_challenge\WarlighterBot\obj\Release\WarLightStarterBot.pdb
+C:\Users\filipecruz\Documents\warlight_ai_challenge\WarlighterBot\bin\Release\WarLightStarterBot.exe
+C:\Users\filipecruz\Documents\warlight_ai_challenge\WarlighterBot\bin\Release\WarLightStarterBot.pdb
+C:\Users\filipecruz\Documents\warlight_ai_challenge\WarlighterBot\obj\Release\Warlighter.csprojResolveAssemblyReference.cache
+C:\Users\filipecruz\Documents\warlight_ai_challenge\bot\obj\Release\WarLightStarterBot.exe
+C:\Users\filipecruz\Documents\warlight_ai_challenge\bot\obj\Release\WarLightStarterBot.pdb
+C:\Users\filipecruz\Documents\warlight_ai_challenge\bot\bin\Release\WarLightStarterBot.exe
+C:\Users\filipecruz\Documents\warlight_ai_challenge\bot\bin\Release\WarLightStarterBot.pdb
+C:\Users\filipecruz\Documents\warlight_ai_challenge\bot\obj\Release\Warlighter.csprojResolveAssemblyReference.cache

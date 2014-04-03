@@ -1,14 +1,19 @@
-Warlighter
-==========
+Warlight AI Challenge
+=====================
 
-My bot for "The AI Games Warlight Challenge"
-http://theaigames.com/competitions/warlight-ai-challenge
+for http://theaigames.com/competitions/warlight-ai-challenge
 
-Based out of Fizzer's StarterBot.
+by Filipe "ps" Cruz
 
-Added:
-* Loading log from File (to help debug)
-* Sorters for SuperRegions and Regions (to improve picking order)
+* ``/_dev_notes/`` - strategy notes
+* ``/bot/`` - my bot, based out of Fizzer's starter bot
+* ``/temp/`` - binaries and logs
+* ``/sim/`` - the conqueror engine simulator, slightly hacked
+* ``/scripts/`` - batch scripts to compile and run
 
 
-Filipe "ps" Cruz
+Needs:
+* Mono 2.10.8 to compile the bot
+* Java Development Kit 8 to compile the simulator
+
+
