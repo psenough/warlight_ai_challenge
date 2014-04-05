@@ -87,7 +87,7 @@ namespace bot
             // figure out if the best listed superregion is finishable on this turn
             bool finishableSuperRegion = false;
             if (state.ExpansionTargets.Count > 0) finishableSuperRegion = state.FullMap.GetSuperRegion(state.ExpansionTargets[0].Id).IsFinishable(state.StartingArmies, myName);
-            //Console.WriteLine("exp: " + state.ExpansionTargets[0].Id);
+            Console.WriteLine("enemy sighted: " + enemySighted);
 
             List<PlaceArmiesMove> placeArmiesMoves = new List<PlaceArmiesMove>();
             int armiesLeft = state.StartingArmies;
@@ -154,6 +154,7 @@ namespace bot
             }
             else if (enemySighted)
             {
+                // early in the game bordering pleny of enemy areas
                 if ((state.RoundNumber < 2) && (state.EnemyBorders.Count > 1))
                 {
                     // if we have atleast 2 enemy sightings, pick one and hit it hard
@@ -206,10 +207,11 @@ namespace bot
                 }
                 else
                 {
+                    // do minimum expansion
 
                     //todo: later: dont bother expanding on areas that might have enemy in a few turns
 
-                    // do minimum expansion on our best found expansion target
+                    // check if we can do minimum expansion on our best found expansion target
                     bool doMinimumExpansion = true;
                     foreach (Region reg in state.ExpansionTargets[0].SubRegions)
                     {
@@ -306,7 +308,7 @@ namespace bot
                         }
                         else
                         {
-                            Console.Error.WriteLine("something went wrong with minimum expansion on round " + state.RoundNumber + ", tried to attack a non neutral");
+                            Console.Error.WriteLine("something went wrong with minimum expansion on round " + state.RoundNumber);
                         }
                     }
                     else
@@ -516,13 +518,13 @@ namespace bot
         public static void Main(String[] args)
         {
             BotParser parser = new BotParser(new BotStarter());
-            //parser.Run(null);
-            try
+            parser.Run(null);
+            /*try
             {
                 string[] lines = System.IO.File.ReadAllLines(@"C:\Users\filipecruz\Documents\warlight_ai_challenge\bot\test.txt");
                 parser.Run(lines);
             }
-            catch (Exception e) { parser.Run(null); }
+            catch (Exception e) { parser.Run(null); }*/
         }
 
     }

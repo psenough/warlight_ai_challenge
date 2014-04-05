@@ -298,14 +298,52 @@ namespace bot
                 // make sure we are not trying to expand on a superregion we already own
                 if (expansionTargetSuperRegions.Count > 0)
                 {
-                    if (expansionTargetSuperRegions[0].OwnedByPlayer() == MyPlayerName)
+                    if (FullMap.GetSuperRegion(expansionTargetSuperRegions[0].Id).OwnedByPlayer() == MyPlayerName)
                     {
                         expansionTargetSuperRegions.RemoveAt(0);
                     }
+
+                    foreach (SuperRegion sr in expansionTargetSuperRegions)
+                    {
+                        // superregion is considered safe if we have all visible areas
+
+                        SuperRegion a = fullMap.GetSuperRegion(sr.Id);
+                        
+                        int count = 0;
+
+                        bool redflag = false; //redflag when there is enemy or too many unknowns
+                        int unknowns = 0;
+                        int mine = 0;
+                        foreach (Region reg in a.SubRegions)
+                        {
+
+                            if (reg.OwnedByPlayer(OpponentPlayerName))
+                            {
+                                redflag = true;
+                                continue;
+                            }
+
+                            if (reg.OwnedByPlayer(MyPlayerName)) mine++;
+                            if (reg.OwnedByPlayer("unknown")) unknowns++;
+
+                        }
+
+                        count += (a.SubRegions.Count - unknowns); // the less unknowns ratio the better
+                        count += mine * 3;
+                        count += (10 - a.SubRegions.Count)*2; // less territories the better
+                        count += a.ArmiesReward; // more army rewards the better
+
+                        //todo: later: fine tune the territory to army reward math
+
+                        if (redflag) count = -1;
+
+                        a.tempSortValue = count;
+                    }
+
+                    expansionTargetSuperRegions = expansionTargetSuperRegions.OrderByDescending(p => p.tempSortValue).ToList();
+
                 }
 
-                //todo: later: make sure we are not trying to expand on a region where enemy is
-                //todo: foolproof Project not to try to access expansionTargetSuperRegions[0] when it's empty
             }
 
         }
