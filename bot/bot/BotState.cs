@@ -220,7 +220,77 @@ namespace bot
             {
                 UpdateOpponentStartRegions();
                 expansionTargetSuperRegions = FullMap.GetMapCopy().SuperRegions;
-                expansionTargetSuperRegions.Sort(new SuperRegionsExpansionTargetSorter(pickableStartingRegions, myName));
+                
+                // sort super region by quality of expansibility
+                foreach (SuperRegion a in expansionTargetSuperRegions)
+                {
+                    // superregion is considered safe if we have all the strategic starting picks (in, or neighbouring) the superregion
+                    // this function quantifies how safe it really is
+
+                    int count = 0;
+
+                    bool redflag = false; //redflag when there is enemy or unknown on a starting pick in or neighbouring
+                    foreach (Region reg in pickableStartingRegions)
+                    {
+                        //bool found = false;
+
+                        // check if we have any neighbour bordering this superregion (this selection includes picks in or countering)
+                        foreach (Region neighbour in reg.Neighbors)
+                        {
+
+                            if (neighbour.SuperRegion.Id == a.Id)
+                            {
+                                //if it is neighboring an area of this superregion, check who the pick was assigned to
+                                switch (reg.PlayerName)
+                                {
+                                    case "player1":
+                                        if (myName == "player1")
+                                        {
+                                            count += 2;
+                                        } else {
+                                            redflag = true;
+                                        }
+                                        break;
+                                    case "player2":
+                                        if (myName == "player2")
+                                        {
+                                            count += 2;
+                                        } else {
+                                            redflag = true;
+                                        }
+                                        break;
+                                    case "neutral":
+                                        count++;
+                                        break;
+                                    case "unknown":
+                                        //todo: check if the pick was picked by me in lower position then my last gotten pick
+                                        //count--;
+                                        //todo: instead of giving it lower priority, it could also be worth increasing the aggressivity
+                                        count--;
+                                        break;
+                                }
+
+                                // we only need to check one of the found neighbours to know this is a relevant pick, skip the rest
+                                //found = true;
+                                break;
+                            }
+                        }
+
+                        //if (found) break;
+
+                    }
+
+                    if (a.SubRegions.Count <= 4) count += 2;
+                    else if (a.SubRegions.Count <= 5) count++;
+
+                    if (redflag) count = -1;
+
+                    a.tempSortValue = count;
+                }
+
+
+                expansionTargetSuperRegions = expansionTargetSuperRegions.OrderByDescending(p=>p.tempSortValue).ToList();
+            
             }
             else // start of other rounds
             {

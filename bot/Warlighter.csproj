@@ -50,7 +50,6 @@
     <Compile Include="bot\BotState.cs" />
     <Compile Include="main\Map.cs" />
     <Compile Include="main\Region.cs" />
-    <Compile Include="main\Sorters.cs" />
     <Compile Include="main\SuperRegion.cs" />
     <Compile Include="move\AttackTransferMove.cs" />
     <Compile Include="move\Move.cs" />

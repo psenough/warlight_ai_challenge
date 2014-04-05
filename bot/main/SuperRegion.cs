@@ -13,6 +13,8 @@ namespace main
         private int id;
         private int armiesReward;
         private List<Region> subRegions;
+        public int tempSortValue;
+
 
         public SuperRegion(int id, int armiesReward)
         {

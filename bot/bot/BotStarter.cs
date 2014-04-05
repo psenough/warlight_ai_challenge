@@ -87,12 +87,14 @@ namespace bot
             // figure out if the best listed superregion is finishable on this turn
             bool finishableSuperRegion = false;
             if (state.ExpansionTargets.Count > 0) finishableSuperRegion = state.FullMap.GetSuperRegion(state.ExpansionTargets[0].Id).IsFinishable(state.StartingArmies, myName);
+            //Console.WriteLine("exp: " + state.ExpansionTargets[0].Id);
 
             List<PlaceArmiesMove> placeArmiesMoves = new List<PlaceArmiesMove>();
             int armiesLeft = state.StartingArmies;
 
             if (finishableSuperRegion)
             {
+                //Console.WriteLine("finishable");
                 //todo: later: calculate if we should be attacking a particular region strongly (in case there is chance of counter or defensive positioning)
 
                 // if you have enough income to finish an area this turn, deploy for it
@@ -109,12 +111,12 @@ namespace bot
                         break;
                     }
 
-                    List<Region> neigh = new List<Region>();
-                    foreach (Region nn in region.Neighbors)
-                    {
-                        neigh.Add(state.FullMap.GetRegion(nn.Id));
-                    }
-                    foreach (Region a in neigh)
+                    //List<Region> neigh = new List<Region>();
+                    //foreach (Region nn in region.Neighbors)
+                    //{
+                    //    neigh.Add(state.FullMap.GetRegion(nn.Id));
+                    //}
+                    foreach (Region a in region.Neighbors)
                     {
                         int aArmies = a.Armies + a.PledgedArmies - a.ReservedArmies;
                         if (!a.OwnedByPlayer(myName)) aArmies = -1;
@@ -123,8 +125,7 @@ namespace bot
 
                     // find our neighbour with highest available armies
                     //neigh.Sort(new RegionsAvailableArmiesSorter(myName));
-                    neigh = neigh.OrderByDescending(p => p.tempSortValue).ToList();
-
+                    var neigh = region.Neighbors.OrderByDescending(p => p.tempSortValue).ToList();
 
                     // make sure the attacking neighbour is owned by us, so we can deploy on it
                     if (neigh[0].OwnedByPlayer(myName))
@@ -208,26 +209,89 @@ namespace bot
 
                     //todo: later: dont bother expanding on areas that might have enemy in a few turns
 
-                    // do minimum expansion on our best found expansion target, only if enemy is not on it
+                    // do minimum expansion on our best found expansion target
                     bool doMinimumExpansion = true;
                     foreach (Region reg in state.ExpansionTargets[0].SubRegions)
                     {
-                        Region region = state.FullMap.GetRegion(reg.Id);
-                        if (region.OwnedByPlayer(opponentName)) doMinimumExpansion = false;
+                        Region a = state.FullMap.GetRegion(reg.Id);
+
+                        // only try to expand if enemy is not on it
+                        if (a.OwnedByPlayer(opponentName)) doMinimumExpansion = false;
+
+                        // find best subregion to expand into, must be a neutral
+                        int count = 0;
+
+                        if (a.OwnedByPlayer(opponentName)) {
+                            a.tempSortValue = -5;
+                            continue;
+                        }
+                        if (a.OwnedByPlayer(myName)) { 
+                            a.tempSortValue = -10;
+                            continue;
+                        }
+
+                        foreach (Region neigh in a.Neighbors)
+                        {
+                            // if neighbor is the enemy, we shouldnt be thinking of expansion, we want to keep our stack close to the enemy
+                            if (neigh.OwnedByPlayer(opponentName))
+                            {
+                                count -= 5;
+                            }
+
+                            // the more neighbours belong to me the better
+                            if (neigh.OwnedByPlayer(myName))
+                            {
+                                count += 3;
+                            }
+
+                            // if it has neutrals on the target superregion its good
+                            if (neigh.OwnedByPlayer("neutral") && (neigh.SuperRegion.Id == a.SuperRegion.Id)) count++;
+
+                            // if it has unknowns on the target superregion its even better (means we will be able to finish it faster)
+                            if (neigh.OwnedByPlayer("unknown") && (neigh.SuperRegion.Id == a.SuperRegion.Id)) count += 2;
+
+                            // if it has only has 1 army it costs less to take, so its better
+                            if (neigh.Armies == 1) count++;
+
+                            // boost if this territory can take this neighbour without deploying, at all
+                            int armyCount = a.Armies + a.PledgedArmies - a.ReservedArmies - neigh.Armies * 2;
+                            // the more armies we'll have left the better
+                            if (armyCount > 0) count += armyCount;
+                        }
+
+                        a.tempSortValue = count;
+
                     }
 
                     if (doMinimumExpansion)
                     {
-                        // find best subregion to expand into, must be a neutral
-                        state.ExpansionTargets[0].SubRegions.Sort(new RegionsMinimumExpansionSorter(myName, opponentName));
-                        Region target = state.FullMap.GetRegion(state.ExpansionTargets[0].SubRegions[0].Id);
+                        var lst = state.ExpansionTargets[0].SubRegions.OrderByDescending(p => p.tempSortValue).ToList();
+                        Region target = state.FullMap.GetRegion(lst[0].Id);
 
                         if (target.OwnedByPlayer("neutral"))
                         {
 
                             // find best region to attack from, must be my territory
-                            state.ExpansionTargets[0].SubRegions[0].Neighbors.Sort(new RegionsBestExpansionAttackerSorter(myName));
-                            Region attacker = state.FullMap.GetRegion(state.ExpansionTargets[0].SubRegions[0].Neighbors[0].Id);
+
+                            foreach (Region a in lst[0].Neighbors)
+                            {
+                                
+                                // if it's not our territory, don't bother
+                                if (!a.OwnedByPlayer(myName))
+                                {
+                                    a.tempSortValue = -1;
+                                    continue;
+                                }
+
+                                // best attacker is the one with more armies available
+                                int armyCount = a.Armies + a.PledgedArmies - a.ReservedArmies;
+                                if (armyCount < 0) armyCount = 0;
+                                a.tempSortValue = armyCount;
+           
+                            }
+                            var atk = lst[0].Neighbors.OrderByDescending(p => p.tempSortValue).ToList();
+                            
+                            Region attacker = state.FullMap.GetRegion(atk[0].Id);
                             if (attacker.OwnedByPlayer(myName))
                             {
                                 int deployed = state.ScheduleNeutralAttack(attacker, target, armiesLeft);
