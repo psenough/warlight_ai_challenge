@@ -16,23 +16,37 @@ namespace bot
 
         public List<Region> GetPreferredStartingRegions(BotState state, long timeOut)
         {
-            // order the superregions by lower number of armies reward, they are the fastes to complete
-            state.FullMap.SuperRegions.Sort(new SuperRegionsLowerArmiesSorter());
+            // order the superregions by lower number of armies reward, they are the fastest to complete
+            // you get income advantage if you finish them early on
+            var lst = state.FullMap.SuperRegions.OrderBy(p => p.ArmiesReward).ToList();
 
             // order the list of possible starting picks by proximity to the best superregions
-            state.PickableStartingRegions.Sort(new RegionsImportanceSorter(state.FullMap.SuperRegions));
+            foreach (Region a in state.PickableStartingRegions)
+            {
+                a.tempSortValue = 0;
 
-            // only return 6
-            //state.PickableStartingRegions.RemoveRange(6, state.PickableStartingRegions.Length-6);
+                // check if region is neighboring a better superregion
+                var na = a.Neighbors.OrderBy(p => lst.IndexOf(a.SuperRegion)).ToList();
+                
+                // if neighbouring a higher ranked superregion
+                if (a.SuperRegion.Id != na[0].Id)
+                {
+                    a.tempSortValue = lst.Count - lst.IndexOf(a.SuperRegion);
+                } else {
+                    a.tempSortValue = lst.Count - lst.IndexOf(a.SuperRegion);
+                }
+
+            }
+            var picks = state.PickableStartingRegions.OrderByDescending(p => p.tempSortValue).ToList();
 
             // assume opponent will also choose optimum picks
             // this will be useful later when we need to predict where opponent started
-            foreach (Region reg in state.PickableStartingRegions)
+            foreach (Region reg in picks)
             {
-                state.OpponentStartRegions.Add(new Region(reg.Id, new SuperRegion(reg.SuperRegion.Id, reg.SuperRegion.ArmiesReward)));
+                state.OpponentStartRegions.Add(reg);
             }
 
-            return state.PickableStartingRegions;
+            return picks;
         }
 
         public List<PlaceArmiesMove> DeployAtRandom(BotState state, int armiesLeft) {
@@ -145,12 +159,42 @@ namespace bot
                     //if (state.EnemyBorders.Count > 1)
                     {
 
-                        //todo: later: do better sort to pick the target with most strategic value (positional and stack advantage)
+                        // pick the target with most strategic value (position and stack advantage)
+                        foreach (Region rr in state.EnemyBorders)
+                        {
+                            rr.tempSortValue = 0;
 
-                        Region target = state.FullMap.GetRegion(state.EnemyBorders[Random.Next(state.EnemyBorders.Count)].Id);
-                        target.Neighbors.Sort( new RegionsHigherArmiesInMyNameSorter(myName) );
+                            // give higher count if positioned in top ranked expansion
+                            if (rr.SuperRegion.ArmiesReward == 2) rr.tempSortValue += 2;
+                            
+                            // give higher count if we have stack advantage
+                            int maxarmies = 0;
+                            foreach (Region rn in rr.Neighbors)
+                            {
+                                if (rn.OwnedByPlayer(myName))
+                                {
+                                    if (rn.Armies > maxarmies) maxarmies = rn.Armies;
+                                }
+                            }
+                            rr.tempSortValue = maxarmies - rr.Armies;
+                        }
+                        var lst = state.EnemyBorders.OrderByDescending(p => p.tempSortValue).ToList();
+                        Region target = state.FullMap.GetRegion(lst[0].Id);
+                        
+                        // pick the neighbour (our territory) with the highest army count
+                        foreach (Region rn in target.Neighbors)
+                        {
+                            int ac = 0;
+                            if (rn.OwnedByPlayer(myName))
+                            {
+                                ac += rn.Armies;
+                            }
+                            rn.tempSortValue = ac;
+                        }
+                        target.Neighbors.OrderByDescending(p => p.tempSortValue);
                         Region attacker = target.Neighbors[0];
 
+                        // validate
                         if (target.OwnedByPlayer(opponentName) && attacker.OwnedByPlayer(myName))
                         {
                             placeArmiesMoves.Add(new PlaceArmiesMove(myName, attacker, armiesLeft));
@@ -353,10 +397,48 @@ namespace bot
                         // move leftovers to where they can border an enemy or finish the highest ranked expansion target superregion
                         if (armiesLeft > 0)
                         {
-                            fromRegion.Neighbors.Sort(new RegionsMoveLeftoversTargetSorter(myName, opponentName, state.ExpansionTargets[0].Id));
-                            if (fromRegion.Neighbors[0].OwnedByPlayer(state.MyPlayerName))
+
+
+                            foreach (Region a in fromRegion.Neighbors)
                             {
-                                attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, fromRegion.Neighbors[0], armiesLeft));
+                                int count = 0;
+
+                                if (a.OwnedByPlayer("neutral") || a.OwnedByPlayer(opponentName))
+                                {
+                                    a.tempSortValue = 0;
+                                    continue;
+                                }
+
+                                // if not bordering an enemy
+                                // move leftover to where they can border an enemy
+                                // or finish the highest ranked expansion target superregion more easily
+
+                                // we can also give a little bonus if it's expanding into an area that will help finish the superregion
+                                foreach (Region neigh in a.Neighbors)
+                                {
+                                    if (neigh.OwnedByPlayer(opponentName))
+                                    {
+                                        a.tempSortValue = 0;
+                                        continue;
+                                    }
+
+                                    foreach (Region nextborder in neigh.Neighbors)
+                                    {
+                                        if (nextborder.OwnedByPlayer(opponentName)) count += 2;
+
+                                        if (nextborder.OwnedByPlayer("neutral") && (nextborder.SuperRegion.Id == state.ExpansionTargets[0].Id)) count++;
+                                    }
+                                }
+
+                                a.tempSortValue = count;
+                            }
+
+                            var lst = fromRegion.Neighbors.OrderByDescending(p => p.tempSortValue).ToList();
+
+                            //fromRegion.Neighbors.Sort(new RegionsMoveLeftoversTargetSorter(myName, opponentName, state.ExpansionTargets[0].Id));
+                            if (lst[0].OwnedByPlayer(state.MyPlayerName))
+                            {
+                                attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, lst[0], armiesLeft));
                             }
                         }
                     }

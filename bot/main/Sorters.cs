@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace main
 {
 
-    class SuperRegionsLowerArmiesSorter : System.Collections.Generic.IComparer<SuperRegion>
+    /*class SuperRegionsLowerArmiesSorter : System.Collections.Generic.IComparer<SuperRegion>
     {
         public SuperRegionsLowerArmiesSorter() { }
 
@@ -15,7 +15,7 @@ namespace main
         {
             return a.ArmiesReward - b.ArmiesReward;
         }
-    }
+    }*/
 
     // this is only meant for round 0 analysis
     class SuperRegionsExpansionTargetSorter : System.Collections.Generic.IComparer<SuperRegion>
@@ -356,7 +356,7 @@ namespace main
     }
 
     
-    class RegionsMoveLeftoversTargetSorter : System.Collections.Generic.IComparer<Region>
+/*    class RegionsMoveLeftoversTargetSorter : System.Collections.Generic.IComparer<Region>
     {
 
         string myName;
@@ -404,10 +404,10 @@ namespace main
             return Count(b) - Count(a);
         }
     }
+    */
 
 
-
-    class RegionsHigherArmiesInMyNameSorter : System.Collections.Generic.IComparer<Region>
+ /*   class RegionsHigherArmiesInMyNameSorter : System.Collections.Generic.IComparer<Region>
     {
         string myname;
 
@@ -429,6 +429,6 @@ namespace main
             return Count(b) - Count(a);
         }
     }
-
+    */
 
 }
