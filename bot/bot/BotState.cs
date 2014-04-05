@@ -31,6 +31,9 @@ namespace bot
         private List<SuperRegion> expansionTargetSuperRegions;
         public List<Tuple<int, int, int>> scheduledAttack; // attacker region id, target region id, armies to attack with
 
+        private bool enemySighted;
+        private List<Region> enemyBorders;
+
 
         public BotState()
         {
@@ -40,6 +43,9 @@ namespace bot
             opponentStartRegions = new List<Region>();
             expansionTargetSuperRegions = new List<SuperRegion>();
             this.scheduledAttack = new List<Tuple<int, int, int>>();
+
+            enemySighted = false;
+            enemyBorders = new List<Region>();
 
             roundNumber = 0;
         }
@@ -162,6 +168,8 @@ namespace bot
                     Region region2 = fullMap.GetRegion(region.Id);
                     region2.PlayerName = playerName;
                     region2.Armies = armies;
+                    region2.PledgedArmies = 0;
+                    region2.ReservedArmies = 0;
 
                     // update pickable regions
                     foreach (Region reg in pickableStartingRegions)
@@ -180,12 +188,27 @@ namespace bot
                     Console.Error.WriteLine("Unable to parse Map Update " + e);
                 }
             }
+       
+            enemySighted = false;
+            enemyBorders.Clear();
+
             List<Region> unknownRegions = new List<Region>();
 
-            // Remove regions from visible map which are unknown
             foreach (var region in visibleMap.Regions)
+            {
+                // Remove regions from visible map which are unknown
                 if (region.PlayerName == "unknown")
                     unknownRegions.Add(region);
+
+                // Determing if there are any enemy sightings
+                if (region.OwnedByPlayer(OpponentPlayerName))
+                {
+                    enemySighted = true;
+                    enemyBorders.Add(region);
+                }
+            }
+
+            // remove unknownRegions from visible map
             foreach (Region unknownRegion in unknownRegions)
                 visibleMap.Regions.Remove(unknownRegion);
 
@@ -203,9 +226,12 @@ namespace bot
             {
                 // update our expansion target
                 // make sure we are not trying to expand on a superregion we already own
-                if (expansionTargetSuperRegions[0].OwnedByPlayer() == MyPlayerName)
+                if (expansionTargetSuperRegions.Count > 0)
                 {
-                    expansionTargetSuperRegions.RemoveAt(0);
+                    if (expansionTargetSuperRegions[0].OwnedByPlayer() == MyPlayerName)
+                    {
+                        expansionTargetSuperRegions.RemoveAt(0);
+                    }
                 }
 
                 //todo: later: make sure we are not trying to expand on a region where enemy is
@@ -278,6 +304,11 @@ namespace bot
         public int RoundNumber
         {
             get { return roundNumber; }
+        }
+
+        public void SetRoundNumber(string value)
+        {
+            roundNumber = int.Parse(value);
         }
 
         public Map VisibleMap
@@ -363,22 +394,46 @@ namespace bot
         {
             int usedArmies = 0;
 
+            // validate our inputs
+            if (!attacker.OwnedByPlayer(MyPlayerName) || target.OwnedByPlayer("unknown") || target.OwnedByPlayer(MyPlayerName) || armiesAvailable < 0)
+            {
+                // there must have been an error somewhere on the algo
+                Console.Error.WriteLine("trying to schedule a neutral attack with invalid inputs (on round " + RoundNumber + ")");
+                return 0;
+            }
+
             // armies needed to attack neutral
             int neededToAttack = target.Armies * 2;
             int neededToDeploy = neededToAttack - attacker.Armies + attacker.PledgedArmies - attacker.ReservedArmies;
 
             if (neededToDeploy > armiesAvailable) {
-                // there must have been a mistake somewhere on the algo
+                // there must have been an error somewhere on the algo
+                Console.Error.WriteLine("trying to schedule a neutral attack without enough armies to carry it through (on round " + RoundNumber + ")");
                 return 0;
-            } else {
-                attacker.PledgedArmies += neededToDeploy;
-                usedArmies += neededToDeploy;
-
-                attacker.ReservedArmies += neededToAttack;
-                scheduledAttack.Add(new Tuple<int, int ,int>(attacker.Id, target.Id, neededToAttack));
             }
 
+            if (neededToDeploy < 0)
+            {
+                neededToDeploy = 0;
+            }
+
+            attacker.PledgedArmies += neededToDeploy;
+            usedArmies += neededToDeploy;
+
+            attacker.ReservedArmies += neededToAttack;
+            scheduledAttack.Add(new Tuple<int, int ,int>(attacker.Id, target.Id, neededToAttack));     
+
             return usedArmies;
+        }
+
+        public List<Region> EnemyBorders
+        {
+            get { return enemyBorders; }
+        }
+
+        public bool EnemySighted
+        {
+            get { return enemySighted; }
         }
     }
 

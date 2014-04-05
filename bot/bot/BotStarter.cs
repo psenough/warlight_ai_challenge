@@ -68,21 +68,11 @@ namespace bot
 
             string myName = state.MyPlayerName;
             string opponentName = state.OpponentPlayerName;
-
+            bool enemySighted = state.EnemySighted;
+            
             // figure out if the best listed superregion is finishable on this turn
-            var finishableSuperRegion = state.ExpansionTargets[0].IsFinishable(state.StartingArmies, myName);
-
-            // check if enemy is in sight, and where
-            var enemySighted = false;
-            List<Region> enemyBorders = new List<Region>();
-            foreach (Region reg in state.VisibleMap.regions)
-            {
-                if (reg.OwnedByPlayer(state.OpponentPlayerName))
-                {
-                    enemySighted = true;
-                    enemyBorders.Add(reg);
-                }
-            }
+            bool finishableSuperRegion = false;
+            if (state.ExpansionTargets.Count > 0) finishableSuperRegion = state.FullMap.GetSuperRegion(state.ExpansionTargets[0].Id).IsFinishable(state.StartingArmies, myName);
 
             List<PlaceArmiesMove> placeArmiesMoves = new List<PlaceArmiesMove>();
             int armiesLeft = state.StartingArmies;
@@ -94,24 +84,31 @@ namespace bot
                 // if you have enough income to finish an area this turn, deploy for it
                 foreach (Region reg in state.ExpansionTargets[0].SubRegions)
                 {
-                    
-                    // skip if you already own this region
-                    if (reg.OwnedByPlayer(myName)) continue;
+                    Region region = state.FullMap.GetRegion(reg.Id);
 
-                    if (!reg.OwnedByPlayer("neutral"))
+                    // skip if you already own this region
+                    if (region.OwnedByPlayer(myName)) continue;
+
+                    if (!region.OwnedByPlayer("neutral"))
                     {
-                        Console.Error.WriteLine("trying to finish a FTB with " + reg.PlayerName + " on it is a bit silly");
+                        Console.Error.WriteLine("trying to finish a FTB with " + region.PlayerName + " on it is a bit silly");
                         break;
                     }
 
+                    List<Region> neigh = new List<Region>();
+                    foreach (Region nn in region.Neighbors)
+                    {
+                        neigh.Add(state.FullMap.GetRegion(nn.Id));
+                    }
+
                     // find our neighbour with highest available armies
-                    reg.Neighbors.Sort(new RegionsAvailableArmiesSorter(myName));
+                    neigh.Sort(new RegionsAvailableArmiesSorter(myName));
 
                     // make sure the attacking neighbour is owned by us, so we can deploy on it
-                    if (reg.Neighbors[0].OwnedByPlayer(myName))
+                    if (neigh[0].OwnedByPlayer(myName))
                     {
-                        int deployed = state.ScheduleNeutralAttack(reg.Neighbors[0], reg, armiesLeft);
-                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg.Neighbors[0], deployed));
+                        int deployed = state.ScheduleNeutralAttack(neigh[0], reg, armiesLeft);
+                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, neigh[0], deployed));
                         armiesLeft -= deployed;
                     }
                    
@@ -134,58 +131,82 @@ namespace bot
             }
             else if (enemySighted)
             {
-                //todo: later: dont bother expanding on areas that might have enemy in a few turns
-
-                // do minimum expansion on our best found expansion target, only if enemy is not on it
-                bool doMinimumExpansion = true;
-                foreach (Region reg in state.ExpansionTargets[0].SubRegions)
+                if ((state.RoundNumber < 2) && (state.EnemyBorders.Count > 1))
                 {
-                    if (reg.OwnedByPlayer(opponentName)) doMinimumExpansion = false;
-                }
-
-                if (doMinimumExpansion)
-                {
-                    // find best subregion to expand into, must be a neutral
-                    state.ExpansionTargets[0].SubRegions.Sort(new RegionsMinimumExpansionSorter(myName, opponentName));
-                    Region target = state.ExpansionTargets[0].SubRegions[0];
-
-                    if (target.OwnedByPlayer("neutral"))
+                    // if we have atleast 2 enemy sightings, pick one and hit it hard
+                    //if (state.EnemyBorders.Count > 1)
                     {
 
-                        // find best region to attack from, must be my territory
-                        state.ExpansionTargets[0].SubRegions[0].Neighbors.Sort(new RegionsBestExpansionAttackerSorter(myName));
-                        Region attacker = state.ExpansionTargets[0].SubRegions[0].Neighbors[0];
-                        if (attacker.OwnedByPlayer(myName))
-                        {
-                            int deployed = state.ScheduleNeutralAttack(attacker, target, armiesLeft);
-                            placeArmiesMoves.Add(new PlaceArmiesMove(myName, attacker, deployed));
-                            armiesLeft -= deployed;
-                        }
-                        else
-                        {
-                            Console.Error.WriteLine("something went wrong with minimum expansion, tried to attack from a territory which wasnt mine");
+                        //todo: later: do better sort to pick the target with most strategic value (positional and stack advantage)
 
-                        }
+                        Region target = state.FullMap.GetRegion(state.EnemyBorders[Random.Next(state.EnemyBorders.Count)].Id);
+                        target.Neighbors.Sort( new RegionsHigherArmiesInMyNameSorter(myName) );
+                        Region attacker = target.Neighbors[0];
 
-                    }
-                    else
-                    {
-                        Console.Error.WriteLine("something went wrong with minimum expansion on round " + state.RoundNumber + ", tried to attack a non neutral");
+                        if (target.OwnedByPlayer(opponentName) && attacker.OwnedByPlayer(myName))
+                        {
+                            placeArmiesMoves.Add(new PlaceArmiesMove(myName, attacker, armiesLeft));
+                            state.scheduledAttack.Add(new Tuple<int, int, int>(attacker.Id, target.Id, attacker.Armies - 1 + armiesLeft));
+                            armiesLeft = 0;
+                        }                        
                     }
                 }
                 else
                 {
-                    //todo: deploy all on biggest stack of main area and attack if predicting to win
 
-                    //todo: later: find a better expansiontarget (without enemy), or risk finishing this one
+                    //todo: later: dont bother expanding on areas that might have enemy in a few turns
+
+                    // do minimum expansion on our best found expansion target, only if enemy is not on it
+                    bool doMinimumExpansion = true;
+                    foreach (Region reg in state.ExpansionTargets[0].SubRegions)
+                    {
+                        Region region = state.FullMap.GetRegion(reg.Id);
+                        if (region.OwnedByPlayer(opponentName)) doMinimumExpansion = false;
+                    }
+
+                    if (doMinimumExpansion)
+                    {
+                        // find best subregion to expand into, must be a neutral
+                        state.ExpansionTargets[0].SubRegions.Sort(new RegionsMinimumExpansionSorter(myName, opponentName));
+                        Region target = state.FullMap.GetRegion(state.ExpansionTargets[0].SubRegions[0].Id);
+
+                        if (target.OwnedByPlayer("neutral"))
+                        {
+
+                            // find best region to attack from, must be my territory
+                            state.ExpansionTargets[0].SubRegions[0].Neighbors.Sort(new RegionsBestExpansionAttackerSorter(myName));
+                            Region attacker = state.FullMap.GetRegion(state.ExpansionTargets[0].SubRegions[0].Neighbors[0].Id);
+                            if (attacker.OwnedByPlayer(myName))
+                            {
+                                int deployed = state.ScheduleNeutralAttack(attacker, target, armiesLeft);
+                                placeArmiesMoves.Add(new PlaceArmiesMove(myName, attacker, deployed));
+                                armiesLeft -= deployed;
+                            }
+                            else
+                            {
+                                Console.Error.WriteLine("something went wrong with minimum expansion, tried to attack from a territory which wasnt mine");
+                            }
+
+                        }
+                        else
+                        {
+                            Console.Error.WriteLine("something went wrong with minimum expansion on round " + state.RoundNumber + ", tried to attack a non neutral");
+                        }
+                    }
+                    else
+                    {
+                        //todo: deploy all on biggest stack of main area and attack if predicting to win
+
+                        //todo: later: find a better expansiontarget (without enemy), or risk finishing this one
+                    }
                 }
                 
                 // deploy rest of your income bordering the enemy
-                if (enemyBorders.Count > 0)
+                if (state.EnemyBorders.Count > 0)
                 {
                     while (armiesLeft > 0)
                     {
-                        foreach (Region reg in enemyBorders)
+                        foreach (Region reg in state.EnemyBorders)
                         {
                             foreach (Region regn in reg.Neighbors)
                             {
@@ -209,62 +230,37 @@ namespace bot
             {
                 // deploy all on the two main expansion targets
 
-                // do for first
-                foreach (Region reg in state.ExpansionTargets[0].SubRegions)
+                for (int i = 0; i < 2; i++)
                 {
-
-                    // skip if you already own this region
-                    if (reg.OwnedByPlayer(myName)) continue;
-
-                    if (!reg.OwnedByPlayer("neutral"))
+                    foreach (Region reg in state.ExpansionTargets[i].SubRegions)
                     {
-                        Console.Error.WriteLine("trying to finish a FTB with " + reg.PlayerName + " in it, on round " + state.RoundNumber + " is a bit silly");
+                        Region region = state.FullMap.GetRegion(reg.Id);
+
+                        // skip if you already own this region
+                        if (region.OwnedByPlayer(myName)) continue;
+
+                        if (!region.OwnedByPlayer("neutral"))
+                        {
+                            Console.Error.WriteLine("trying to finish a FTB with " + region.PlayerName + " in it, on round " + state.RoundNumber + " is a bit silly");
+                            break;
+                        }
+
+                        // find our neighbour with highest available armies
+                        region.Neighbors.Sort(new RegionsAvailableArmiesSorter(myName));
+
+                        // make sure the attacking neighbour is owned by us, so we can deploy on it
+                        Region neigh = state.FullMap.GetRegion(region.Neighbors[0].Id);
+                        if (neigh.OwnedByPlayer(myName))
+                        {
+                            int deployed = state.ScheduleNeutralAttack(neigh, region, armiesLeft);
+                            placeArmiesMoves.Add(new PlaceArmiesMove(myName, neigh, deployed));
+                            armiesLeft -= deployed;
+                        }
+
+                        // only do the expansion for the first neutral region found
                         break;
+
                     }
-
-                    // find our neighbour with highest available armies
-                    reg.Neighbors.Sort(new RegionsAvailableArmiesSorter(myName));
-
-                    // make sure the attacking neighbour is owned by us, so we can deploy on it
-                    if (reg.Neighbors[0].OwnedByPlayer(myName))
-                    {
-                        int deployed = state.ScheduleNeutralAttack(reg.Neighbors[0], reg, armiesLeft);
-                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg.Neighbors[0], deployed));
-                        armiesLeft -= deployed;
-                    }
-
-                    // only do the expansion for the first neutral region found
-                    break; 
-
-                }
-
-                // do for second
-                foreach (Region reg in state.ExpansionTargets[1].SubRegions)
-                {
-
-                    // skip if you already own this region
-                    if (reg.OwnedByPlayer(myName)) continue;
-
-                    if (!reg.OwnedByPlayer("neutral"))
-                    {
-                        Console.Error.WriteLine("trying to finish a FTB with " + reg.PlayerName + " on it is a bit silly");
-                        break;
-                    }
-
-                    // find our neighbour with highest available armies
-                    reg.Neighbors.Sort(new RegionsAvailableArmiesSorter(myName));
-
-                    // make sure the attacking neighbour is owned by us, so we can deploy on it
-                    if (reg.Neighbors[0].OwnedByPlayer(myName))
-                    {
-                        int deployed = state.ScheduleNeutralAttack(reg.Neighbors[0], reg, armiesLeft);
-                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, reg.Neighbors[0], deployed));
-                        armiesLeft -= deployed;
-                    }
-
-                    // only do the expansion for the first neutral region found
-                    break;
-
                 }
 
                 // deploy the rest of our armies randomly
@@ -303,6 +299,8 @@ namespace bot
                     Region from = state.FullMap.GetRegion(tup.Item1);
                     Region to = state.FullMap.GetRegion(tup.Item2);
                     attackTransferMoves.Add(new AttackTransferMove(myName, from, to, tup.Item3));
+                    //from.PledgedArmies = 0;
+                    //from.ReservedArmies = 0;
                 }
             }
 
@@ -316,10 +314,11 @@ namespace bot
 
                     foreach (Region reg in fromRegion.Neighbors)
                     {
+                        Region region = state.FullMap.GetRegion(reg.Id);
                         if (reg.OwnedByPlayer(opponentName))
                         {
                             borderingEnemy = true;
-                            enemyBorders.Add(reg);
+                            enemyBorders.Add(region);
                         }
                     }
 
@@ -358,13 +357,13 @@ namespace bot
         public static void Main(String[] args)
         {
             BotParser parser = new BotParser(new BotStarter());
-            parser.Run(null);
-            /*try
+            //parser.Run(null);
+            try
             {
-                string[] lines = System.IO.File.ReadAllLines(@"C:\Users\filipecruz\Documents\Warlighter\test.txt");
+                string[] lines = System.IO.File.ReadAllLines(@"C:\Users\filipecruz\Documents\warlight_ai_challenge\bot\test.txt");
                 parser.Run(lines);
             }
-            catch (Exception e) { parser.Run(null); }*/
+            catch (Exception e) { parser.Run(null); }
         }
 
     }

@@ -100,6 +100,11 @@ namespace bot
                     // All visible opponent moves are given
                     currentState.ReadOpponentMoves(parts);
                 }
+                /*else if (parts[0] == "Round")
+                {
+                    // All visible opponent moves are given
+                    currentState.SetRoundNumber(parts[1]);
+                }*/
                 else
                 {
                     Console.Error.WriteLine("Unable to parse line \"" + line + "\"");

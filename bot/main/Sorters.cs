@@ -38,7 +38,7 @@ namespace main
             bool redflag = false; //redflag when there is enemy or unknown on a starting pick in or neighbouring
             foreach (Region reg in picks)
             {
-                bool found = false;
+                //bool found = false;
 
                 // check if we have any neighbour bordering this superregion (this selection includes picks in or countering)
                 foreach(Region neighbour in reg.Neighbors) {
@@ -75,7 +75,7 @@ namespace main
                         }
                     
                         // we only need to check one of the found neighbours to know this is a relevant pick, skip the rest
-                        found = true;
+                        //found = true;
                         break;
                     }
                 }
@@ -99,7 +99,7 @@ namespace main
             //Console.WriteLine(a.Id + " " + ac + " : " + b.Id + " " + bc);
             //if ((ac == -1) || (bc == -1)) return -1;
 
-            return Count(b) - Count(a);
+            return bc - ac;
         }
     }
 
@@ -238,12 +238,16 @@ namespace main
             myName = _myName;
         }
 
+        public int Count(Region a) {
+            int aArmies = a.Armies + a.PledgedArmies - a.ReservedArmies;
+            if (!a.OwnedByPlayer(myName)) aArmies = -1;
+            return aArmies;
+        }
+
         public int Compare(Region a, Region b)
         {
-            int aArmies = a.Armies + a.PledgedArmies - a.ReservedArmies;
-            int bArmies = b.Armies + b.PledgedArmies - b.ReservedArmies;
-
-            if (!a.OwnedByPlayer(myName)) return -1;
+            int aArmies = Count(a);
+            int bArmies = Count(b);
 
             return bArmies - aArmies;
         }
@@ -345,7 +349,7 @@ namespace main
             int cb = Count(b);
             //Console.WriteLine(a.Id + " " + ca + " : " + b.Id + " " + cb);
 
-            return Count(b) - Count(a);
+            return cb - ca;
         }
     }
 
@@ -367,7 +371,6 @@ namespace main
         public int Count(Region a)
         {
             int count = 0;
-
 
             if (a.OwnedByPlayer("neutral") || a.OwnedByPlayer(opponentName))
             {
@@ -399,5 +402,31 @@ namespace main
             return Count(b) - Count(a);
         }
     }
+
+
+
+    class RegionsHigherArmiesInMyNameSorter : System.Collections.Generic.IComparer<Region>
+    {
+        string myname;
+
+        public RegionsHigherArmiesInMyNameSorter(string _myname) {
+            myname = _myname;
+        }
+
+        public int Count(Region a)
+        {
+            int ac = 0;
+            if (a.OwnedByPlayer(myname)) {
+                ac+=a.Armies;
+            }
+            return ac;
+        }
+
+        public int Compare(Region a, Region b)
+        {
+            return Count(b) - Count(a);
+        }
+    }
+
 
 }

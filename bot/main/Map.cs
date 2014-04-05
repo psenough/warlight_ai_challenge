@@ -74,7 +74,8 @@ namespace main
                     Region newRegion = new Region(r.Id, newMap.GetSuperRegion(r.SuperRegion.Id), r.PlayerName, r.Armies);
                     newMap.Add(newRegion);
                 }
-                catch (Exception exc) { 
+                catch (Exception exc) {
+                    Console.Error.WriteLine(exc.Message);
                     Console.Error.WriteLine("couldn't copy region");
                     Console.Error.WriteLine("id: " + r.Id);
                     Console.Error.WriteLine("parent: " + r.SuperRegion.Id);
