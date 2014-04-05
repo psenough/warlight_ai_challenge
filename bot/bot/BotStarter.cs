@@ -87,7 +87,7 @@ namespace bot
             // figure out if the best listed superregion is finishable on this turn
             bool finishableSuperRegion = false;
             if (state.ExpansionTargets.Count > 0) finishableSuperRegion = state.FullMap.GetSuperRegion(state.ExpansionTargets[0].Id).IsFinishable(state.StartingArmies, myName);
-            Console.WriteLine("enemy sighted: " + enemySighted);
+            //Console.WriteLine("enemy sighted: " + enemySighted);
 
             List<PlaceArmiesMove> placeArmiesMoves = new List<PlaceArmiesMove>();
             int armiesLeft = state.StartingArmies;
