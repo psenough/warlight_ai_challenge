@@ -100,9 +100,17 @@ namespace bot
                     {
                         neigh.Add(state.FullMap.GetRegion(nn.Id));
                     }
+                    foreach (Region a in neigh)
+                    {
+                        int aArmies = a.Armies + a.PledgedArmies - a.ReservedArmies;
+                        if (!a.OwnedByPlayer(myName)) aArmies = -1;
+                        a.tempSortValue = aArmies;
+                    }
 
                     // find our neighbour with highest available armies
-                    neigh.Sort(new RegionsAvailableArmiesSorter(myName));
+                    //neigh.Sort(new RegionsAvailableArmiesSorter(myName));
+                    neigh = neigh.OrderByDescending(p => p.tempSortValue).ToList();
+
 
                     // make sure the attacking neighbour is owned by us, so we can deploy on it
                     if (neigh[0].OwnedByPlayer(myName))
@@ -246,10 +254,15 @@ namespace bot
                         }
 
                         // find our neighbour with highest available armies
-                        region.Neighbors.Sort(new RegionsAvailableArmiesSorter(myName));
+                        foreach (Region a in region.Neighbors)
+                        {
+                            int aArmies = a.Armies + a.PledgedArmies - a.ReservedArmies;
+                            if (!a.OwnedByPlayer(myName)) aArmies = -1;
+                            a.tempSortValue = aArmies;
+                        }
+                        var lst = region.Neighbors.OrderByDescending(p => p.tempSortValue).ToList();
+                        Region neigh = state.FullMap.GetRegion(lst[0].Id);
 
-                        // make sure the attacking neighbour is owned by us, so we can deploy on it
-                        Region neigh = state.FullMap.GetRegion(region.Neighbors[0].Id);
                         if (neigh.OwnedByPlayer(myName))
                         {
                             int deployed = state.ScheduleNeutralAttack(neigh, region, armiesLeft);

@@ -229,6 +229,7 @@ namespace main
         }
     }
 
+    /*
     class RegionsAvailableArmiesSorter : System.Collections.Generic.IComparer<Region>
     {
         string myName;
@@ -252,6 +253,7 @@ namespace main
             return bArmies - aArmies;
         }
     }
+    */
 
     
     class RegionsMinimumExpansionSorter : System.Collections.Generic.IComparer<Region>

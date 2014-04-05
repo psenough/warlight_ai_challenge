@@ -22,6 +22,8 @@ namespace main
         private int reservedArmies; // reserved for an attack
         private int pledgedArmies; // pledged being added at this turn
 
+        public int tempSortValue;
+
         public Region(int id, SuperRegion superRegion)
         {
             this.id = id;
