@@ -512,9 +512,9 @@ namespace bot
 
             // armies needed to attack neutral
             int neededToAttack = target.Armies * 2;
-            int neededToDeploy = neededToAttack - attacker.Armies + attacker.PledgedArmies - attacker.ReservedArmies;
+            int neededToDeploy = neededToAttack - attacker.Armies + attacker.PledgedArmies - attacker.ReservedArmies + 1;
 
-            if (neededToDeploy > armiesAvailable) {
+            if (neededToDeploy > armiesAvailable + 1) {
                 // there must have been an error somewhere on the algo
                 Console.Error.WriteLine("trying to schedule a neutral attack without enough armies to carry it through (on round " + RoundNumber + ")");
                 return 0;

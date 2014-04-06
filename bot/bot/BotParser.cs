@@ -65,6 +65,9 @@ namespace bot
                     {
                         // Place armies
                         List<PlaceArmiesMove> placeArmiesMoves = bot.GetPlaceArmiesMoves(currentState, long.Parse(parts[2]));
+                        
+                        //todo: later: bundle them together to avoid multiple +1 deployments being shown
+
                         foreach (var move in placeArmiesMoves)
                             output.Append(move.String + ",");
                     }

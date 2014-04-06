@@ -123,6 +123,17 @@ namespace main
             get { return pledgedArmies; }
         }
 
+        public bool IsSafe(bot.BotState state)
+        {
+            bool safe = true;
+            foreach (Region reg in Neighbors)
+            {
+                Region r = state.FullMap.GetRegion(reg.Id);
+                if (!r.OwnedByPlayer(PlayerName)) safe = false;
+            }
+            return safe;
+        }
+
     }
 
 }

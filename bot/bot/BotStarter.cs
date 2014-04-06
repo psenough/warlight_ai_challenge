@@ -49,30 +49,24 @@ namespace bot
             return picks;
         }
 
-        public List<PlaceArmiesMove> DeployAtRandom(BotState state, int armiesLeft) {
+        public List<PlaceArmiesMove> DeployAtRandom(List<Region> list, string myName, int armiesLeft) {
             List<PlaceArmiesMove> placeArmiesMoves = new List<PlaceArmiesMove>();
-            String myName = state.MyPlayerName;
-            var visibleRegions = state.VisibleMap.Regions;
+        
+            while (armiesLeft > 0)
+            {
+                double rand = Random.NextDouble();
+                int r = (int)(rand * list.Count);
+                var region = list[r];
 
-            //int maxcycles = 20;
-            //for (int i = 0; i < maxcycles; i++)
-            //{
-                while (armiesLeft > 0)
+                // validate it's really our region
+                if (region.OwnedByPlayer(myName))
                 {
-                    double rand = Random.NextDouble();
-                    int r = (int)(rand * visibleRegions.Count);
-                    var region = visibleRegions.ElementAt(r);
-
-                    if (region.OwnedByPlayer(myName))
-                    {
-                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, region, 1));
-                        armiesLeft -= 1;
-                    }
-
+                    placeArmiesMoves.Add(new PlaceArmiesMove(myName, region, 1));
+                    region.PledgedArmies += 1;
+                    armiesLeft -= 1;
                 }
 
-            //    if (armiesLeft <= 0) break;
-            //}
+            }
 
             return placeArmiesMoves;
         }
@@ -94,8 +88,7 @@ namespace bot
 
             if (finishableSuperRegion)
             {
-                //Console.WriteLine("finishable");
-                //todo: later: calculate if we should be attacking a particular region strongly (in case there is chance of counter or defensive positioning)
+                //todo: later: calculate if we should be attacking a particular region more strongly (in case there is chance of counter or defensive positioning)
 
                 // if you have enough income to finish an area this turn, deploy for it
                 foreach (Region reg in state.ExpansionTargets[0].SubRegions)
@@ -111,20 +104,13 @@ namespace bot
                         break;
                     }
 
-                    //List<Region> neigh = new List<Region>();
-                    //foreach (Region nn in region.Neighbors)
-                    //{
-                    //    neigh.Add(state.FullMap.GetRegion(nn.Id));
-                    //}
+                    // find neighbour with highest available armies (will be the attacker)
                     foreach (Region a in region.Neighbors)
                     {
                         int aArmies = a.Armies + a.PledgedArmies - a.ReservedArmies;
                         if (!a.OwnedByPlayer(myName)) aArmies = -1;
                         a.tempSortValue = aArmies;
                     }
-
-                    // find our neighbour with highest available armies
-                    //neigh.Sort(new RegionsAvailableArmiesSorter(myName));
                     var neigh = region.Neighbors.OrderByDescending(p => p.tempSortValue).ToList();
 
                     // make sure the attacking neighbour is owned by us, so we can deploy on it
@@ -142,7 +128,14 @@ namespace bot
                 // deploy the rest of our armies randomly
                 if (armiesLeft > 0)
                 {
-                    List<PlaceArmiesMove> placings = DeployAtRandom(state, armiesLeft);
+                    // do not deploy in areas that are safe
+                    List<Region> list = new List<Region>();
+                    foreach (Region reg in state.VisibleMap.Regions)
+                    {
+                        if (!reg.IsSafe(state)) list.Add(reg);
+                    }
+
+                    List<PlaceArmiesMove> placings = DeployAtRandom(list, myName, armiesLeft);
                     foreach (PlaceArmiesMove pl in placings)
                     {
                         placeArmiesMoves.Add(pl);
@@ -298,6 +291,7 @@ namespace bot
                             {
                                 int deployed = state.ScheduleNeutralAttack(attacker, target, armiesLeft);
                                 placeArmiesMoves.Add(new PlaceArmiesMove(myName, attacker, deployed));
+                                attacker.PledgedArmies += deployed;
                                 armiesLeft -= deployed;
                             }
                             else
@@ -331,6 +325,7 @@ namespace bot
                                 if (regn.OwnedByPlayer(myName))
                                 {
                                     placeArmiesMoves.Add(new PlaceArmiesMove(myName, regn, 1));
+                                    regn.PledgedArmies += 1;
                                     armiesLeft--;
                                     if (armiesLeft == 0) break;
                                 }
@@ -377,6 +372,7 @@ namespace bot
                         {
                             int deployed = state.ScheduleNeutralAttack(neigh, region, armiesLeft);
                             placeArmiesMoves.Add(new PlaceArmiesMove(myName, neigh, deployed));
+                            neigh.PledgedArmies += deployed;
                             armiesLeft -= deployed;
                         }
 
@@ -389,7 +385,14 @@ namespace bot
                 // deploy the rest of our armies randomly
                 if (armiesLeft > 0)
                 {
-                    List<PlaceArmiesMove> placings = DeployAtRandom(state, armiesLeft);
+                    // do not deploy in areas that are safe
+                    List<Region> list = new List<Region>();
+                    foreach(Region reg in state.VisibleMap.Regions) {
+
+                        if (!reg.IsSafe(state)) list.Add(reg);
+                    }
+
+                    List<PlaceArmiesMove> placings = DeployAtRandom(list, myName, armiesLeft);
                     foreach (PlaceArmiesMove pl in placings)
                     {
                         placeArmiesMoves.Add(pl);
