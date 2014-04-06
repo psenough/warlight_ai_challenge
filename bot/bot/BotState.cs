@@ -298,7 +298,12 @@ namespace bot
                 // make sure we are not trying to expand on a superregion we already own
                 if (expansionTargetSuperRegions.Count > 0)
                 {
-                    if (FullMap.GetSuperRegion(expansionTargetSuperRegions[0].Id).OwnedByPlayer() == MyPlayerName)
+                    bool finished = true;
+                    foreach (Region reg in expansionTargetSuperRegions[0].SubRegions)
+                    {
+                        if (!FullMap.GetRegion(reg.Id).OwnedByPlayer(MyPlayerName)) finished = false;
+                    }
+                    if (finished)
                     {
                         expansionTargetSuperRegions.RemoveAt(0);
                     }

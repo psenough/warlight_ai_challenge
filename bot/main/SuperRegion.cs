@@ -32,7 +32,7 @@ namespace main
         /**
          * @return A string with the name of the player that fully owns this SuperRegion
          */
-        public string OwnedByPlayer()
+       /* public string OwnedByPlayer()
     	{
     		String playerName = subRegions.First().PlayerName;
     		foreach(Region region in subRegions)
@@ -42,6 +42,9 @@ namespace main
     		}
     		return playerName;
     	}
+        
+        useless function if our subregions are not updated every turn
+        */
 
         public int Id
         {

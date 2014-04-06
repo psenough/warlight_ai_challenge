@@ -352,12 +352,6 @@ namespace bot
                         // skip if you already own this region
                         if (region.OwnedByPlayer(myName)) continue;
 
-                        if (!region.OwnedByPlayer("neutral"))
-                        {
-                            Console.Error.WriteLine("trying to finish a FTB with " + region.PlayerName + " in it, on round " + state.RoundNumber + " is a bit silly");
-                            break;
-                        }
-
                         // find our neighbour with highest available armies
                         foreach (Region a in region.Neighbors)
                         {
@@ -521,13 +515,13 @@ namespace bot
         public static void Main(String[] args)
         {
             BotParser parser = new BotParser(new BotStarter());
-            parser.Run(null);
-            /*try
+            //parser.Run(null);
+            try
             {
                 string[] lines = System.IO.File.ReadAllLines(@"C:\Users\filipecruz\Documents\warlight_ai_challenge\bot\test.txt");
                 parser.Run(lines);
             }
-            catch (Exception e) { parser.Run(null); }*/
+            catch (Exception e) { parser.Run(null); }
         }
 
     }
