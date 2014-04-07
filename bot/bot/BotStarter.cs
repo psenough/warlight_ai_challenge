@@ -189,8 +189,8 @@ namespace bot
                             }
                             rn.tempSortValue = ac;
                         }
-                        target.Neighbors.OrderByDescending(p => p.tempSortValue);
-                        Region attacker = target.Neighbors[0];
+                        lst = target.Neighbors.OrderByDescending(p => p.tempSortValue).ToList();
+                        Region attacker = lst[0];
 
                         // validate
                         if (target.OwnedByPlayer(opponentName) && attacker.OwnedByPlayer(myName))
@@ -257,7 +257,7 @@ namespace bot
                             if (armyCount > 0) count += armyCount;
                         }
 
-                        a.tempSortValue = count;
+                        reg.tempSortValue = count;
 
                     }
 
@@ -518,13 +518,13 @@ namespace bot
         public static void Main(String[] args)
         {
             BotParser parser = new BotParser(new BotStarter());
-            //parser.Run(null);
-            try
+            parser.Run(null);
+            /*try
             {
                 string[] lines = System.IO.File.ReadAllLines(@"C:\Users\filipecruz\Documents\warlight_ai_challenge\bot\test.txt");
                 parser.Run(lines);
             }
-            catch (Exception e) { parser.Run(null); }
+            catch (Exception e) { parser.Run(null); }*/
         }
 
     }
