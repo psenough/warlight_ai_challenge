@@ -116,9 +116,12 @@ namespace bot
                     // make sure the attacking neighbour is owned by us, so we can deploy on it
                     if (neigh[0].OwnedByPlayer(myName))
                     {
-                        int deployed = state.ScheduleNeutralAttack(neigh[0], reg, armiesLeft);
-                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, neigh[0], deployed));
-                        armiesLeft -= deployed;
+                        int deployed = state.ScheduleNeutralAttack(neigh[0], region, armiesLeft);
+                        if (deployed > 0)
+                        {
+                            placeArmiesMoves.Add(new PlaceArmiesMove(myName, neigh[0], deployed));
+                            armiesLeft -= deployed;
+                        }
                     }
                    
                 }
@@ -171,7 +174,7 @@ namespace bot
                                     if (rn.Armies > maxarmies) maxarmies = rn.Armies;
                                 }
                             }
-                            rr.tempSortValue = maxarmies - rr.Armies;
+                            rr.tempSortValue += maxarmies - rr.Armies;
                         }
                         var lst = state.EnemyBorders.OrderByDescending(p => p.tempSortValue).ToList();
                         Region target = state.FullMap.GetRegion(lst[0].Id);
