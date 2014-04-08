@@ -310,17 +310,16 @@ namespace bot
 
                     foreach (SuperRegion sr in expansionTargetSuperRegions)
                     {
-                        // superregion is considered safe if we have all visible areas
-
-                        SuperRegion a = fullMap.GetSuperRegion(sr.Id);
-                        
                         int count = 0;
 
                         bool redflag = false; //redflag when there is enemy or too many unknowns
                         int unknowns = 0;
                         int mine = 0;
-                        foreach (Region reg in a.SubRegions)
+                        int neutrals = 0;
+
+                        foreach (Region region in sr.SubRegions)
                         {
+                            Region reg = FullMap.GetRegion(region.Id);
 
                             if (reg.OwnedByPlayer(OpponentPlayerName))
                             {
@@ -330,13 +329,26 @@ namespace bot
 
                             if (reg.OwnedByPlayer(MyPlayerName)) mine++;
                             if (reg.OwnedByPlayer("unknown")) unknowns++;
+                            if (reg.OwnedByPlayer("neutral")) neutrals++;
+
+                            // check neighbours
+                            foreach (Region rn in region.Neighbors)
+                            {
+                                Region regn = FullMap.GetRegion(rn.Id);
+
+                                // more borders belonging to us the better
+                                if (regn.OwnedByPlayer(MyPlayerName)) count += 2;
+
+                                // if there is a border beloging to the enemy, it's not a very good area for expansion
+                                if (regn.OwnedByPlayer(OpponentPlayerName)) count -= 5;
+                            }
 
                         }
 
-                        count += (a.SubRegions.Count - unknowns); // the less unknowns ratio the better
+                        count += (sr.SubRegions.Count - unknowns); // the less unknowns ratio the better
                         count += mine * 3;
-                        count += (10 - a.SubRegions.Count)*2; // less territories the better
-                        count += a.ArmiesReward; // more army rewards the better
+                        count += (10 - sr.SubRegions.Count)*2; // less territories the better
+                        count += sr.ArmiesReward; // more army rewards the better
 
                         //todo: later: fine tune the territory to army reward math
 

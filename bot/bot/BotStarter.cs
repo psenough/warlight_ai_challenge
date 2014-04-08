@@ -49,14 +49,43 @@ namespace bot
             return picks;
         }
 
-        public List<PlaceArmiesMove> DeployAtRandom(List<Region> list, string myName, int armiesLeft) {
+        public List<PlaceArmiesMove> DeployBorderingEnemy(bot.BotState state, int armiesLeft)
+        {
+            List<PlaceArmiesMove> placeArmiesMoves = new List<PlaceArmiesMove>();
+            if (state.EnemyBorders.Count > 0)
+            {
+                while (armiesLeft > 0)
+                {
+                    foreach (Region reg in state.EnemyBorders)
+                    {
+                        foreach (Region regn in reg.Neighbors)
+                        {
+                            Region rn = state.FullMap.GetRegion(regn.Id);
+                            if (rn.OwnedByPlayer(state.MyPlayerName))
+                            {
+                                placeArmiesMoves.Add(new PlaceArmiesMove(state.MyPlayerName, rn, 1));
+                                rn.PledgedArmies += 1;
+                                armiesLeft--;
+                                if (armiesLeft == 0) break;
+                            }
+                        }
+
+                        if (armiesLeft == 0) break;
+                    }
+                }
+            }
+            return placeArmiesMoves;
+        }
+
+
+        public List<PlaceArmiesMove> DeployAtRandom(List<Region> list, BotState state, string myName, int armiesLeft) {
             List<PlaceArmiesMove> placeArmiesMoves = new List<PlaceArmiesMove>();
         
             while (armiesLeft > 0)
             {
                 double rand = Random.NextDouble();
                 int r = (int)(rand * list.Count);
-                var region = list[r];
+                Region region = state.FullMap.GetRegion(list[r].Id);
 
                 // validate it's really our region
                 if (region.OwnedByPlayer(myName))
@@ -67,7 +96,6 @@ namespace bot
                 }
 
             }
-
             return placeArmiesMoves;
         }
 
@@ -133,23 +161,37 @@ namespace bot
 
                 if (armiesLeft < 0) Console.Error.WriteLine("exceeded army deployment on turn " + state.RoundNumber);
             
-                // deploy the rest of our armies randomly
+                // deploy the rest of our armies
                 if (armiesLeft > 0)
                 {
-                    // do not deploy in areas that are safe
-                    List<Region> list = new List<Region>();
-                    foreach (Region reg in state.VisibleMap.Regions)
+                    if (enemySighted)
                     {
-                        if (!reg.IsSafe(state)) list.Add(reg);
+                        List<PlaceArmiesMove> placings = DeployBorderingEnemy(state, armiesLeft);
+                        foreach (PlaceArmiesMove pl in placings)
+                        {
+                            placeArmiesMoves.Add(pl);
+                        }
+                    }
+                    else
+                    {
+                        // deploy the rest of our armies randomly
+
+                        // do not deploy in areas that are safe
+                        List<Region> list = new List<Region>();
+                        foreach (Region reg in state.VisibleMap.Regions)
+                        {
+                            if (!reg.IsSafe(state)) list.Add(reg);
+                        }
+
+                        List<PlaceArmiesMove> placings = DeployAtRandom(list, state, myName, armiesLeft);
+                        foreach (PlaceArmiesMove pl in placings)
+                        {
+                            placeArmiesMoves.Add(pl);
+                        }
+
+                        //todo: it would be better to give deployment priority to areas not bordering the expansion target we are trying to finish
                     }
 
-                    List<PlaceArmiesMove> placings = DeployAtRandom(list, myName, armiesLeft);
-                    foreach (PlaceArmiesMove pl in placings)
-                    {
-                        placeArmiesMoves.Add(pl);
-                    }
-
-                    //todo: it would be better to give deployment priority to areas not bordering the expansion target we are trying to finish
                 }
 
             }
@@ -318,31 +360,15 @@ namespace bot
                         //todo: later: find a better expansiontarget (without enemy), or risk finishing this one
                     }
                 }
-                
+
+                //todo: later: decide if we should deploy all in one place and attack hard, or spread out the deployments on multiple borders and sit
+
                 // deploy rest of your income bordering the enemy
-                if (state.EnemyBorders.Count > 0)
+                List<PlaceArmiesMove> placings = DeployBorderingEnemy(state, armiesLeft);
+                foreach (PlaceArmiesMove pl in placings)
                 {
-                    while (armiesLeft > 0)
-                    {
-                        foreach (Region reg in state.EnemyBorders)
-                        {
-                            foreach (Region regn in reg.Neighbors)
-                            {
-                                if (regn.OwnedByPlayer(myName))
-                                {
-                                    placeArmiesMoves.Add(new PlaceArmiesMove(myName, regn, 1));
-                                    regn.PledgedArmies += 1;
-                                    armiesLeft--;
-                                    if (armiesLeft == 0) break;
-                                }
-                            }
-
-                            if (armiesLeft == 0) break;
-                        }
-                    }
+                    placeArmiesMoves.Add(pl);
                 }
-
-                //todo: later: decide if we should deploy all in one place and attack hard, or spread out the deployments and sit
 
             }
             else
@@ -388,13 +414,11 @@ namespace bot
                     // do not deploy in areas that are safe
                     List<Region> list = new List<Region>();
                     foreach(Region reg in state.VisibleMap.Regions) {
-
                         if (!reg.IsSafe(state)) list.Add(reg);
                     }
 
-                    List<PlaceArmiesMove> placings = DeployAtRandom(list, myName, armiesLeft);
-                    foreach (PlaceArmiesMove pl in placings)
-                    {
+                    List<PlaceArmiesMove> placings = DeployAtRandom(list, state, myName, armiesLeft);
+                    foreach (PlaceArmiesMove pl in placings) {
                         placeArmiesMoves.Add(pl);
                     }
                 }
