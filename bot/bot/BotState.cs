@@ -342,7 +342,7 @@ namespace bot
 
                         if (redflag) count = -1;
 
-                        a.tempSortValue = count;
+                        sr.tempSortValue = count;
                     }
 
                     expansionTargetSuperRegions = expansionTargetSuperRegions.OrderByDescending(p => p.tempSortValue).ToList();

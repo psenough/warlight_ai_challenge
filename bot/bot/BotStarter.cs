@@ -105,11 +105,12 @@ namespace bot
                     }
 
                     // find neighbour with highest available armies (will be the attacker)
-                    foreach (Region a in region.Neighbors)
+                    foreach (Region an in region.Neighbors)
                     {
+                        Region a = state.FullMap.GetRegion(an.Id);
                         int aArmies = a.Armies + a.PledgedArmies - a.ReservedArmies;
                         if (!a.OwnedByPlayer(myName)) aArmies = -1;
-                        a.tempSortValue = aArmies;
+                        an.tempSortValue = aArmies;
                     }
                     var neigh = region.Neighbors.OrderByDescending(p => p.tempSortValue).ToList();
 
@@ -122,6 +123,10 @@ namespace bot
                             placeArmiesMoves.Add(new PlaceArmiesMove(myName, neigh[0], deployed));
                             armiesLeft -= deployed;
                         }
+                    }
+                    else
+                    {
+                        Console.Error.WriteLine("trying to attack out of a territory owned by " + neigh[0].PlayerName + "on round " + state.RoundNumber);
                     }
                    
                 }
@@ -150,56 +155,54 @@ namespace bot
             }
             else if (enemySighted)
             {
-                // early in the game bordering pleny of enemy areas
-                if ((state.RoundNumber < 2) && (state.EnemyBorders.Count > 1))
+                // early in the game bordering plenty of enemy areas
+                if (((state.RoundNumber <= 2) && (state.EnemyBorders.Count > 1)) || (state.EnemyBorders.Count == 3))
                 {
                     // if we have atleast 2 enemy sightings, pick one and hit it hard
-                    //if (state.EnemyBorders.Count > 1)
+
+                    // pick the target with most strategic value (position and stack advantage)
+                    foreach (Region rr in state.EnemyBorders)
                     {
+                        rr.tempSortValue = 0;
 
-                        // pick the target with most strategic value (position and stack advantage)
-                        foreach (Region rr in state.EnemyBorders)
-                        {
-                            rr.tempSortValue = 0;
-
-                            // give higher count if positioned in top ranked expansion
-                            if (rr.SuperRegion.ArmiesReward == 2) rr.tempSortValue += 2;
+                        // give higher count if positioned in top ranked expansion
+                        if (rr.SuperRegion.ArmiesReward == 2) rr.tempSortValue += 2;
                             
-                            // give higher count if we have stack advantage
-                            int maxarmies = 0;
-                            foreach (Region rn in rr.Neighbors)
-                            {
-                                if (rn.OwnedByPlayer(myName))
-                                {
-                                    if (rn.Armies > maxarmies) maxarmies = rn.Armies;
-                                }
-                            }
-                            rr.tempSortValue += maxarmies - rr.Armies;
-                        }
-                        var lst = state.EnemyBorders.OrderByDescending(p => p.tempSortValue).ToList();
-                        Region target = state.FullMap.GetRegion(lst[0].Id);
-                        
-                        // pick the neighbour (our territory) with the highest army count
-                        foreach (Region rn in target.Neighbors)
+                        // give higher count if we have stack advantage
+                        int maxarmies = 0;
+                        foreach (Region rn in rr.Neighbors)
                         {
-                            int ac = 0;
                             if (rn.OwnedByPlayer(myName))
                             {
-                                ac += rn.Armies;
+                                if (rn.Armies > maxarmies) maxarmies = rn.Armies;
                             }
-                            rn.tempSortValue = ac;
                         }
-                        lst = target.Neighbors.OrderByDescending(p => p.tempSortValue).ToList();
-                        Region attacker = lst[0];
-
-                        // validate
-                        if (target.OwnedByPlayer(opponentName) && attacker.OwnedByPlayer(myName))
-                        {
-                            placeArmiesMoves.Add(new PlaceArmiesMove(myName, attacker, armiesLeft));
-                            state.scheduledAttack.Add(new Tuple<int, int, int>(attacker.Id, target.Id, attacker.Armies - 1 + armiesLeft));
-                            armiesLeft = 0;
-                        }                        
+                        rr.tempSortValue += maxarmies - rr.Armies;
                     }
+                    var lst = state.EnemyBorders.OrderByDescending(p => p.tempSortValue).ToList();
+                    Region target = state.FullMap.GetRegion(lst[0].Id);
+                        
+                    // pick the neighbour (our territory) with the highest army count
+                    foreach (Region rn in target.Neighbors)
+                    {
+                        int ac = 0;
+                        if (rn.OwnedByPlayer(myName))
+                        {
+                            ac += rn.Armies;
+                        }
+                        rn.tempSortValue = ac;
+                    }
+                    lst = target.Neighbors.OrderByDescending(p => p.tempSortValue).ToList();
+                    Region attacker = lst[0];
+
+                    // validate
+                    if (target.OwnedByPlayer(opponentName) && attacker.OwnedByPlayer(myName))
+                    {
+                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, attacker, armiesLeft));
+                        state.scheduledAttack.Add(new Tuple<int, int, int>(attacker.Id, target.Id, attacker.Armies - 1 + armiesLeft));
+                        armiesLeft = 0;
+                    }                        
+                    
                 }
                 else
                 {
@@ -305,7 +308,7 @@ namespace bot
                         }
                         else
                         {
-                            Console.Error.WriteLine("something went wrong with minimum expansion on round " + state.RoundNumber);
+                            Console.Error.WriteLine("something went wrong with minimum expansion on round " + state.RoundNumber + " maybe because all options are bad?");
                         }
                     }
                     else
@@ -463,14 +466,22 @@ namespace bot
                         // move leftovers to where they can border an enemy or finish the highest ranked expansion target superregion
                         if (armiesLeft > 0)
                         {
+                            bool eborder = false;
 
-
+                            // go through all the neighbours to see into which it's more worth moving
                             foreach (Region a in fromRegion.Neighbors)
                             {
+                                Region an = state.FullMap.GetRegion(a.Id);
                                 int count = 0;
 
-                                if (a.OwnedByPlayer("neutral") || a.OwnedByPlayer(opponentName))
+                                // neighbour doesnt belong to us, can't move there
+                                if (!an.OwnedByPlayer(myName))
                                 {
+                                    if (an.OwnedByPlayer(opponentName))
+                                    {
+                                        eborder = true;
+                                    }
+
                                     a.tempSortValue = 0;
                                     continue;
                                 }
@@ -482,7 +493,9 @@ namespace bot
                                 // we can also give a little bonus if it's expanding into an area that will help finish the superregion
                                 foreach (Region neigh in a.Neighbors)
                                 {
-                                    if (neigh.OwnedByPlayer(opponentName))
+                                    an = state.FullMap.GetRegion(neigh.Id);
+
+                                    if (an.OwnedByPlayer(opponentName))
                                     {
                                         a.tempSortValue = 0;
                                         continue;
@@ -490,9 +503,10 @@ namespace bot
 
                                     foreach (Region nextborder in neigh.Neighbors)
                                     {
-                                        if (nextborder.OwnedByPlayer(opponentName)) count += 2;
+                                        an = state.FullMap.GetRegion(nextborder.Id);
+                                        if (an.OwnedByPlayer(opponentName)) count += 10;
 
-                                        if (nextborder.OwnedByPlayer("neutral") && (nextborder.SuperRegion.Id == state.ExpansionTargets[0].Id)) count++;
+                                        if (an.OwnedByPlayer("neutral") && (an.SuperRegion.Id == state.ExpansionTargets[0].Id)) count++;
                                     }
                                 }
 
@@ -500,11 +514,12 @@ namespace bot
                             }
 
                             var lst = fromRegion.Neighbors.OrderByDescending(p => p.tempSortValue).ToList();
+                            Region dest = state.FullMap.GetRegion(lst[0].Id);
 
                             //fromRegion.Neighbors.Sort(new RegionsMoveLeftoversTargetSorter(myName, opponentName, state.ExpansionTargets[0].Id));
-                            if (lst[0].OwnedByPlayer(state.MyPlayerName))
+                            if (dest.OwnedByPlayer(state.MyPlayerName) && (!eborder))
                             {
-                                attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, lst[0], armiesLeft));
+                                attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, dest, armiesLeft));
                             }
                         }
                     }
