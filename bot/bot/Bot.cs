@@ -15,11 +15,11 @@ namespace bot
 
         List<Region> GetPreferredStartingRegions(BotState state, long timeOut);
 
-        List<PlaceArmiesMove> DeployBorderingEnemy(BotState state, int armiesLeft);
-        
-        List<PlaceArmiesMove> DeployAtRandom(List<Region> list, BotState state, string myName, int armiesLeft);
+        List<DeployArmies> DeployBorderingEnemy(BotState state, int armiesLeft);
 
-        List<PlaceArmiesMove> GetPlaceArmiesMoves(BotState state, long timeOut);
+        List<DeployArmies> DeployAtRandom(List<Region> list, BotState state, string myName, int armiesLeft);
+
+        List<DeployArmies> GetDeployArmiesMoves(BotState state, long timeOut);
 
         List<AttackTransferMove> GetAttackTransferMoves(BotState state, long timeOut);
 

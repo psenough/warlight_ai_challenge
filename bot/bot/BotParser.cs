@@ -64,7 +64,7 @@ namespace bot
                     if (parts[1] == "place_armies")
                     {
                         // Place armies
-                        List<PlaceArmiesMove> placeArmiesMoves = bot.GetPlaceArmiesMoves(currentState, long.Parse(parts[2]));
+                        List<DeployArmies> placeArmiesMoves = bot.GetDeployArmiesMoves(currentState, long.Parse(parts[2]));
                         
                         //todo: later: bundle them together to avoid multiple +1 deployments being shown
 

@@ -148,6 +148,10 @@ namespace bot
         // Visible regions are given to the bot with player and armies info
         public void UpdateMap(String[] mapInput)
         {
+            foreach (Region r in fullMap.regions)
+            {
+                r.PlayerName = "unknown";
+            }
             visibleMap = fullMap.GetMapCopy();
             for (int i = 1; i < mapInput.Length; i++)
             {
@@ -164,7 +168,7 @@ namespace bot
                     region.ReservedArmies = 0;
                     region.PledgedArmies = 0;
                     
-                    // update fullmap (fog of war)
+                    // update fullmap aswell
                     Region region2 = fullMap.GetRegion(region.Id);
                     region2.PlayerName = playerName;
                     region2.Armies = armies;
@@ -380,7 +384,7 @@ namespace bot
                         Region region = visibleMap.GetRegion(int.Parse(moveInput[i + 2]));
                         String playerName = moveInput[i];
                         int armies = int.Parse(moveInput[i + 3]);
-                        move = new PlaceArmiesMove(playerName, region, armies);
+                        move = new DeployArmies(playerName, region, armies);
                         i += 3;
                     }
                     else if (moveInput[i + 1] == "attack/transfer")
@@ -550,6 +554,28 @@ namespace bot
 
             return usedArmies;
         }
+
+        public void ScheduleFullAttack(Region attacker, Region target, int armiesDeployed)
+        {
+            int usedArmies = 0;
+
+            // validate our inputs
+            if (!attacker.OwnedByPlayer(MyPlayerName) || target.OwnedByPlayer("unknown") || target.OwnedByPlayer(MyPlayerName))
+            {
+                // there must have been an error somewhere on the algo
+                Console.Error.WriteLine("trying to schedule a full attack with invalid inputs (on round " + RoundNumber + ")");
+                return;
+            }
+
+            // count total armies available
+            int totalArmies = attacker.Armies + attacker.PledgedArmies - attacker.ReservedArmies + armiesDeployed - 1;
+
+            attacker.PledgedArmies += armiesDeployed;
+
+            attacker.ReservedArmies += totalArmies;
+            scheduledAttack.Add(new Tuple<int, int, int>(attacker.Id, target.Id, totalArmies));
+        }
+
 
         public List<Region> EnemyBorders
         {

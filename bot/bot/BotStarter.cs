@@ -49,9 +49,9 @@ namespace bot
             return picks;
         }
 
-        public List<PlaceArmiesMove> DeployBorderingEnemy(bot.BotState state, int armiesLeft)
+        public List<DeployArmies> DeployBorderingEnemy(bot.BotState state, int armiesLeft)
         {
-            List<PlaceArmiesMove> placeArmiesMoves = new List<PlaceArmiesMove>();
+            List<DeployArmies> deployArmies = new List<DeployArmies>();
             if (state.EnemyBorders.Count > 0)
             {
                 while (armiesLeft > 0)
@@ -63,7 +63,7 @@ namespace bot
                             Region rn = state.FullMap.GetRegion(regn.Id);
                             if (rn.OwnedByPlayer(state.MyPlayerName))
                             {
-                                placeArmiesMoves.Add(new PlaceArmiesMove(state.MyPlayerName, rn, 1));
+                                deployArmies.Add(new DeployArmies(state.MyPlayerName, rn, 1));
                                 rn.PledgedArmies += 1;
                                 armiesLeft--;
                                 if (armiesLeft == 0) break;
@@ -74,12 +74,12 @@ namespace bot
                     }
                 }
             }
-            return placeArmiesMoves;
+            return deployArmies;
         }
 
 
-        public List<PlaceArmiesMove> DeployAtRandom(List<Region> list, BotState state, string myName, int armiesLeft) {
-            List<PlaceArmiesMove> placeArmiesMoves = new List<PlaceArmiesMove>();
+        public List<DeployArmies> DeployAtRandom(List<Region> list, BotState state, string myName, int armiesLeft) {
+            List<DeployArmies> deployArmies = new List<DeployArmies>();
         
             while (armiesLeft > 0)
             {
@@ -90,16 +90,16 @@ namespace bot
                 // validate it's really our region
                 if (region.OwnedByPlayer(myName))
                 {
-                    placeArmiesMoves.Add(new PlaceArmiesMove(myName, region, 1));
+                    deployArmies.Add(new DeployArmies(myName, region, 1));
                     region.PledgedArmies += 1;
                     armiesLeft -= 1;
                 }
 
             }
-            return placeArmiesMoves;
+            return deployArmies;
         }
 
-        public List<PlaceArmiesMove> GetPlaceArmiesMoves(BotState state, long timeOut)
+        public List<DeployArmies> GetDeployArmiesMoves(BotState state, long timeOut)
         {
 
             string myName = state.MyPlayerName;
@@ -111,7 +111,7 @@ namespace bot
             if (state.ExpansionTargets.Count > 0) finishableSuperRegion = state.FullMap.GetSuperRegion(state.ExpansionTargets[0].Id).IsFinishable(state.StartingArmies, myName);
             //Console.WriteLine("enemy sighted: " + enemySighted);
 
-            List<PlaceArmiesMove> placeArmiesMoves = new List<PlaceArmiesMove>();
+            List<DeployArmies> deployArmies = new List<DeployArmies>();
             int armiesLeft = state.StartingArmies;
 
             if (finishableSuperRegion)
@@ -148,7 +148,7 @@ namespace bot
                         int deployed = state.ScheduleNeutralAttack(neigh[0], region, armiesLeft);
                         if (deployed > 0)
                         {
-                            placeArmiesMoves.Add(new PlaceArmiesMove(myName, neigh[0], deployed));
+                            deployArmies.Add(new DeployArmies(myName, neigh[0], deployed));
                             armiesLeft -= deployed;
                         }
                     }
@@ -166,10 +166,10 @@ namespace bot
                 {
                     if (enemySighted)
                     {
-                        List<PlaceArmiesMove> placings = DeployBorderingEnemy(state, armiesLeft);
-                        foreach (PlaceArmiesMove pl in placings)
+                        List<DeployArmies> placings = DeployBorderingEnemy(state, armiesLeft);
+                        foreach (DeployArmies pl in placings)
                         {
-                            placeArmiesMoves.Add(pl);
+                            deployArmies.Add(pl);
                         }
                     }
                     else
@@ -183,10 +183,10 @@ namespace bot
                             if (!reg.IsSafe(state)) list.Add(reg);
                         }
 
-                        List<PlaceArmiesMove> placings = DeployAtRandom(list, state, myName, armiesLeft);
-                        foreach (PlaceArmiesMove pl in placings)
+                        List<DeployArmies> placings = DeployAtRandom(list, state, myName, armiesLeft);
+                        foreach (DeployArmies pl in placings)
                         {
-                            placeArmiesMoves.Add(pl);
+                            deployArmies.Add(pl);
                         }
 
                         //todo: it would be better to give deployment priority to areas not bordering the expansion target we are trying to finish
@@ -240,7 +240,7 @@ namespace bot
                     // validate
                     if (target.OwnedByPlayer(opponentName) && attacker.OwnedByPlayer(myName))
                     {
-                        placeArmiesMoves.Add(new PlaceArmiesMove(myName, attacker, armiesLeft));
+                        deployArmies.Add(new DeployArmies(myName, attacker, armiesLeft));
                         state.scheduledAttack.Add(new Tuple<int, int, int>(attacker.Id, target.Id, attacker.Armies - 1 + armiesLeft));
                         armiesLeft = 0;
                     }                        
@@ -338,7 +338,7 @@ namespace bot
                             if (attacker.OwnedByPlayer(myName))
                             {
                                 int deployed = state.ScheduleNeutralAttack(attacker, target, armiesLeft);
-                                placeArmiesMoves.Add(new PlaceArmiesMove(myName, attacker, deployed));
+                                deployArmies.Add(new DeployArmies(myName, attacker, deployed));
                                 attacker.PledgedArmies += deployed;
                                 armiesLeft -= deployed;
                             }
@@ -364,17 +364,19 @@ namespace bot
                 //todo: later: decide if we should deploy all in one place and attack hard, or spread out the deployments on multiple borders and sit
 
                 // deploy rest of your income bordering the enemy
-                List<PlaceArmiesMove> placings = DeployBorderingEnemy(state, armiesLeft);
-                foreach (PlaceArmiesMove pl in placings)
+                List<DeployArmies> placings = DeployBorderingEnemy(state, armiesLeft);
+                foreach (DeployArmies pl in placings)
                 {
-                    placeArmiesMoves.Add(pl);
+                    deployArmies.Add(pl);
                 }
 
             }
             else
             {
+
                 // deploy all on the two main expansion targets
 
+                bool expanding = false;
                 for (int i = 0; i < 2; i++)
                 {
                     foreach (Region reg in state.ExpansionTargets[i].SubRegions)
@@ -397,15 +399,45 @@ namespace bot
                         if (neigh.OwnedByPlayer(myName))
                         {
                             int deployed = state.ScheduleNeutralAttack(neigh, region, armiesLeft);
-                            placeArmiesMoves.Add(new PlaceArmiesMove(myName, neigh, deployed));
+                            deployArmies.Add(new DeployArmies(myName, neigh, deployed));
                             neigh.PledgedArmies += deployed;
                             armiesLeft -= deployed;
+                            expanding = true;
                         }
 
                         // only do the expansion for the first neutral region found
                         break;
 
                     }
+
+                    if (!expanding)
+                    {
+                        foreach (Region r in state.VisibleMap.Regions)
+                        {
+                            if (r.OwnedByPlayer("neutral"))
+                            {
+                                foreach (Region rn in r.Neighbors)
+                                {
+                                    Region rnn = state.FullMap.GetRegion(rn.Id);
+
+                                    if (rnn.OwnedByPlayer(myName))
+                                    {
+                                        state.ScheduleFullAttack(rnn, r, armiesLeft);
+                                        deployArmies.Add(new DeployArmies(myName, rnn, armiesLeft));
+                                        armiesLeft = 0;
+                                        expanding = true;
+                                        break;
+                                    }
+                                }
+
+                            }
+
+                            if (expanding) break;
+                        }
+                    }
+
+                    //todo: later: if we are stuck in australia, enter breaker mode heading for south america through africa 
+
                 }
 
                 // deploy the rest of our armies randomly
@@ -417,22 +449,22 @@ namespace bot
                         if (!reg.IsSafe(state)) list.Add(reg);
                     }
 
-                    List<PlaceArmiesMove> placings = DeployAtRandom(list, state, myName, armiesLeft);
-                    foreach (PlaceArmiesMove pl in placings) {
-                        placeArmiesMoves.Add(pl);
+                    List<DeployArmies> placings = DeployAtRandom(list, state, myName, armiesLeft);
+                    foreach (DeployArmies pl in placings) {
+                        deployArmies.Add(pl);
                     }
                 }
              
                 //todo: later: need to decide if expansion should be done with stack or scatter, depending on how likely enemy is close
             }
 
-            return placeArmiesMoves;
+            return deployArmies;
         }
 
         /**
          * This method is called for at the second part of each round. This example attacks if a region has
          * more than 6 armies on it, and transfers if it has less than 6 and a neighboring owned region.
-         * @return The list of PlaceArmiesMoves for one round
+         * @return The list of DeployArmiess for one round
          */
         public List<AttackTransferMove> GetAttackTransferMoves(BotState state, long timeOut)
         {
@@ -557,13 +589,13 @@ namespace bot
         public static void Main(String[] args)
         {
             BotParser parser = new BotParser(new BotStarter());
-            parser.Run(null);
-            /*try
+            //parser.Run(null);
+            try
             {
                 string[] lines = System.IO.File.ReadAllLines(@"C:\Users\filipecruz\Documents\warlight_ai_challenge\bot\test.txt");
                 parser.Run(lines);
             }
-            catch (Exception e) { parser.Run(null); }*/
+            catch (Exception e) { parser.Run(null); }
         }
 
     }

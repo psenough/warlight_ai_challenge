@@ -53,7 +53,7 @@
     <Compile Include="main\SuperRegion.cs" />
     <Compile Include="move\AttackTransferMove.cs" />
     <Compile Include="move\Move.cs" />
-    <Compile Include="move\PlaceArmiesMove.cs" />
+    <Compile Include="move\DeployArmies.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, Add your task inside one of the targets below and uncomment it. 

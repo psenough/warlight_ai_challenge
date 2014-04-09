@@ -14,12 +14,12 @@ namespace move
  * with how many armies.
  */
 
-	public class PlaceArmiesMove : Move {
+	public class DeployArmies : Move {
 		
 		private Region region;
 		private int armies;
 		
-		public PlaceArmiesMove(string playerName, Region region, int armies)
+		public DeployArmies(string playerName, Region region, int armies)
 		{
 			base.PlayerName = playerName;
 			this.region = region;
