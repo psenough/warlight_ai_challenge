@@ -637,8 +637,8 @@ namespace bot
 
                     // if this region is bordering the enemy
                     if (borderingEnemy) {
-                        // and their expected army count (current armies + half our current income) is lower then ours, attack
-                        if (armiesLeft > enemyBorders[0].Armies + state.StartingArmies * .5)
+                        // and their expected army count (current armies + 3/4 of our current income) is lower then ours, attack
+                        if (armiesLeft > enemyBorders[0].Armies + state.StartingArmies * .75)
                         {
                             attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, enemyBorders[0], armiesLeft));
                         }
