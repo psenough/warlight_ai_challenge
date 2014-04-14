@@ -19,6 +19,14 @@ namespace bot
 
         List<DeployArmies> DeployAtRandom(List<Region> list, BotState state, string myName, int armiesLeft);
 
+        List<DeployArmies> FinishSuperRegion(BotState state, int armiesLeft);
+
+        List<DeployArmies> ExpandNormal(BotState state, int armiesLeft);
+
+        List<DeployArmies> ExpandMinimum(BotState state, int armiesLeft);
+
+        List<DeployArmies> AttackHard(BotState state, int armiesLeft);
+
         List<DeployArmies> GetDeployArmiesMoves(BotState state, long timeOut);
 
         List<AttackTransferMove> GetAttackTransferMoves(BotState state, long timeOut);

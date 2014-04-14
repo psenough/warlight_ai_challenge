@@ -33,6 +33,7 @@ namespace bot
 
         private bool enemySighted;
         private List<Region> enemyBorders;
+        private bool ozBased;
 
 
         public BotState()
@@ -46,6 +47,8 @@ namespace bot
 
             enemySighted = false;
             enemyBorders = new List<Region>();
+
+            ozBased = false;
 
             roundNumber = 0;
         }
@@ -216,10 +219,11 @@ namespace bot
             foreach (Region unknownRegion in unknownRegions)
                 visibleMap.Regions.Remove(unknownRegion);
 
-
             scheduledAttack.Clear();
 
+            ozBased = false;
 
+            // figure out best expansion target
             if (RoundNumber == 1) // start of round 1
             {
                 UpdateOpponentStartRegions();
@@ -298,10 +302,12 @@ namespace bot
             }
             else // start of other rounds
             {
+                int ozCount = 0;
+
                 // update our expansion target
-                // make sure we are not trying to expand on a superregion we already own
                 if (expansionTargetSuperRegions.Count > 0)
                 {
+                    // make sure we are not trying to expand on a superregion we already own
                     bool finished = true;
                     foreach (Region reg in expansionTargetSuperRegions[0].SubRegions)
                     {
@@ -312,6 +318,7 @@ namespace bot
                         expansionTargetSuperRegions.RemoveAt(0);
                     }
 
+                    // figure out the next best thing
                     foreach (SuperRegion sr in expansionTargetSuperRegions)
                     {
                         int count = 0;
@@ -347,6 +354,17 @@ namespace bot
                                 if (regn.OwnedByPlayer(OpponentPlayerName)) count -= 5;
                             }
 
+
+                            // check if we are ozBased while we are at it
+                            // all 4 areas of oz are ours & siam is not enemy & brazil is not ours
+                            if ( ((reg.Id == 39) && (reg.OwnedByPlayer(MyPlayerName))) || 
+                                 ((reg.Id == 40) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                 ((reg.Id == 41) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                 ((reg.Id == 42) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                 ((reg.Id == 12) && (!reg.OwnedByPlayer(MyPlayerName))) ||
+                                 ((reg.Id == 38) && (!reg.OwnedByPlayer(OpponentPlayerName)))
+                                ) ozCount++;
+
                         }
 
                         count += (sr.SubRegions.Count - unknowns); // the less unknowns ratio the better
@@ -365,6 +383,7 @@ namespace bot
 
                 }
 
+                if (ozCount == 6) ozBased = true;
             }
 
         }
@@ -585,6 +604,11 @@ namespace bot
         public bool EnemySighted
         {
             get { return enemySighted; }
+        }
+        
+        public bool OZBased
+        {
+            get { return ozBased; }
         }
     }
 
