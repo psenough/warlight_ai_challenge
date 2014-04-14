@@ -302,8 +302,6 @@ namespace bot
             }
             else // start of other rounds
             {
-                int ozCount = 0;
-
                 // update our expansion target
                 if (expansionTargetSuperRegions.Count > 0)
                 {
@@ -354,17 +352,6 @@ namespace bot
                                 if (regn.OwnedByPlayer(OpponentPlayerName)) count -= 5;
                             }
 
-
-                            // check if we are ozBased while we are at it
-                            // all 4 areas of oz are ours & siam is not enemy & brazil is not ours
-                            if ( ((reg.Id == 39) && (reg.OwnedByPlayer(MyPlayerName))) || 
-                                 ((reg.Id == 40) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                                 ((reg.Id == 41) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                                 ((reg.Id == 42) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                                 ((reg.Id == 12) && (!reg.OwnedByPlayer(MyPlayerName))) ||
-                                 ((reg.Id == 38) && (!reg.OwnedByPlayer(OpponentPlayerName)))
-                                ) ozCount++;
-
                         }
 
                         count += (sr.SubRegions.Count - unknowns); // the less unknowns ratio the better
@@ -383,7 +370,25 @@ namespace bot
 
                 }
 
+
+                // check if we are 
+                int ozCount = 0;
+                foreach (Region reg in FullMap.Regions) {
+                    // check if we are ozBased while we are at it
+                    // all 4 areas of oz are ours & siam is not enemy & brazil is not ours
+                    if (((reg.Id == 39) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                            ((reg.Id == 40) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                            ((reg.Id == 41) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                            ((reg.Id == 42) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                            ((reg.Id == 12) && (!reg.OwnedByPlayer(MyPlayerName))) ||
+                            ((reg.Id == 38) && (!reg.OwnedByPlayer(OpponentPlayerName)))
+                        )
+                    {
+                        ozCount++;
+                    }
+                }
                 if (ozCount == 6) ozBased = true;
+
             }
 
         }
