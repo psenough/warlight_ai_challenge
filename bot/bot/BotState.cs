@@ -576,8 +576,6 @@ namespace bot
 
         public void ScheduleFullAttack(Region attacker, Region target, int armiesDeployed)
         {
-            int usedArmies = 0;
-
             // validate our inputs
             if (!attacker.OwnedByPlayer(MyPlayerName) || target.OwnedByPlayer("unknown") || target.OwnedByPlayer(MyPlayerName))
             {

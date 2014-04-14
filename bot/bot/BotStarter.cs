@@ -525,12 +525,27 @@ namespace bot
                     //todo: if this is the case, just deploy and sit, do min expansion elsewhere to get income advantage
 
                 } else {
-                    // do minimum expansion
-                    List<DeployArmies> deploy = ExpandMinimum(state, armiesLeft);
-                    foreach (DeployArmies da in deploy)
+
+                    // figure out if the best listed superregion is finishable on this turn
+                    bool finishableSuperRegion = false;
+                    if (state.ExpansionTargets.Count > 0) finishableSuperRegion = state.FullMap.GetSuperRegion(state.ExpansionTargets[0].Id).IsFinishable(state.StartingArmies, myName);
+
+                    if (finishableSuperRegion)
                     {
-                        deployArmies.Add(da);
-                        armiesLeft -= da.Armies;
+                        List<DeployArmies> deploy = FinishSuperRegion(state, armiesLeft);
+                        foreach (DeployArmies da in deploy)
+                        {
+                            deployArmies.Add(da);
+                            armiesLeft -= da.Armies;
+                        }
+                    } else { 
+                        // do minimum expansion
+                        List<DeployArmies> deploy = ExpandMinimum(state, armiesLeft);
+                        foreach (DeployArmies da in deploy)
+                        {
+                            deployArmies.Add(da);
+                            armiesLeft -= da.Armies;
+                        }
                     }
                 }
 
@@ -634,7 +649,7 @@ namespace bot
                         {
                             bool eborder = false;
 
-                            // go through all the neighbours to see into which it's more worth moving
+                            // go through all the neighbours to see into which is more worth moving into
                             foreach (Region a in fromRegion.Neighbors)
                             {
                                 Region an = state.FullMap.GetRegion(a.Id);
@@ -656,24 +671,12 @@ namespace bot
                                 // move leftover to where they can border an enemy
                                 // or finish the highest ranked expansion target superregion more easily
 
-                                // we can also give a little bonus if it's expanding into an area that will help finish the superregion
+                                // we can also give a little bonus if it's bordering an area that will help finish the superregion
                                 foreach (Region neigh in a.Neighbors)
                                 {
                                     an = state.FullMap.GetRegion(neigh.Id);
-
-                                    if (an.OwnedByPlayer(opponentName))
-                                    {
-                                        a.tempSortValue = 0;
-                                        continue;
-                                    }
-
-                                    foreach (Region nextborder in neigh.Neighbors)
-                                    {
-                                        an = state.FullMap.GetRegion(nextborder.Id);
-                                        if (an.OwnedByPlayer(opponentName)) count += 10;
-
-                                        if (an.OwnedByPlayer("neutral") && (an.SuperRegion.Id == state.ExpansionTargets[0].Id)) count++;
-                                    }
+                                    if (an.OwnedByPlayer(opponentName)) count += 10;
+                                    if (an.OwnedByPlayer("neutral") && ((an.SuperRegion.Id == state.ExpansionTargets[0].Id) || (an.SuperRegion.Id == state.ExpansionTargets[1].Id))) count++;
                                 }
 
                                 a.tempSortValue = count;
@@ -703,7 +706,9 @@ namespace bot
                 string[] lines = System.IO.File.ReadAllLines(@"C:\Users\filipecruz\Documents\warlight_ai_challenge\bot\test.txt");
                 parser.Run(lines);
             }
-            catch (Exception e) { parser.Run(null); }
+            catch (Exception e) { 
+                parser.Run(null);
+            }
         }
 
     }
