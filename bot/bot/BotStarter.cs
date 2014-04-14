@@ -586,6 +586,8 @@ namespace bot
                
             }
 
+            //todo: go through all deploy orders and condense them into one (to avoid multiple +1)
+
             return deployArmies;
         }
 
@@ -611,8 +613,10 @@ namespace bot
                 }
             }
 
-            foreach (Region fromRegion in state.VisibleMap.Regions)
+            foreach (Region re in state.VisibleMap.Regions)
             {
+                Region fromRegion = state.FullMap.GetRegion(re.Id);
+
                 if (fromRegion.OwnedByPlayer(myName))
                 {      
 
