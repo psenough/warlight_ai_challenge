@@ -609,7 +609,14 @@ namespace bot
                 {
                     Region from = state.FullMap.GetRegion(tup.Item1);
                     Region to = state.FullMap.GetRegion(tup.Item2);
-                    attackTransferMoves.Add(new AttackTransferMove(myName, from, to, tup.Item3));
+
+                    // prevent from hitting a wall against opponent
+                    if (to.OwnedByPlayer(opponentName) && (tup.Item3 > to.Armies + state.StartingArmies) && (tup.Item3 != 2))
+                    {
+                        Console.Error.WriteLine("prevent hitting a wall from " + from.Id + " to " + to.Id + " with " + tup.Item3 +  " on round " + state.RoundNumber);
+                    } else {
+                        attackTransferMoves.Add(new AttackTransferMove(myName, from, to, tup.Item3));
+                    }
                 }
             }
 
