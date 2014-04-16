@@ -35,6 +35,7 @@ namespace bot
         private List<Region> enemyBorders;
         private bool ozBased;
 
+        private int estimatedOpponentIncome;
 
         public BotState()
         {
@@ -49,6 +50,8 @@ namespace bot
             enemyBorders = new List<Region>();
 
             ozBased = false;
+
+            estimatedOpponentIncome = 5;
 
             roundNumber = 0;
         }
@@ -398,6 +401,7 @@ namespace bot
         public void ReadOpponentMoves(String[] moveInput)
         {
             opponentMoves.Clear();
+            int tempArmies = 0;
             for (int i = 1; i < moveInput.Length; i++)
             {
                 try
@@ -409,6 +413,7 @@ namespace bot
                         String playerName = moveInput[i];
                         int armies = int.Parse(moveInput[i + 3]);
                         move = new DeployArmies(playerName, region, armies);
+                        tempArmies += armies;
                         i += 3;
                     }
                     else if (moveInput[i + 1] == "attack/transfer")
@@ -437,6 +442,15 @@ namespace bot
                     Console.Error.WriteLine("Unable to parse Opponent moves " + e);
                 }
             }
+
+            // assume opponent has same armies as us 
+            estimatedOpponentIncome = startingArmies;
+ 
+            // if they deploy more, then they obviously have more
+            if (tempArmies > estimatedOpponentIncome) estimatedOpponentIncome = tempArmies;
+
+            //todo: later: update base estimate when we break an area the opponent likely has
+
         }
 
         public String MyPlayerName
@@ -612,6 +626,11 @@ namespace bot
         public bool OZBased
         {
             get { return ozBased; }
+        }
+
+        public int EstimatedOpponentIncome
+        {
+            get { return estimatedOpponentIncome; }
         }
     }
 

@@ -611,9 +611,9 @@ namespace bot
                     Region to = state.FullMap.GetRegion(tup.Item2);
 
                     // prevent from hitting a wall against opponent
-                    if (to.OwnedByPlayer(opponentName) && (tup.Item3 > to.Armies + state.StartingArmies) && (tup.Item3 != 2))
+                    if (to.OwnedByPlayer(opponentName) && (tup.Item3 <= to.Armies + state.EstimatedOpponentIncome))
                     {
-                        Console.Error.WriteLine("prevent hitting a wall from " + from.Id + " to " + to.Id + " with " + tup.Item3 +  " on round " + state.RoundNumber);
+                        Console.Error.WriteLine("prevent hitting a wall from " + from.Id + " to " + to.Id + " with " + tup.Item3 +  " armies on round " + state.RoundNumber);
                     } else {
                         attackTransferMoves.Add(new AttackTransferMove(myName, from, to, tup.Item3));
                     }
@@ -629,6 +629,8 @@ namespace bot
 
                     bool borderingEnemy = false;
                     List<Region> enemyBorders = new List<Region>();
+                    int enemyArmies = 0;
+                    int estimatedOpponentIncome = state.EstimatedOpponentIncome;
 
                     foreach (Region reg in fromRegion.Neighbors)
                     {
@@ -637,24 +639,62 @@ namespace bot
                         {
                             borderingEnemy = true;
                             enemyBorders.Add(region);
+                            enemyArmies += region.Armies;
                         }
                     }
+                    enemyBorders = enemyBorders.OrderBy(p => p.Armies).ToList();
 
                     int armiesLeft = fromRegion.Armies + fromRegion.PledgedArmies - fromRegion.ReservedArmies - 1;
 
+                    //enemyArmies += estimatedOpponentIncome;
+
                     // if this region is bordering the enemy
                     if (borderingEnemy) {
-                        // and their expected army count (current armies + 3/4 of our current income) is lower then ours, attack
-                        if (armiesLeft > enemyBorders[0].Armies + state.StartingArmies * .75)
+
+                        // if multiple borders, attack small armies
+                        if (enemyBorders.Count > 1)
                         {
-                            attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, enemyBorders[0], armiesLeft));
+                            foreach (Region en in enemyBorders)
+                            {
+                                // attack small armies with little armies
+                                if ((en.Armies == 1) || (en.Armies == 2))
+                                {
+                                    if (armiesLeft > en.Armies * 2)
+                                    {
+                                        attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, en, en.Armies * 2));
+                                        armiesLeft -= en.Armies * 2;
+                                    }
+                                }
+                            }
                         }
 
-                        //todo: refactor this code to handle attacking multiple enemy borders on same turn
+                        // check if we can attack biggest stack with our own stack
+                        Region enm = enemyBorders[enemyBorders.Count - 1];
+                        if (armiesLeft > enm.Armies + estimatedOpponentIncome)
+                        {
+                            bool alreadyScheduled = false;
+                            foreach (AttackTransferMove atk in attackTransferMoves)
+                            {
+                                // if it was already scheduled, upgrade it to use the remaining armies
+                                if ((atk.FromRegion.Id == fromRegion.Id) && (atk.ToRegion.Id == enm.Id)){
+                                    atk.Armies += armiesLeft;
+                                    armiesLeft = 0;
+                                    alreadyScheduled = true;
+                                }
+                            }
+
+                            // if not previously scheduled then test attack fullforce
+                            if (!alreadyScheduled) {
+                                attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, enm, armiesLeft));
+                                armiesLeft = 0;
+                            }
+                        }
+                        
 
                         //todo: later: if we have multiple areas bordering an enemy, decide if we should attack with all or sit, delay a lot and attack with 2
 
                     } else {
+
                         // move leftovers to where they can border an enemy or finish the highest ranked expansion target superregion
                         if (armiesLeft > 0)
                         {
