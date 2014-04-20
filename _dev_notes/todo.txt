@@ -1,10 +1,5 @@
 
-
 bordering opponent, if one of the areas is bordering one of our finished super regions, deploy to stack on it (protect north africa when we have south america; protect siam when we have australia, protect middle east and brazil when we have africa)
-
-if southamerica based and not bordering enemy, only deploy in brazil and head into africa (no need to deploy in mexico)
-
-if southamerica based and africa based and not bordering enemy, only deploy in egypt and head into asia
 
 re-calc estimate of opponent income after we have successful attack. (we could have broken one of their areas)
 
