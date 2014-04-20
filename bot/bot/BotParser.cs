@@ -66,9 +66,23 @@ namespace bot
                         // Place armies
                         List<DeployArmies> placeArmiesMoves = bot.GetDeployArmiesMoves(currentState, long.Parse(parts[2]));
                         
-                        //todo: later: bundle them together to avoid multiple +1 deployments being shown
+                        // bundle deploy army instructions  together to avoid multiple +1 deployments being shown
+                        List<DeployArmies> compact = new List<DeployArmies>();
+                        foreach (var move in placeArmiesMoves) {
+                            bool found = false;
+                            foreach(var test in compact) {
+                                if (move.Region.Id == test.Region.Id) {
+                                    test.Armies += move.Armies;
+                                    break;
+                                }
+                            }
+                            if (!found) {
+                                compact.Add(move);
+                            }
+                        }
+                        //todo: TEST THIS!
 
-                        foreach (var move in placeArmiesMoves)
+                        foreach (var move in compact)
                             output.Append(move.String + ",");
                     }
                     else if (parts[1] == "attack/transfer")
@@ -103,11 +117,6 @@ namespace bot
                     // All visible opponent moves are given
                     currentState.ReadOpponentMoves(parts);
                 }
-                /*else if (parts[0] == "Round")
-                {
-                    // All visible opponent moves are given
-                    currentState.SetRoundNumber(parts[1]);
-                }*/
                 else
                 {
                     Console.Error.WriteLine("Unable to parse line \"" + line + "\"");

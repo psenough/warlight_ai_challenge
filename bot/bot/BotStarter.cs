@@ -629,7 +629,6 @@ namespace bot
 
                     bool borderingEnemy = false;
                     List<Region> enemyBorders = new List<Region>();
-                    int enemyArmies = 0;
                     int estimatedOpponentIncome = state.EstimatedOpponentIncome;
 
                     foreach (Region reg in fromRegion.Neighbors)
@@ -639,14 +638,11 @@ namespace bot
                         {
                             borderingEnemy = true;
                             enemyBorders.Add(region);
-                            enemyArmies += region.Armies;
                         }
                     }
                     enemyBorders = enemyBorders.OrderBy(p => p.Armies).ToList();
 
                     int armiesLeft = fromRegion.Armies + fromRegion.PledgedArmies - fromRegion.ReservedArmies - 1;
-
-                    //enemyArmies += estimatedOpponentIncome;
 
                     // if this region is bordering the enemy
                     if (borderingEnemy) {
@@ -654,8 +650,10 @@ namespace bot
                         // if multiple borders, attack small armies
                         if (enemyBorders.Count > 1)
                         {
-                            foreach (Region en in enemyBorders)
+                            foreach (Region enmm in enemyBorders)
                             {
+                                Region en = state.FullMap.GetRegion(enmm.Id);
+
                                 // attack small armies with little armies
                                 if ((en.Armies == 1) || (en.Armies == 2))
                                 {
@@ -669,7 +667,7 @@ namespace bot
                         }
 
                         // check if we can attack biggest stack with our own stack
-                        Region enm = enemyBorders[enemyBorders.Count - 1];
+                        Region enm = state.FullMap.GetRegion(enemyBorders[enemyBorders.Count - 1].Id);
                         if (armiesLeft > enm.Armies + estimatedOpponentIncome)
                         {
                             bool alreadyScheduled = false;
@@ -690,7 +688,6 @@ namespace bot
                             }
                         }
                         
-
                         //todo: later: if we have multiple areas bordering an enemy, decide if we should attack with all or sit, delay a lot and attack with 2
 
                     } else {
