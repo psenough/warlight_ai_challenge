@@ -187,6 +187,7 @@ namespace bot
             return deployArmies;
         }
 
+        // is only called when no enemy is in sight
         public List<DeployArmies> ExpandNormal(BotState state, int armiesLeft)
         {
             string myName = state.MyPlayerName;
@@ -254,9 +255,6 @@ namespace bot
                         if (expanding) break;
                     }
                 }
-
-                //todo: later: if we are stuck in australia, enter breaker mode heading for south america through africa 
-
             }
 
             // deploy the rest of our armies randomly
@@ -266,7 +264,19 @@ namespace bot
                 List<Region> list = new List<Region>();
                 foreach (Region reg in state.VisibleMap.Regions)
                 {
-                    if (!reg.IsSafe(state)) list.Add(reg);
+                    if (!reg.IsSafe(state))
+                    {
+                        // dont deploy on venezuela if we have south america
+                        if (state.SABased && (reg.Id == 10)) continue;
+
+                        // dont deploy on north africa if we have africa
+                        if (state.AfricaBased && (reg.Id == 21)) continue;
+
+                        // dont deploy on north africa if we have africa
+                        if (state.AfricaBased && (reg.Id == 23)) continue;
+
+                        list.Add(reg);
+                    }
                 }
 
                 List<DeployArmies> placings = DeployAtRandom(list, state, myName, armiesLeft);
@@ -508,7 +518,9 @@ namespace bot
                     Console.Error.WriteLine("ozbased turn without any action?! (round " + state.RoundNumber + ")");
                 }
 
-            } else if (enemySighted) {
+            }
+            else if (enemySighted)
+            {
 
                 // early in the game bordering plenty of enemy areas
                 if (((state.RoundNumber <= 2) && (state.EnemyBorders.Count > 1)) || (state.EnemyBorders.Count == 3))
@@ -538,7 +550,9 @@ namespace bot
                             deployArmies.Add(da);
                             armiesLeft -= da.Armies;
                         }
-                    } else { 
+
+                    } else {
+
                         // do minimum expansion
                         List<DeployArmies> deploy = ExpandMinimum(state, armiesLeft);
                         foreach (DeployArmies da in deploy)
@@ -559,9 +573,7 @@ namespace bot
                     armiesLeft -= da.Armies;
                 }
 
-            }
-            else
-            {
+            } else {
 
                 // figure out if the best listed superregion is finishable on this turn
                 bool finishableSuperRegion = false;
@@ -575,18 +587,56 @@ namespace bot
                         deployArmies.Add(da);
                         armiesLeft -= da.Armies;
                     }
+
                 } else {
-                    List<DeployArmies> expand = ExpandNormal(state, armiesLeft);
-                    foreach (DeployArmies da in expand)
+
+                    if (state.AfricaBased) {
+
+                        // if africaBased and not saBased, go hard into brazil
+                        if (!state.SABased)
+                        {
+                            Region rnn = state.FullMap.GetRegion(21); // deploy all on north africa
+                            Region r = state.FullMap.GetRegion(12); // attack brazil
+                            state.ScheduleFullAttack(rnn, r, armiesLeft);
+                            deployArmies.Add(new DeployArmies(myName, rnn, armiesLeft));
+                            armiesLeft = 0;
+
+                        } 
+                        else if (state.FullMap.GetRegion(12).OwnedByPlayer(myName))
+                        {
+                            // we have brazil and no enemy bordering, so we can predict enemy is coming at us from oz
+                            // so go hard into middle east
+                            Region rnn = state.FullMap.GetRegion(22); // deploy all on egypt
+                            Region r = state.FullMap.GetRegion(36); // attack middle east
+                            state.ScheduleFullAttack(rnn, r, armiesLeft);
+                            deployArmies.Add(new DeployArmies(myName, rnn, armiesLeft));
+                            armiesLeft = 0;
+                        }
+                    }
+
+                    // if saBased and no enemy on north africa, go hard into north africa from brazil
+                    if (state.SABased && !state.FullMap.GetRegion(21).OwnedByPlayer(opponentName))
                     {
-                        deployArmies.Add(da);
-                        armiesLeft -= da.Armies;
+                        Region rnn = state.FullMap.GetRegion(12); // deploy all on brazil
+                        Region r = state.FullMap.GetRegion(21); // attack north africa
+                        state.ScheduleFullAttack(rnn, r, armiesLeft);
+                        deployArmies.Add(new DeployArmies(myName, rnn, armiesLeft));
+                        armiesLeft = 0;
+                    }
+
+                    // if no priority predidictions occures
+                    if (armiesLeft > 0)
+                    {
+                        List<DeployArmies> expand = ExpandNormal(state, armiesLeft);
+                        foreach (DeployArmies da in expand)
+                        {
+                            deployArmies.Add(da);
+                            armiesLeft -= da.Armies;
+                        }
                     }
                 }
-               
-            }
 
-            //todo: go through all deploy orders and condense them into one (to avoid multiple +1)
+            }
 
             return deployArmies;
         }

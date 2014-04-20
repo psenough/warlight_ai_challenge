@@ -668,6 +668,16 @@ namespace bot
             get { return ozBased; }
         }
 
+        public bool SABased
+        {
+            get { return saBased; }
+        }
+
+        public bool AfricaBased
+        {
+            get { return africaBased; }
+        }
+
         public int EstimatedOpponentIncome
         {
             get { return estimatedOpponentIncome; }
