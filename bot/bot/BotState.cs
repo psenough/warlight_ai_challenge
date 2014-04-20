@@ -34,6 +34,8 @@ namespace bot
         private bool enemySighted;
         private List<Region> enemyBorders;
         private bool ozBased;
+        private bool saBased;
+        private bool africaBased;
 
         private int estimatedOpponentIncome;
 
@@ -50,6 +52,8 @@ namespace bot
             enemyBorders = new List<Region>();
 
             ozBased = false;
+            saBased = false;
+            africaBased = false;
 
             estimatedOpponentIncome = 5;
 
@@ -225,6 +229,8 @@ namespace bot
             scheduledAttack.Clear();
 
             ozBased = false;
+            saBased = false;
+            africaBased = false;
 
             // figure out best expansion target
             if (RoundNumber == 1) // start of round 1
@@ -374,12 +380,17 @@ namespace bot
                 }
 
 
-                // check if we are 
+                // check if we are based somewhere
                 int ozCount = 0;
+                int saCount = 0;
+                int africaCount = 0;
+
                 foreach (Region reg in FullMap.Regions) {
-                    // check if we are ozBased while we are at it
+
+                    // check if we are ozBased
                     // all 4 areas of oz are ours & siam is not enemy & brazil is not ours
-                    if (((reg.Id == 39) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                    // brazil is main target, if we have a foot there it doesnt matter if we are oz based or not
+                    if (    ((reg.Id == 39) && (reg.OwnedByPlayer(MyPlayerName))) ||
                             ((reg.Id == 40) && (reg.OwnedByPlayer(MyPlayerName))) ||
                             ((reg.Id == 41) && (reg.OwnedByPlayer(MyPlayerName))) ||
                             ((reg.Id == 42) && (reg.OwnedByPlayer(MyPlayerName))) ||
@@ -389,8 +400,37 @@ namespace bot
                     {
                         ozCount++;
                     }
+
+
+                    // check if we are saBased
+                    // all 4 areas of south america are ours
+                    if (    ((reg.Id == 10) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                            ((reg.Id == 11) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                            ((reg.Id == 12) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                            ((reg.Id == 13) && (reg.OwnedByPlayer(MyPlayerName)))
+                        )
+                    {
+                        saCount++;
+                    }
+
+                    //todo: use saBased to deploy into Brazil and not go into central america
+
+                    // check if we are africaBased
+                    // all 6 areas of africa are ours
+                    if (    ((reg.Id == 21) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                            ((reg.Id == 22) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                            ((reg.Id == 23) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                            ((reg.Id == 24) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                            ((reg.Id == 25) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                            ((reg.Id == 26) && (reg.OwnedByPlayer(MyPlayerName)))
+                        )
+                    {
+                        saCount++;
+                    }
                 }
                 if (ozCount == 6) ozBased = true;
+                if (saCount == 4) saBased = true;
+                if (africaCount == 6) africaBased = true;
 
             }
 
