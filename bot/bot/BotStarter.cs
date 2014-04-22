@@ -70,13 +70,13 @@ namespace bot
                             // if the threat is to a region belonging to a superregion we own: count += 3;
                             if (state.RegionBelongsToOurSuperRegion(rn.Id))
                             {
-                                count += 3;
+                                count += 8;
                             }
 
                             // if the threat is to a region bordering a superregion we own: count += 2;
                             if (state.RegionBordersOneOfOurOwnSuperRegions(rn.Id))
                             {
-                                count += 2;
+                                count += 4;
                             }
 
                             // if the threat is to a region being double bordered by enemy: count +=1;
@@ -88,9 +88,9 @@ namespace bot
                             }
                             if (countenemy > 1) count += 1;
 
-
                             rn.tempSortValue = count;
-                            listofregions.Add(rn);
+
+                            if (!listofregions.Contains(rn)) listofregions.Add(rn);
                         }
                     }
                 }
@@ -585,6 +585,8 @@ namespace bot
                     bool finishableSuperRegion = false;
                     if (state.ExpansionTargets.Count > 0) finishableSuperRegion = state.FullMap.GetSuperRegion(state.ExpansionTargets[0].Id).IsFinishable(state.StartingArmies, myName);
 
+                    //todo: if already bordered by enemy, then its not finishable.
+
                     if (finishableSuperRegion)
                     {
                         List<DeployArmies> deploy = FinishSuperRegion(state, armiesLeft);
@@ -616,7 +618,7 @@ namespace bot
                     armiesLeft -= da.Armies;
                 }
 
-            } else {
+            } else { // no enemy in sight, expand normally / strategically
 
                 // figure out if the best listed superregion is finishable on this turn
                 bool finishableSuperRegion = false;

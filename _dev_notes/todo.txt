@@ -1,5 +1,15 @@
 
-bordering opponent, if one of the areas is bordering one of our finished super regions, deploy to stack on it (protect north africa when we have south america; protect siam when we have australia, protect middle east and brazil when we have africa)
+why not deploying more on north africa
+
+finishableSuperRegion should be false if the superregion is already bordered by an enemy.
+
+debug -1 on deploying to finish superregion
+
+test: bordering opponent, if one of the areas is bordering one of our finished super regions, deploy to stack on it (protect north africa when we have south america; protect siam when we have australia, protect middle east and brazil when we have africa)
+
+if we have a stack on a region we are trying to finish dont attack with just 4vs2 and 2vs1
+
+if we have leftovers when finishing an area, dont move them around aimlessly, move them into the finished region or bordering another super region
 
 re-calc estimate of opponent income after we have successful attack. (we could have broken one of their areas)
 

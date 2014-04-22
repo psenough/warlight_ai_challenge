@@ -73,6 +73,7 @@ namespace bot
                             foreach(var test in compact) {
                                 if (move.Region.Id == test.Region.Id) {
                                     test.Armies += move.Armies;
+                                    found = true;
                                     break;
                                 }
                             }
@@ -80,7 +81,6 @@ namespace bot
                                 compact.Add(move);
                             }
                         }
-                        //todo: TEST THIS!
 
                         foreach (var move in compact)
                             output.Append(move.String + ",");
