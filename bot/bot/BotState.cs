@@ -33,6 +33,8 @@ namespace bot
 
         private bool enemySighted;
         private List<Region> enemyBorders;
+        private List<SuperRegion> ownedSR;
+
         private bool ozBased;
         private bool saBased;
         private bool africaBased;
@@ -50,6 +52,7 @@ namespace bot
 
             enemySighted = false;
             enemyBorders = new List<Region>();
+            ownedSR = new List<SuperRegion>();
 
             ozBased = false;
             saBased = false;
@@ -228,6 +231,25 @@ namespace bot
 
             scheduledAttack.Clear();
 
+           
+            ownedSR.Clear();
+            foreach (SuperRegion sr in fullMap.superRegions) {
+                sr.numberOfRegionsOwnedByUs = 0;
+                sr.numberOfRegionsOwnedByOpponent = 0;
+                sr.ownedByUs = false;
+            }
+
+            // check what superregions we own
+            foreach (Region reg in visibleMap.regions)
+            {
+                SuperRegion par = fullMap.GetSuperRegion(reg.SuperRegion.Id);
+                if (reg.OwnedByPlayer(myName)) par.numberOfRegionsOwnedByUs++;
+                if (reg.OwnedByPlayer(opponentName)) par.numberOfRegionsOwnedByOpponent++;
+            }
+            foreach (SuperRegion sr in fullMap.superRegions) {
+                if (sr.numberOfRegionsOwnedByUs == sr.SubRegions.Count) sr.ownedByUs = true;
+            }
+
             ozBased = false;
             saBased = false;
             africaBased = false;
@@ -314,17 +336,9 @@ namespace bot
                 // update our expansion target
                 if (expansionTargetSuperRegions.Count > 0)
                 {
-                    // make sure we are not trying to expand on a superregion we already own
-                    bool finished = true;
-                    foreach (Region reg in expansionTargetSuperRegions[0].SubRegions)
-                    {
-                        if (!FullMap.GetRegion(reg.Id).OwnedByPlayer(MyPlayerName)) finished = false;
-                    }
-                    if (finished)
-                    {
-                        expansionTargetSuperRegions.RemoveAt(0);
-                    }
-
+                    // make sure we are not still trying to expand on a superregion we already own
+                    if (FullMap.GetSuperRegion(expansionTargetSuperRegions[0].Id).ownedByUs) expansionTargetSuperRegions.RemoveAt(0);
+                    
                     // figure out the next best thing
                     foreach (SuperRegion sr in expansionTargetSuperRegions)
                     {
@@ -401,6 +415,7 @@ namespace bot
                         ozCount++;
                     }
 
+                    //todo: refactor this to use the new SuperRegion.ownedByUs bool
 
                     // check if we are saBased
                     // all 4 areas of south america are ours
@@ -412,8 +427,6 @@ namespace bot
                     {
                         saCount++;
                     }
-
-                    //todo: use saBased to deploy into Brazil and not go into central america
 
                     // check if we are africaBased
                     // all 6 areas of africa are ours
@@ -681,6 +694,33 @@ namespace bot
         public int EstimatedOpponentIncome
         {
             get { return estimatedOpponentIncome; }
+        }
+
+        public bool RegionBelongsToOurSuperRegion(int id)
+        {
+            Region thisregion = fullMap.GetRegion(id);
+            SuperRegion thissr = fullMap.GetSuperRegion(thisregion.SuperRegion.Id);
+
+            foreach (Region reg in thissr.SubRegions)
+            {
+                Region rn = fullMap.GetRegion(reg.Id);
+                if (!rn.OwnedByPlayer(myName)) return false;
+            }
+
+            return true;
+        }
+
+        public bool RegionBordersOneOfOurOwnSuperRegions(int id)
+        {
+            Region thisregion = fullMap.GetRegion(id);
+
+            foreach (Region ne in thisregion.Neighbors)
+            {
+                SuperRegion sr = fullMap.GetSuperRegion( ne.SuperRegion.Id );
+                if (sr.ownedByUs) return true;
+            }
+
+            return false;
         }
     }
 

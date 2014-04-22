@@ -52,26 +52,69 @@ namespace bot
         public List<DeployArmies> DeployBorderingEnemy(bot.BotState state, int armiesLeft)
         {
             List<DeployArmies> deployArmies = new List<DeployArmies>();
+
             if (state.EnemyBorders.Count > 0)
             {
+
+                List<Region> listofregions = new List<Region>();
+
+                foreach (Region reg in state.EnemyBorders)
+                {
+                    foreach (Region regn in reg.Neighbors)
+                    {
+                        Region rn = state.FullMap.GetRegion(regn.Id);
+                        if (rn.OwnedByPlayer(state.MyPlayerName))
+                        {
+                            int count = 1;
+
+                            // if the threat is to a region belonging to a superregion we own: count += 3;
+                            if (state.RegionBelongsToOurSuperRegion(rn.Id))
+                            {
+                                count += 3;
+                            }
+
+                            // if the threat is to a region bordering a superregion we own: count += 2;
+                            if (state.RegionBordersOneOfOurOwnSuperRegions(rn.Id))
+                            {
+                                count += 2;
+                            }
+
+                            // if the threat is to a region being double bordered by enemy: count +=1;
+                            int countenemy = 0;
+                            foreach (Region nnnn in rn.Neighbors)
+                            {
+                                Region nnn = state.FullMap.GetRegion(nnnn.Id);
+                                if (nnn.OwnedByPlayer(state.OpponentPlayerName)) countenemy++;
+                            }
+                            if (countenemy > 1) count += 1;
+
+
+                            rn.tempSortValue = count;
+                            listofregions.Add(rn);
+                        }
+                    }
+                }
+
+                List<Region> lst = listofregions.OrderByDescending(p => p.tempSortValue).ToList();
+
                 while (armiesLeft > 0)
                 {
-                    foreach (Region reg in state.EnemyBorders)
+                    foreach (Region rn in lst)
                     {
-                        foreach (Region regn in reg.Neighbors)
-                        {
-                            Region rn = state.FullMap.GetRegion(regn.Id);
-                            if (rn.OwnedByPlayer(state.MyPlayerName))
-                            {
-                                deployArmies.Add(new DeployArmies(state.MyPlayerName, rn, 1));
-                                rn.PledgedArmies += 1;
-                                armiesLeft--;
-                                if (armiesLeft == 0) break;
-                            }
-                        }
+                        // higher distribution to top of heap 
+                        int rand = Random.Next(lst[0].tempSortValue + 1);
+                        if (rand > rn.tempSortValue) continue;
 
-                        if (armiesLeft == 0) break;
+                        // while we have armies left, use them
+                        if (rn.OwnedByPlayer(state.MyPlayerName))
+                        {
+                            deployArmies.Add(new DeployArmies(state.MyPlayerName, rn, 1));
+                            rn.PledgedArmies += 1;
+                            armiesLeft--;
+                            if (armiesLeft == 0) break;
+                        }
                     }
+
                 }
             }
             return deployArmies;

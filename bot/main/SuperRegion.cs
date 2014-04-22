@@ -15,6 +15,9 @@ namespace main
         private List<Region> subRegions;
         public int tempSortValue;
 
+        public int numberOfRegionsOwnedByUs;
+        public int numberOfRegionsOwnedByOpponent;
+        public bool ownedByUs;
 
         public SuperRegion(int id, int armiesReward)
         {
