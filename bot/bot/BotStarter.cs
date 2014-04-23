@@ -70,13 +70,13 @@ namespace bot
                             // if the threat is to a region belonging to a superregion we own: count += 3;
                             if (state.RegionBelongsToOurSuperRegion(rn.Id))
                             {
-                                count += 8;
+                                count += 12;
                             }
 
                             // if the threat is to a region bordering a superregion we own: count += 2;
                             if (state.RegionBordersOneOfOurOwnSuperRegions(rn.Id))
                             {
-                                count += 4;
+                                count += 8;
                             }
 
                             // if the threat is to a region being double bordered by enemy: count +=1;
@@ -566,7 +566,10 @@ namespace bot
             {
 
                 // early in the game bordering plenty of enemy areas
-                if (((state.RoundNumber <= 2) && (state.EnemyBorders.Count > 1)) || (state.EnemyBorders.Count == 3))
+                if (
+                    ((state.RoundNumber <= 2) && (state.EnemyBorders.Count > 1 )) || 
+                    (state.EnemyBorders.Count == 3)
+                   )
                 {
                     // if we have atleast 2 enemy sightings, pick one and hit it hard
                     List<DeployArmies> deploy = AttackHard(state, armiesLeft);
@@ -579,6 +582,9 @@ namespace bot
                     //todo: dont try to attack hard if we can predict that opponent could have another starting pick nearby
                     //todo: if this is the case, just deploy and sit, do min expansion elsewhere to get income advantage
 
+                    //todo: it can happen that we just used the previous action to hit hard, succeed and now we have a stack we could use to expand without deploying, while still neighbouring 3 enemy areas
+                    //todo: if finishable without deploying, finish it
+                    //todo: if expand minimum without deploying, do it
                 } else {
 
                     // figure out if the best listed superregion is finishable on this turn

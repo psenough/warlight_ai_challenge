@@ -1,5 +1,8 @@
 
-why not deploying more on north africa
+// early in the game bordering plenty of enemy areas
+//todo: it can happen that we just used the previous action to hit hard, succeed and now we have a stack we could use to expand without deploying, while still neighbouring 3 enemy areas
+//todo: if finishable without deploying, finish it
+//todo: if expand minimum without deploying, do it
 
 finishableSuperRegion should be false if the superregion is already bordered by an enemy.
 

@@ -551,10 +551,6 @@ namespace bot
             get { return pickableStartingRegions; }
         }
 
-
-
-        
-
         public void UpdateOpponentStartRegions()
         {
 
