@@ -564,11 +564,11 @@ namespace bot
             }
             else if (enemySighted)
             {
-
+                
                 // early in the game bordering plenty of enemy areas
                 if (
-                    ((state.RoundNumber <= 2) && (state.EnemyBorders.Count > 1 )) || 
-                    (state.EnemyBorders.Count == 3)
+                    ((state.RoundNumber <= 2) && (state.EnemyBorders.Count > 1 )) ||
+                    ((state.RoundNumber <= 15) && (state.EnemyBorders.Count == 3))
                    )
                 {
                     // if we have atleast 2 enemy sightings, pick one and hit it hard
@@ -580,42 +580,55 @@ namespace bot
                     }
 
                     //todo: dont try to attack hard if we can predict that opponent could have another starting pick nearby
-                    //todo: if this is the case, just deploy and sit, do min expansion elsewhere to get income advantage
-
-                    //todo: it can happen that we just used the previous action to hit hard, succeed and now we have a stack we could use to expand without deploying, while still neighbouring 3 enemy areas
-                    //todo: if finishable without deploying, finish it
-                    //todo: if expand minimum without deploying, do it
-                } else {
-
-                    // figure out if the best listed superregion is finishable on this turn
-                    bool finishableSuperRegion = false;
-                    if (state.ExpansionTargets.Count > 0) finishableSuperRegion = state.FullMap.GetSuperRegion(state.ExpansionTargets[0].Id).IsFinishable(state.StartingArmies, myName);
-
-                    //todo: if already bordered by enemy, then its not finishable.
-
-                    if (finishableSuperRegion)
-                    {
-                        List<DeployArmies> deploy = FinishSuperRegion(state, armiesLeft);
-                        foreach (DeployArmies da in deploy)
-                        {
-                            deployArmies.Add(da);
-                            armiesLeft -= da.Armies;
-                        }
-
-                    } else {
-
-                        // do minimum expansion
-                        List<DeployArmies> deploy = ExpandMinimum(state, armiesLeft);
-                        foreach (DeployArmies da in deploy)
-                        {
-                            deployArmies.Add(da);
-                            armiesLeft -= da.Armies;
-                        }
-                    }
+                    
                 }
 
-                //todo: later: decide if we should deploy all in one place and attack hard, or spread out the deployments on multiple borders and sit
+                // figure out if the best listed superregion is finishable on this turn
+                bool finishableSuperRegion = false;
+                SuperRegion targetSR = state.FullMap.GetSuperRegion(state.ExpansionTargets[0].Id);
+                if (state.ExpansionTargets.Count > 0) finishableSuperRegion = targetSR.IsFinishable(armiesLeft, myName);
 
+                // if superregion has enemy or is already bordered by enemy, then its not very safe
+                // might aswell not consider it finishable, don't waste armies on it
+                foreach (Region reg in targetSR.SubRegions)
+                {
+                    Region rn = state.FullMap.GetRegion(reg.Id);
+                    if (rn.OwnedByPlayer(opponentName)) {
+                        finishableSuperRegion = false;
+                        break;
+                    }
+                    foreach (Region neigh in rn.Neighbors)
+                    {
+                        Region ni = state.FullMap.GetRegion(neigh.Id);
+                        if (ni.OwnedByPlayer(opponentName))
+                        {
+                            finishableSuperRegion = false;
+                            break;
+                        }
+                    }
+                    if (!finishableSuperRegion) break;
+                }
+
+                if (finishableSuperRegion)
+                {
+                    List<DeployArmies> deploy = FinishSuperRegion(state, armiesLeft);
+                    foreach (DeployArmies da in deploy)
+                    {
+                        deployArmies.Add(da);
+                        armiesLeft -= da.Armies;
+                    }
+
+                } else {
+
+                    // do minimum expansion
+                    List<DeployArmies> deploy = ExpandMinimum(state, armiesLeft);
+                    foreach (DeployArmies da in deploy)
+                    {
+                        deployArmies.Add(da);
+                        armiesLeft -= da.Armies;
+                    }
+                }
+                
                 // deploy rest of your income bordering the enemy
                 List<DeployArmies> placings = DeployBorderingEnemy(state, armiesLeft);
                 foreach (DeployArmies da in placings)
