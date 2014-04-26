@@ -1,4 +1,11 @@
 
+on expandnormal:
+//todo: determine the closest superregion where opponent is most likely in (based on starting picks and number of turns)
+//todo: do two minimum expansions on main expansion target
+//todo: use the rest of armies to move in the direction of the enemy with largest stack left
+
+if have africa, should attack middle east
+
 if we have a stack on a region we are trying to finish dont attack with just 4vs2 and 2vs1, use it to improve the odds or to head into defensive position
 
 if we have leftovers when finishing an area, dont move them around aimlessly, move them into the finished region or bordering another super region

@@ -237,10 +237,14 @@ namespace bot
             string opponentName = state.OpponentPlayerName;
             List<DeployArmies> deployArmies = new List<DeployArmies>();
 
-            // deploy all on the two main expansion targets
+            //todo: determine the closest superregion where opponent is most likely in (based on starting picks and number of turns)
+            //todo: do two minimum expansions on main expansion target
+            //todo: use the rest of armies to move in the direction of the enemy with largest stack left
 
+            // expand on the main expansion target
             bool expanding = false;
-            for (int i = 0; i < 2; i++)
+            //for (int i = 0; i < 2; i++)
+            int i = 0;
             {
                 foreach (Region reg in state.ExpansionTargets[i].SubRegions)
                 {
@@ -578,8 +582,6 @@ namespace bot
                         deployArmies.Add(da);
                         armiesLeft -= da.Armies;
                     }
-
-                    //todo: dont try to attack hard if we can predict that opponent could have another starting pick nearby
                     
                 }
 
@@ -619,14 +621,27 @@ namespace bot
                     }
 
                 } else {
+                    // do minimum expansion, but only on expansiontargets that are close to being finished
 
-                    // do minimum expansion
-                    List<DeployArmies> deploy = ExpandMinimum(state, armiesLeft);
-                    foreach (DeployArmies da in deploy)
+                    // check how many territories of the expansion target we already own
+                    int count = 0;
+                    foreach (Region reg in state.ExpansionTargets[0].SubRegions)
                     {
-                        deployArmies.Add(da);
-                        armiesLeft -= da.Armies;
+                        Region rn = state.FullMap.GetRegion(reg.Id);
+                        if (rn.OwnedByPlayer(myName)) count++; 
                     }
+
+                    if (count > state.ExpansionTargets[0].SubRegions.Count * 0.5)
+                    {
+                        // do minimum expansion
+                        List<DeployArmies> deploy = ExpandMinimum(state, armiesLeft);
+                        foreach (DeployArmies da in deploy)
+                        {
+                            deployArmies.Add(da);
+                            armiesLeft -= da.Armies;
+                        }
+                    }
+
                 }
                 
                 // deploy rest of your income bordering the enemy
@@ -688,7 +703,7 @@ namespace bot
                         armiesLeft = 0;
                     }
 
-                    // if no priority predidictions occures
+                    // if no priority predidictions occurs
                     if (armiesLeft > 0)
                     {
                         List<DeployArmies> expand = ExpandNormal(state, armiesLeft);
