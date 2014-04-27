@@ -237,12 +237,40 @@ namespace bot
             string opponentName = state.OpponentPlayerName;
             List<DeployArmies> deployArmies = new List<DeployArmies>();
 
-            //todo: determine the closest superregion where opponent is most likely in (based on starting picks and number of turns)
-            //todo: do two minimum expansions on main expansion target
-            //todo: use the rest of armies to move in the direction of the enemy with largest stack left
+            // determine the best region the opponent is most likely in
+            if (state.OpponentStartRegions.Count > 1) {             
+                
+                // find next step on shortest path to get there
+                // and schedule an attack in that direction
 
+                int nextstep = state.FindNextStep(state.OpponentStartRegions[0].Id);
+                if (nextstep != -1)
+                {                
+                    Region region = state.FullMap.GetRegion(nextstep);
+
+                    // find our neighbour with highest available armies
+                    foreach (Region a in region.Neighbors)
+                    {
+                        int aArmies = a.Armies + a.PledgedArmies - a.ReservedArmies;
+                        if (!a.OwnedByPlayer(myName)) aArmies = -1;
+                        a.tempSortValue = aArmies;
+                    }
+                    var lst = region.Neighbors.OrderByDescending(p => p.tempSortValue).ToList();
+                    Region neigh = state.FullMap.GetRegion(lst[0].Id);
+                    if (neigh.OwnedByPlayer(myName))
+                    {
+                        int deployed = state.ScheduleNeutralAttack(neigh, region, armiesLeft);
+                        if (armiesLeft >= deployed)
+                        {
+                            deployArmies.Add(new DeployArmies(myName, neigh, deployed));
+                            neigh.PledgedArmies += deployed;
+                            armiesLeft -= deployed;
+                        }
+                    }
+                }
+            }
+            
             // expand on the main expansion target
-            bool expanding = false;
             //for (int i = 0; i < 2; i++)
             int i = 0;
             {
@@ -266,43 +294,21 @@ namespace bot
                     if (neigh.OwnedByPlayer(myName))
                     {
                         int deployed = state.ScheduleNeutralAttack(neigh, region, armiesLeft);
-                        deployArmies.Add(new DeployArmies(myName, neigh, deployed));
-                        neigh.PledgedArmies += deployed;
-                        armiesLeft -= deployed;
-                        expanding = true;
+                        if (armiesLeft >= deployed) {
+                            deployArmies.Add(new DeployArmies(myName, neigh, deployed));
+                            neigh.PledgedArmies += deployed;
+                            armiesLeft -= deployed;
+                        }
                     }
 
                     // only do the expansion for the first neutral region found
-                    break;
+                    //break;
 
                 }
 
-                if (!expanding)
-                {
-                    foreach (Region r in state.VisibleMap.Regions)
-                    {
-                        if (r.OwnedByPlayer("neutral"))
-                        {
-                            foreach (Region rn in r.Neighbors)
-                            {
-                                Region rnn = state.FullMap.GetRegion(rn.Id);
-
-                                if (rnn.OwnedByPlayer(myName))
-                                {
-                                    state.ScheduleFullAttack(rnn, r, armiesLeft);
-                                    deployArmies.Add(new DeployArmies(myName, rnn, armiesLeft));
-                                    armiesLeft = 0;
-                                    expanding = true;
-                                    break;
-                                }
-                            }
-
-                        }
-
-                        if (expanding) break;
-                    }
-                }
             }
+
+            //todo: throw any leftovers to the strategic move stack
 
             // deploy the rest of our armies randomly
             if (armiesLeft > 0)
@@ -738,13 +744,27 @@ namespace bot
                 {
                     Region from = state.FullMap.GetRegion(tup.Item1);
                     Region to = state.FullMap.GetRegion(tup.Item2);
+                    int armyCount = tup.Item3;
+
+                    // if we have move orders in regions with leftover troops, use them up
+                    int armiesAvail = from.Armies + from.PledgedArmies - 1;
+                    if (armiesAvail > from.ReservedArmies)
+                    {
+                        int narmies = armiesAvail - from.ReservedArmies;
+                        from.ReservedArmies += narmies;
+                        armyCount += narmies;
+                    }
+
+                    //todo: refactor code above to distribute evenly when there are multiple attacks originating from same region
+
+                    //todo: remove potential excessive armies used (due to the finish region +1 bug/feature)
 
                     // prevent from hitting a wall against opponent
-                    if (to.OwnedByPlayer(opponentName) && (tup.Item3 <= to.Armies + state.EstimatedOpponentIncome))
+                    if (to.OwnedByPlayer(opponentName) && (armyCount <= to.Armies + state.EstimatedOpponentIncome))
                     {
-                        Console.Error.WriteLine("prevent hitting a wall from " + from.Id + " to " + to.Id + " with " + tup.Item3 +  " armies on round " + state.RoundNumber);
+                        Console.Error.WriteLine("prevent hitting a wall from " + from.Id + " to " + to.Id + " with " + armyCount +  " armies on round " + state.RoundNumber);
                     } else {
-                        attackTransferMoves.Add(new AttackTransferMove(myName, from, to, tup.Item3));
+                        attackTransferMoves.Add(new AttackTransferMove(myName, from, to, armyCount));
                     }
                 }
             }

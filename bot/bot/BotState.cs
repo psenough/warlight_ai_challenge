@@ -250,6 +250,9 @@ namespace bot
                 if (sr.numberOfRegionsOwnedByUs == sr.SubRegions.Count) sr.ownedByUs = true;
             }
 
+            // update list of opponent start regions
+            UpdateOpponentStartRegions();
+
             ozBased = false;
             saBased = false;
             africaBased = false;
@@ -257,7 +260,6 @@ namespace bot
             // figure out best expansion target
             if (RoundNumber == 1) // start of round 1
             {
-                UpdateOpponentStartRegions();
                 expansionTargetSuperRegions = FullMap.GetMapCopy().SuperRegions;
                 
                 // sort super region by quality of expansibility
@@ -559,6 +561,7 @@ namespace bot
 
             // if there is a region on the opponent start regions list whose player is me on the current state
             // then that means i got the pick, so we can remove it from the prediction list
+            // also remove neutral sightings in that region
             foreach (Region reg in opponentStartRegions)
             {
                 foreach (Region mapreg in VisibleMap.Regions)
@@ -718,6 +721,61 @@ namespace bot
 
             return false;
         }
+
+        public int FindNextStep(int dest)
+        {
+            // reset
+            foreach (Region reg in fullMap.regions)
+            {
+                reg.tempSortValue = 0;
+            }
+
+            // initial list
+            List<Region> list = new List<Region>();
+            foreach (Region reg in FullMap.GetRegion(dest).Neighbors)
+            {
+                list.Add(reg);
+            }
+
+            // first iteration
+            int it = 1;
+
+            while ( list.Count > 0 )
+            {
+                List<Region> newlist = new List<Region>();
+                foreach (Region testRegion in list)
+                {
+                    Region reg = fullMap.GetRegion(testRegion.Id);
+                    if (reg.OwnedByPlayer(myName))
+                    {
+                        // found home
+                        return reg.Id;
+                    }
+                    else
+                    {
+                        if (reg.tempSortValue == 0)
+                        {
+                            reg.tempSortValue = it;
+                            foreach(Region neigh in reg.Neighbors) {
+                                newlist.Add(neigh);
+                            }
+                        }
+                    }
+                }
+                
+                list.Clear();
+                foreach (Region nl in newlist)
+                {
+                    list.Add(nl);
+                }
+
+                it++;
+            }
+
+            return -1; // failed to find home
+        }
+
     }
+
 
 }
