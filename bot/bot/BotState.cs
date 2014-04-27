@@ -748,11 +748,19 @@ namespace bot
                     Region reg = fullMap.GetRegion(testRegion.Id);
                     if (reg.OwnedByPlayer(myName))
                     {
-                        // found home
-                        return reg.Id;
+                        // found home, now backtrack to find which neighbour to attack, should be the one with lowest it that is not 0
+                        int lowest = 50;
+                        int index = -1;
+                        foreach (Region neigh in reg.Neighbors)
+                        {
+                            Region regn = fullMap.GetRegion(neigh.Id);
+                            if ((regn.tempSortValue < lowest) && (regn.tempSortValue != 0)) index = regn.Id;
+                        }
+                        return index;
                     }
                     else
                     {
+                        // havent found home yet, prepare next iteration
                         if (reg.tempSortValue == 0)
                         {
                             reg.tempSortValue = it;

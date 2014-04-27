@@ -245,7 +245,7 @@ namespace bot
 
                 int nextstep = state.FindNextStep(state.OpponentStartRegions[0].Id);
                 if (nextstep != -1)
-                {                
+                {
                     Region region = state.FullMap.GetRegion(nextstep);
 
                     // find our neighbour with highest available armies
@@ -708,16 +708,16 @@ namespace bot
                         deployArmies.Add(new DeployArmies(myName, rnn, armiesLeft));
                         armiesLeft = 0;
                     }
+                }
 
-                    // if no priority predidictions occurs
-                    if (armiesLeft > 0)
+                // if no priority predidictions occurs
+                if (armiesLeft > 0)
+                {
+                    List<DeployArmies> expand = ExpandNormal(state, armiesLeft);
+                    foreach (DeployArmies da in expand)
                     {
-                        List<DeployArmies> expand = ExpandNormal(state, armiesLeft);
-                        foreach (DeployArmies da in expand)
-                        {
-                            deployArmies.Add(da);
-                            armiesLeft -= da.Armies;
-                        }
+                        deployArmies.Add(da);
+                        armiesLeft -= da.Armies;
                     }
                 }
 
