@@ -537,7 +537,7 @@ namespace bot
 
             // while we are ozbased and have not breaken into brazil, focus entirely on that
             // exception if oz is threatened by enemy in siam, then it's not considered ozBased
-            if (state.OZBased && !state.FullMap.GetRegion(12).OwnedByPlayer(myName))
+            /*if (state.OZBased && !state.FullMap.GetRegion(12).OwnedByPlayer(myName))
             {
                 // if we dont have brazil (12) but have north africa (21)
                 if (!state.FullMap.GetRegion(12).OwnedByPlayer(myName) && state.FullMap.GetRegion(21).OwnedByPlayer(myName))
@@ -582,7 +582,7 @@ namespace bot
                 }
 
             }
-            else if (enemySighted)
+            else*/ if (enemySighted)
             {
                 
                 // early in the game bordering plenty of enemy areas
