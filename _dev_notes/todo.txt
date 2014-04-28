@@ -3,20 +3,13 @@ if we have a stack protecting a superregion, dont attack hard out unless there i
 
 dont run into walls (improve estimated opponent income)
 
-if there is a big enemy stack on north africa and i have brazil and i have over half of africa, attack north africa with 2 on last action
-
 if we have a stack on a region we are trying to finish dont attack with just 4vs2 and 2vs1, use it to improve the odds or to head into defensive position
 
-if we have leftovers when finishing an area, dont move them around aimlessly, move them into the finished region or bordering another super region
+if we have leftovers when finishing an area, dont move them around aimlessly, move them into the finished region (if > 1) or to bordering another super region instead of a neutral inside the superregion that will be finished this turn
 
 if one enemy territory borders multiple borders from us put everything into the biggest stack to be able to hit enemy hard next turn
 
 re-calc estimate of opponent income after we have successful attack. (we could have broken one of their areas)
 
 debug -1 on deploying to finish superregion
-
-set move priority levels (first order, last order)
-leftover moves if first order if bordering enemy, normal if not
-heavy attacks are last,
-light attacks are usually first
 
