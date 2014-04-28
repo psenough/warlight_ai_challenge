@@ -774,7 +774,7 @@ namespace bot
                     {
                         Console.Error.WriteLine("prevent hitting a wall from " + from.Id + " to " + to.Id + " with " + armyCount +  " armies on round " + state.RoundNumber);
                     } else {
-                        attackTransferMoves.Add(new AttackTransferMove(myName, from, to, armyCount));
+                        attackTransferMoves.Add(new AttackTransferMove(myName, from, to, armyCount, 4));
                     }
                 }
             }
@@ -806,24 +806,30 @@ namespace bot
                     // if this region is bordering the enemy
                     if (borderingEnemy) {
 
-                        // if multiple borders, attack small armies
-                        if (enemyBorders.Count > 1)
+                        // attack regions with small number of armies, to clear them out
+                        foreach (Region enmm in enemyBorders)
                         {
-                            foreach (Region enmm in enemyBorders)
-                            {
-                                Region en = state.FullMap.GetRegion(enmm.Id);
+                            Region en = state.FullMap.GetRegion(enmm.Id);
 
-                                // attack small armies with little armies
-                                if ((en.Armies == 1) || (en.Armies == 2))
+                            // attack small armies with little armies
+                            if ((en.Armies == 1) || (en.Armies == 2))
+                            {
+                                if (armiesLeft > en.Armies * 2)
                                 {
-                                    if (armiesLeft > en.Armies * 2)
-                                    {
-                                        attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, en, en.Armies * 2));
-                                        armiesLeft -= en.Armies * 2;
-                                    }
+                                    attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, en, en.Armies * 2, 5));
+                                    armiesLeft -= en.Armies * 2;
                                 }
                             }
+
+                            // attack north africa with 2 on last action
+                            if ((en.Id == 21) && (state.AfricaCount > 4))
+                            {
+                                attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, en, 2, 10));
+                                armiesLeft -= 2;
+                            }
+
                         }
+                        
 
                         // check if we can attack biggest stack with our own stack
                         Region enm = state.FullMap.GetRegion(enemyBorders[enemyBorders.Count - 1].Id);
@@ -842,7 +848,7 @@ namespace bot
 
                             // if not previously scheduled then test attack fullforce
                             if (!alreadyScheduled) {
-                                attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, enm, armiesLeft));
+                                attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, enm, armiesLeft, 5));
                                 armiesLeft = 0;
                             }
                         }
@@ -893,15 +899,17 @@ namespace bot
                             Region dest = state.FullMap.GetRegion(lst[0].Id);
                             if (dest.OwnedByPlayer(state.MyPlayerName) && (!eborder))
                             {
-                                attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, dest, armiesLeft));
+                                attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, dest, armiesLeft, 1));
                             }
                         }
                     }
 
                 }
             }
+
+            List<AttackTransferMove> sorted = attackTransferMoves.OrderBy(p => p.Priority).ToList();
            
-            return attackTransferMoves;
+            return sorted;
         }
 
         public static void Main(String[] args)

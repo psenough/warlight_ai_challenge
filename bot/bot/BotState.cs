@@ -38,6 +38,7 @@ namespace bot
         private bool ozBased;
         private bool saBased;
         private bool africaBased;
+        private int africaCount;
 
         private int estimatedOpponentIncome;
 
@@ -57,6 +58,7 @@ namespace bot
             ozBased = false;
             saBased = false;
             africaBased = false;
+            africaCount = 0;
 
             estimatedOpponentIncome = 5;
 
@@ -399,7 +401,7 @@ namespace bot
                 // check if we are based somewhere
                 int ozCount = 0;
                 int saCount = 0;
-                int africaCount = 0;
+                africaCount = 0;
 
                 foreach (Region reg in FullMap.Regions) {
 
@@ -688,6 +690,11 @@ namespace bot
         public bool AfricaBased
         {
             get { return africaBased; }
+        }
+
+        public int AfricaCount
+        {
+            get { return africaCount; }
         }
 
         public int EstimatedOpponentIncome

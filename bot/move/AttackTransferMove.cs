@@ -20,6 +20,7 @@ namespace move
 		private Region fromRegion;
 		private Region toRegion;
 		private int armies;
+        private int priority;
 		
 		public AttackTransferMove(String playerName, Region fromRegion, Region toRegion, int armies)
 		{
@@ -27,7 +28,17 @@ namespace move
 			this.fromRegion = fromRegion;
 			this.toRegion = toRegion;
 			this.armies = armies;
+            this.priority = 0;
 		}
+
+        public AttackTransferMove(String playerName, Region fromRegion, Region toRegion, int armies, int priority)
+        {
+            base.PlayerName = playerName;
+            this.fromRegion = fromRegion;
+            this.toRegion = toRegion;
+            this.armies = armies;
+            this.priority = priority;
+        }
 
 		public int Armies
 		{
@@ -55,5 +66,9 @@ namespace move
 			}
 		}
 
+        public int Priority
+        {
+            get { return priority; }
+        }
 	}
 }
