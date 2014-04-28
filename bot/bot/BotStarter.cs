@@ -27,16 +27,22 @@ namespace bot
 
                 // check if region is neighboring a better superregion
                 var na = a.Neighbors.OrderBy(p => lst.IndexOf(a.SuperRegion)).ToList();
-                
-                // if neighbouring a higher ranked superregion
-                if (a.SuperRegion.Id != na[0].Id)
-                {
-                    a.tempSortValue = lst.Count - lst.IndexOf(na[0].SuperRegion);
-                } else {
-                    a.tempSortValue = lst.Count - lst.IndexOf(a.SuperRegion);
-                }
 
-                if (na[0].SuperRegion.Id == 6)
+                int bestindex = lst.IndexOf(a.SuperRegion);
+                int ni = lst.IndexOf(na[0].SuperRegion);
+                if (ni < bestindex)
+                {
+                    bestindex = ni;
+
+                    // better to have region inside than bordering
+                    // counters in this map are hard due to starting armies being 2
+                    // if we had more starting armies this value should be +=1
+                    a.tempSortValue -= 1;
+                }
+                
+                a.tempSortValue += lst.Count - bestindex;
+                
+                if (lst[bestindex].Id == 6)
                 {
                     a.tempSortValue += 2;
                 }

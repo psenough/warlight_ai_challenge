@@ -1,11 +1,9 @@
 
-debug test.txt why didnt it deploy the +7 on north africa?
-
-prioritize australia over SA
-
 if we have a stack protecting a superregion, dont attack hard out unless there is only 1 target left (dont leave north africa wide open)
 
 dont run into walls (needs higher ratio)
+
+attack with 2 if opponent has 1 army (should be implemented but doesnt always happen)
 
 if there is a big enemy stack on north africa and i have brazil and i have over half of africa, attack north africa with 2 on last action
 
