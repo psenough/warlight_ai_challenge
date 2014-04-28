@@ -31,11 +31,15 @@ namespace bot
                 // if neighbouring a higher ranked superregion
                 if (a.SuperRegion.Id != na[0].Id)
                 {
-                    a.tempSortValue = lst.Count - lst.IndexOf(a.SuperRegion);
+                    a.tempSortValue = lst.Count - lst.IndexOf(na[0].SuperRegion);
                 } else {
                     a.tempSortValue = lst.Count - lst.IndexOf(a.SuperRegion);
                 }
 
+                if (na[0].SuperRegion.Id == 6)
+                {
+                    a.tempSortValue += 2;
+                }
             }
             var picks = state.PickableStartingRegions.OrderByDescending(p => p.tempSortValue).ToList();
 
