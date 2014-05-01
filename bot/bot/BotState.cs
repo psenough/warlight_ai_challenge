@@ -772,7 +772,8 @@ namespace bot
                         {
                             reg.tempSortValue = it;
                             foreach(Region neigh in reg.Neighbors) {
-                                newlist.Add(neigh);
+                                if (!newlist.Contains(neigh)) newlist.Add(neigh);
+                                //todo: have to test if this contains is really working
                             }
                         }
                     }
