@@ -320,8 +320,9 @@ public class Engine {
 							}
 							else //attack
 							{
-								int destroyedArmies = doAttack(move);
-								oldFromRegion.setArmies(oldFromRegion.getArmies() - destroyedArmies); //armies that are destroyed and replaced in the same turn cannot be used to attack/transfer with
+								//int destroyedArmies = doAttack(move);
+								//oldFromRegion.setArmies(oldFromRegion.getArmies() - destroyedArmies); //armies that are destroyed and replaced in the same turn cannot be used to attack/transfer with
+								doAttack(move);
 								usedRegions.get(fromRegion.getId()).add(toRegion.getId());
 							}
 						}
@@ -371,7 +372,7 @@ public class Engine {
 	}
 	
 	//see wiki.warlight.net/index.php/Combat_Basics
-	private int doAttack(AttackTransferMove move)
+	private void doAttack(AttackTransferMove move)
 	{
 		Region fromRegion = move.getFromRegion();
 		Region toRegion = move.getToRegion();
@@ -420,14 +421,14 @@ public class Engine {
 			{
 				fromRegion.setArmies(fromRegion.getArmies() - attackersDestroyed);
 				toRegion.setArmies(toRegion.getArmies() - defendersDestroyed);
-				return defendersDestroyed;
+				//return defendersDestroyed;
 			}
 			
 		}
 		else
 			move.setIllegalMove(move.getFromRegion().getId() + " attack " + "only has 1 army");
 
-		return 0;
+		//return 0;
 	}
 	
 	public Player winningPlayer()
