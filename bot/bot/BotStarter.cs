@@ -215,7 +215,7 @@ namespace bot
                         deployArmies.Add(pl);
                     }
                 }
-                else
+ /*               else
                 {
                     // deploy the rest of our armies randomly
 
@@ -233,7 +233,7 @@ namespace bot
                     }
 
                     //todo: it would be better to give deployment priority to areas not bordering the expansion target we are trying to finish
-                }
+                }*/
 
             }
 
@@ -335,7 +335,7 @@ namespace bot
                         // dont deploy on north africa if we have africa
                         if (state.AfricaBased && (reg.Id == 21)) continue;
 
-                        // dont deploy on north africa if we have africa
+                        // dont deploy on east africa if we have africa
                         if (state.AfricaBased && (reg.Id == 23)) continue;
 
                         list.Add(reg);
