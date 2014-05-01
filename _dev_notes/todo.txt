@@ -1,15 +1,17 @@
 
+if one enemy territory borders multiple borders from us put everything into the biggest stack to be able to hit enemy hard next turn
+
+have better heuristics on how to handle bordering enemy regions with 1 or 2 armies, and chose between heuristics in a smart way (random vs machinelearn)
+- only do small attacks when having a bigger stack
+- only do small attacks when region is bordering multiple areas
+- only do small attacks when region has had no change of armies on last 2 turns
+
 if we have a stack protecting a superregion, dont attack hard out unless there is only 1 target left (dont leave north africa wide open)
 
-dont run into walls (improve estimated opponent income)
+dont run into walls (improve estimated opponent income) - re-calc estimate of opponent income after we have successful attack. (we could have broken one of their areas)
 
 if we have a stack on a region we are trying to finish dont attack with just 4vs2 and 2vs1, use it to improve the odds or to head into defensive position
 
 if we have leftovers when finishing an area, dont move them around aimlessly, move them into the finished region (if > 1) or to bordering another super region instead of a neutral inside the superregion that will be finished this turn
 
-if one enemy territory borders multiple borders from us put everything into the biggest stack to be able to hit enemy hard next turn
-
-re-calc estimate of opponent income after we have successful attack. (we could have broken one of their areas)
-
 debug -1 on deploying to finish superregion
-
