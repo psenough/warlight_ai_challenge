@@ -177,8 +177,8 @@ namespace bot
                     int armies = int.Parse(mapInput[i + 2]);
 
                     region.PlayerName = playerName;
+                    region.PreviousTurnArmies = region.Armies;
                     region.Armies = armies;
-
                     // clean up temporary variables
                     region.ReservedArmies = 0;
                     region.PledgedArmies = 0;
@@ -186,19 +186,20 @@ namespace bot
                     // update fullmap aswell
                     Region region2 = fullMap.GetRegion(region.Id);
                     region2.PlayerName = playerName;
+                    region2.PreviousTurnArmies = region2.Armies;
                     region2.Armies = armies;
                     region2.PledgedArmies = 0;
                     region2.ReservedArmies = 0;
 
                     // update pickable regions
-                    foreach (Region reg in pickableStartingRegions)
+                    /*foreach (Region reg in pickableStartingRegions)
                     {
                         if (reg.Id == region.Id)
                         {
                             reg.Armies = region.Armies;
                             reg.PlayerName = region.PlayerName;
                         }
-                    }
+                    }*/
 
                     i += 2;
                 }

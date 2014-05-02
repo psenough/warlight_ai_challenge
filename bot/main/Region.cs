@@ -16,6 +16,7 @@ namespace main
         private List<Region> neighbors;
         private SuperRegion superRegion;
         private int armies;
+        private int previousturnarmies;
         private String playerName;
 
         // temp variables
@@ -31,6 +32,7 @@ namespace main
             this.neighbors = new List<Region>();
             this.playerName = "unknown";
             this.armies = 0;
+            this.previousturnarmies = 0;
 
             this.reservedArmies = 0;
             this.pledgedArmies = 0;
@@ -45,6 +47,7 @@ namespace main
             this.neighbors = new List<Region>();
             this.playerName = playerName;
             this.armies = armies;
+            this.previousturnarmies = armies;
 
             this.reservedArmies = 0;
             this.pledgedArmies = 0;
@@ -89,6 +92,12 @@ namespace main
             get { return armies; }
         }
 
+        public int PreviousTurnArmies
+        {
+            set { previousturnarmies = value; }
+            get { return previousturnarmies; }
+        }
+
         public String PlayerName
         {
             set { playerName = value; }
@@ -109,7 +118,6 @@ namespace main
         {
             get { return superRegion; }
         }
-
 
         public int ReservedArmies
         {

@@ -803,21 +803,31 @@ namespace bot
 
                     int armiesLeft = fromRegion.Armies + fromRegion.PledgedArmies - fromRegion.ReservedArmies - 1;
 
+                    //todo: before thinking of attacking, check if our stack shouldn't be better used defensively
+                    //      like backtracking to defend a region in or bordering one of our superregions
+
                     // if this region is bordering the enemy
                     if (borderingEnemy) {
+
+                        //todo: later: apply machine learning heuristic to determine best small attacks behavior through game
 
                         // attack regions with small number of armies, to clear them out
                         foreach (Region enmm in enemyBorders)
                         {
                             Region en = state.FullMap.GetRegion(enmm.Id);
 
-                            // attack small armies with little armies
-                            if ((en.Armies == 1) || (en.Armies == 2))
+                            // only do small attacks when we are bordering multiple enemies
+                            // or target hasn't changed it's income on last turn
+                            if ((enemyBorders.Count > 2) && (en.Armies == en.PreviousTurnArmies))
                             {
-                                if (armiesLeft > en.Armies * 2)
+                                // attack small armies with little armies
+                                if ((en.Armies == 1) || (en.Armies == 2))
                                 {
-                                    attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, en, en.Armies * 2, 5));
-                                    armiesLeft -= en.Armies * 2;
+                                    if (armiesLeft > en.Armies * 2)
+                                    {
+                                        attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, en, en.Armies * 2, 5));
+                                        armiesLeft -= en.Armies * 2;
+                                    }
                                 }
                             }
 
@@ -829,9 +839,9 @@ namespace bot
                             }
 
                         }
-                        
+                       
 
-                        // check if we can attack biggest stack with our own stack
+                        // check if we can attack enemies biggest stack with our own stack
                         Region enm = state.FullMap.GetRegion(enemyBorders[enemyBorders.Count - 1].Id);
                         if (armiesLeft > enm.Armies + estimatedOpponentIncome)
                         {
