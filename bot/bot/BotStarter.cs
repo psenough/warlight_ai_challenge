@@ -561,6 +561,7 @@ namespace bot
 
                 // if superregion has enemy or is already bordered by enemy, then its not very safe
                 // might aswell not consider it finishable, don't waste armies on it
+                // unless it is only bordering in a single territory and we have stack advantage/equality on it
                 foreach (Region reg in targetSR.SubRegions)
                 {
                     Region rn = state.FullMap.GetRegion(reg.Id);
@@ -573,6 +574,29 @@ namespace bot
                         Region ni = state.FullMap.GetRegion(neigh.Id);
                         if (ni.OwnedByPlayer(opponentName))
                         {
+                            // enemy is bordering, beware
+
+                            // check with how many armies and how many areas is the enemy bordering us
+                            int nborders = 0;
+                            int enarmies = 0;
+                            int ourarmies = 0;
+                            foreach (Region ourregions in ni.Neighbors)
+                            {
+                                Region our = state.FullMap.GetRegion(ourregions.Id);
+                                if (our.OwnedByPlayer(myName))
+                                {
+                                    nborders++;
+                                    ourarmies = our.Armies;
+                                    enarmies = ni.Armies;
+                                }
+                            }
+                            
+                            // if it's a 1 on 1 border and we have stack equality give or take a couple armies
+                            // or stacks are higher then 20
+                            // let it proceed (superregion is still finishable)
+                            if (((nborders == 1) && (ourarmies+2 >= enarmies)) || ((nborders == 1) && (ourarmies > 20))) continue;
+
+                            // else, it's a bad idea to finish this region
                             finishableSuperRegion = false;
                             break;
                         }
