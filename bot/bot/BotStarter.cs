@@ -535,54 +535,7 @@ namespace bot
             List<DeployArmies> deployArmies = new List<DeployArmies>();
             int armiesLeft = state.StartingArmies;
 
-            // while we are ozbased and have not breaken into brazil, focus entirely on that
-            // exception if oz is threatened by enemy in siam, then it's not considered ozBased
-            /*if (state.OZBased && !state.FullMap.GetRegion(12).OwnedByPlayer(myName))
-            {
-                // if we dont have brazil (12) but have north africa (21)
-                if (!state.FullMap.GetRegion(12).OwnedByPlayer(myName) && state.FullMap.GetRegion(21).OwnedByPlayer(myName))
-                {
-                    deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(21), armiesLeft));
-                    state.scheduledAttack.Add(new Tuple<int, int, int>(21, 12, state.FullMap.GetRegion(21).Armies - 1 + armiesLeft));
-                    armiesLeft = 0;                           
-                } else // we dont have north africa (21) but have egypt (22)
-                if (!state.FullMap.GetRegion(21).OwnedByPlayer(myName) && state.FullMap.GetRegion(22).OwnedByPlayer(myName))
-                {
-                    deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(22), armiesLeft));
-                    state.scheduledAttack.Add(new Tuple<int, int, int>(22, 21, state.FullMap.GetRegion(22).Armies - 1 + armiesLeft));
-                    armiesLeft = 0;
-                } else // we dont have egypt (22) but have middle east (36)
-                if (!state.FullMap.GetRegion(22).OwnedByPlayer(myName) && state.FullMap.GetRegion(36).OwnedByPlayer(myName))
-                {
-                    deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(36), armiesLeft));
-                    state.scheduledAttack.Add(new Tuple<int, int, int>(36, 22, state.FullMap.GetRegion(36).Armies - 1 + armiesLeft));
-                    armiesLeft = 0;
-                } else // we dont have middle east (36) but have india (37)
-                if (!state.FullMap.GetRegion(36).OwnedByPlayer(myName) && state.FullMap.GetRegion(37).OwnedByPlayer(myName))
-                {
-                    deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(37), armiesLeft));
-                    state.scheduledAttack.Add(new Tuple<int, int, int>(37, 36, state.FullMap.GetRegion(37).Armies - 1 + armiesLeft));
-                    armiesLeft = 0;
-                } else // we dont have india (37) but have siam (38)
-                if (!state.FullMap.GetRegion(37).OwnedByPlayer(myName) && state.FullMap.GetRegion(38).OwnedByPlayer(myName))
-                {
-                    deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(38), armiesLeft));
-                    state.scheduledAttack.Add(new Tuple<int, int, int>(38, 37, state.FullMap.GetRegion(38).Armies - 1 + armiesLeft));
-                    armiesLeft = 0;
-                } else // we dont have siam (38) but have indonesia (39)
-                if (!state.FullMap.GetRegion(38).OwnedByPlayer(myName) && state.FullMap.GetRegion(39).OwnedByPlayer(myName))
-                {
-                    deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(39), armiesLeft));
-                    state.scheduledAttack.Add(new Tuple<int, int, int>(39, 38, state.FullMap.GetRegion(39).Armies - 1 + armiesLeft));
-                    armiesLeft = 0;
-                }
-                else
-                {
-                    Console.Error.WriteLine("ozbased turn without any action?! (round " + state.RoundNumber + ")");
-                }
-
-            }
-            else*/ if (enemySighted)
+            if (enemySighted)
             {
                 
                 // early in the game bordering plenty of enemy areas
@@ -684,6 +637,74 @@ namespace bot
                     }
 
                 } else {
+
+                    if (state.OZBased)
+                    {
+                        // if we are based in australia and have no territory in africa, europe or south america
+                        // we should be making our way into africa
+
+                        bool thereyet = false;
+                        foreach (Region reg in state.VisibleMap.Regions)
+                        {
+                            if ((reg.SuperRegion.Id == 2) || //SA
+                                (reg.SuperRegion.Id == 3) || //europe
+                                (reg.SuperRegion.Id == 4)) //africa
+                            {
+                                thereyet = true;
+                            }
+                        }
+
+                        if (!thereyet)
+                        {
+                            // if we dont have brazil (12) but have north africa (21)
+                            if (!state.FullMap.GetRegion(12).OwnedByPlayer(myName) && state.FullMap.GetRegion(21).OwnedByPlayer(myName))
+                            {
+                                deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(21), armiesLeft));
+                                state.scheduledAttack.Add(new Tuple<int, int, int>(21, 12, state.FullMap.GetRegion(21).Armies - 1 + armiesLeft));
+                                armiesLeft = 0;
+                            }
+                            else // we dont have north africa (21) but have egypt (22)
+                                if (!state.FullMap.GetRegion(21).OwnedByPlayer(myName) && state.FullMap.GetRegion(22).OwnedByPlayer(myName))
+                                {
+                                    deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(22), armiesLeft));
+                                    state.scheduledAttack.Add(new Tuple<int, int, int>(22, 21, state.FullMap.GetRegion(22).Armies - 1 + armiesLeft));
+                                    armiesLeft = 0;
+                                }
+                                else // we dont have egypt (22) but have middle east (36)
+                                    if (!state.FullMap.GetRegion(22).OwnedByPlayer(myName) && state.FullMap.GetRegion(36).OwnedByPlayer(myName))
+                                    {
+                                        deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(36), armiesLeft));
+                                        state.scheduledAttack.Add(new Tuple<int, int, int>(36, 22, state.FullMap.GetRegion(36).Armies - 1 + armiesLeft));
+                                        armiesLeft = 0;
+                                    }
+                                    else // we dont have middle east (36) but have india (37)
+                                        if (!state.FullMap.GetRegion(36).OwnedByPlayer(myName) && state.FullMap.GetRegion(37).OwnedByPlayer(myName))
+                                        {
+                                            deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(37), armiesLeft));
+                                            state.scheduledAttack.Add(new Tuple<int, int, int>(37, 36, state.FullMap.GetRegion(37).Armies - 1 + armiesLeft));
+                                            armiesLeft = 0;
+                                        }
+                                        else // we dont have india (37) but have siam (38)
+                                            if (!state.FullMap.GetRegion(37).OwnedByPlayer(myName) && state.FullMap.GetRegion(38).OwnedByPlayer(myName))
+                                            {
+                                                deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(38), armiesLeft));
+                                                state.scheduledAttack.Add(new Tuple<int, int, int>(38, 37, state.FullMap.GetRegion(38).Armies - 1 + armiesLeft));
+                                                armiesLeft = 0;
+                                            }
+                                            else // we dont have siam (38) but have indonesia (39)
+                                                if (!state.FullMap.GetRegion(38).OwnedByPlayer(myName) && state.FullMap.GetRegion(39).OwnedByPlayer(myName))
+                                                {
+                                                    deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(39), armiesLeft));
+                                                    state.scheduledAttack.Add(new Tuple<int, int, int>(39, 38, state.FullMap.GetRegion(39).Armies - 1 + armiesLeft));
+                                                    armiesLeft = 0;
+                                                }
+                                                else
+                                                {
+                                                    Console.Error.WriteLine("ozbased turn without any action?! (round " + state.RoundNumber + ")");
+                                                }
+                        }
+                    }
+
 
                     if (state.AfricaBased) {
 
@@ -818,7 +839,7 @@ namespace bot
 
                             // only do small attacks when we are bordering multiple enemies
                             // or target hasn't changed it's income on last turn
-                            if ((enemyBorders.Count > 2) && (en.Armies == en.PreviousTurnArmies))
+                            if ((enemyBorders.Count > 2) || (en.Armies == en.PreviousTurnArmies))
                             {
                                 // attack small armies with little armies
                                 if ((en.Armies == 1) || (en.Armies == 2))

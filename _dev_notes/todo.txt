@@ -1,4 +1,13 @@
 
+exception when it's worth finishing a superregion even when its already being bordered:
+there is only one enemy border and we have a stack advantage in that border
+
+if stacks are big enough (higher then 80), it means the game is stalled and we should be expanding minimally instead of deploying all on stack
+
+when finishing a superregion dont deploy more armies than necessary, deploy the rest on the region closest to the next predicted enemy starting point
+
+prioritize moving of leftovers that will directly border the enemy
+
 if one enemy territory borders multiple borders from us put everything into the biggest stack to be able to hit enemy hard next turn
 
 if we have a stack protecting a superregion, dont attack hard out unless there is only 1 target left (dont leave north africa wide open)
