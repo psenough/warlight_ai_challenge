@@ -541,7 +541,7 @@ namespace bot
                 // early in the game bordering plenty of enemy areas
                 if (
                     ((state.RoundNumber <= 2) && (state.EnemyBorders.Count > 1 )) ||
-                    ((state.RoundNumber <= 15) && (state.EnemyBorders.Count == 3))
+                    ((state.RoundNumber <= 15) && (state.EnemyBorders.Count == 3) && (state.StartingArmies == 5))
                    )
                 {
                     // if we have atleast 2 enemy sightings, pick one and hit it hard
@@ -644,6 +644,8 @@ namespace bot
                     deployArmies.Add(da);
                     armiesLeft -= da.Armies;
                 }
+
+                //todo: make sure the rest of the income bordering the enemy is focused on a single stack and also move leftovers there
 
             } else { // no enemy in sight, expand normally / strategically
 
@@ -801,26 +803,7 @@ namespace bot
                     Region to = state.FullMap.GetRegion(tup.Item2);
                     int armyCount = tup.Item3;
 
-                    // if we have move orders in regions with leftover troops, use them up
-                    int armiesAvail = from.Armies + from.PledgedArmies - 1;
-                    if (armiesAvail > from.ReservedArmies)
-                    {
-                        int narmies = armiesAvail - from.ReservedArmies;
-                        from.ReservedArmies += narmies;
-                        armyCount += narmies;
-                    }
-
-                    //todo: refactor code above to distribute evenly when there are multiple attacks originating from same region
-
-                    //todo: remove potential excessive armies used (due to the finish region +1 bug/feature)
-
-                    // prevent from hitting a wall against opponent
-                    if (to.OwnedByPlayer(opponentName) && (armyCount <= to.Armies + state.EstimatedOpponentIncome))
-                    {
-                        Console.Error.WriteLine("prevent hitting a wall from " + from.Id + " to " + to.Id + " with " + armyCount +  " armies on round " + state.RoundNumber);
-                    } else {
-                        attackTransferMoves.Add(new AttackTransferMove(myName, from, to, armyCount, 4));
-                    }
+                    attackTransferMoves.Add(new AttackTransferMove(myName, from, to, armyCount, 4));
                 }
             }
 
@@ -962,6 +945,35 @@ namespace bot
                 }
             }
 
+            // buff up any scheduled attack coming from regions with armies left lying around unused
+            foreach (AttackTransferMove atm in attackTransferMoves)
+            {
+                Region from = state.FullMap.GetRegion(atm.FromRegion.Id);
+                Region to = state.FullMap.GetRegion(atm.ToRegion.Id);
+                int armyCount = atm.Armies;
+
+                // if we have move orders in regions with leftover troops, use them up
+                int armiesAvail = from.Armies + from.PledgedArmies - 1;
+                if (armiesAvail > from.ReservedArmies)
+                {
+                    int narmies = armiesAvail - from.ReservedArmies;
+                    from.ReservedArmies += narmies;
+                    atm.Armies += narmies;
+                    armyCount += narmies;
+                }
+
+                //todo: refactor code above to distribute evenly when there are multiple attacks originating from same region
+
+                //todo: remove potential excessive armies used (due to the finish region +1 bug/feature)
+
+                // prevent from hitting a wall against opponent
+                if (to.OwnedByPlayer(opponentName) && (armyCount <= to.Armies + state.EstimatedOpponentIncome) && (atm.Priority < 8))
+                {
+                    Console.Error.WriteLine("prevent hitting a wall from " + from.Id + " to " + to.Id + " with " + armyCount + " armies on round " + state.RoundNumber);
+                    attackTransferMoves.Remove(atm);
+                }
+            }
+
             List<AttackTransferMove> sorted = attackTransferMoves.OrderBy(p => p.Priority).ToList();
            
             return sorted;
@@ -977,6 +989,7 @@ namespace bot
                 parser.Run(lines);
             }
             catch (Exception e) { 
+                Console.Error.WriteLine("running null parser due to " + e.ToString());
                 parser.Run(null);
             }
         }
