@@ -946,6 +946,8 @@ namespace bot
             }
 
             // buff up any scheduled attack coming from regions with armies left lying around unused
+            // remove any call that might run into a wall (unless it's high priority)
+            List<AttackTransferMove> remove = new List<AttackTransferMove>();
             foreach (AttackTransferMove atm in attackTransferMoves)
             {
                 Region from = state.FullMap.GetRegion(atm.FromRegion.Id);
@@ -970,9 +972,16 @@ namespace bot
                 if (to.OwnedByPlayer(opponentName) && (armyCount <= to.Armies + state.EstimatedOpponentIncome) && (atm.Priority < 8))
                 {
                     Console.Error.WriteLine("prevent hitting a wall from " + from.Id + " to " + to.Id + " with " + armyCount + " armies on round " + state.RoundNumber);
-                    attackTransferMoves.Remove(atm);
+                    remove.Add(atm);
+                    //attackTransferMoves.Remove(atm);
                 }
             }
+            foreach (AttackTransferMove atm in remove)
+            {
+                attackTransferMoves.Remove(atm);
+            }
+
+            //todo: if we have a high priority attack (>=9) then break down lower priority moves into delayer unit moves, only for leftover moves that will not border an opponent 
 
             List<AttackTransferMove> sorted = attackTransferMoves.OrderBy(p => p.Priority).ToList();
            
