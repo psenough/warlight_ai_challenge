@@ -615,6 +615,7 @@ namespace bot
 
                 } else {
                     // do minimum expansion, but only on expansiontargets that are close to being finished
+                    // or we know the game has been stalled for a while (stacks bigger then, lets say 50)
 
                     // check how many territories of the expansion target we already own
                     int count = 0;
@@ -624,7 +625,18 @@ namespace bot
                         if (rn.OwnedByPlayer(myName)) count++; 
                     }
 
-                    if (count > state.ExpansionTargets[0].SubRegions.Count * 0.5)
+                    // check if the game is starting to have big stacks
+                    bool bigstack = false;
+                    foreach (Region reg in state.VisibleMap.Regions)
+                    {
+                        if (reg.OwnedByPlayer(myName))
+                        {
+                            if (reg.Armies > 50) bigstack = true;
+                        }
+                    }
+
+
+                    if ((count > state.ExpansionTargets[0].SubRegions.Count * 0.5) || (bigstack))
                     {
                         // do minimum expansion
                         List<DeployArmies> deploy = ExpandMinimum(state, armiesLeft);
