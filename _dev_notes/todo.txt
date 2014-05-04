@@ -1,11 +1,15 @@
 
-prioritize moving of leftovers that will directly border the enemy
+test new deployment / defensive stack moves / stack piling moves
+
+the first expansiontarget might not be safe to finish but the second might, we should be finishing the second then
+
+prioritize heavy attack to always try to break estimated superregion instead of enemies largest stack (situation where we are in north africa, enemy has troops in africa or europe with bigger stack then in south america, we want to break south america while we have stack advantage to do it)
+
+stacks exception to expand minimally should only be applied when we have safe superregions to expand into
 
 when finishing a superregion dont deploy more armies than necessary, deploy the rest on the region closest to the next predicted enemy starting point
 
 when finishing a superregion, make sure you're giving attack priority to the territories that only have 1 neutral border (will help finish africa faster / more elegantly)
-
-if one enemy territory borders multiple borders from us put everything into the biggest stack to be able to hit enemy hard next turn
 
 if we have a stack protecting a superregion, dont attack out of position hard, unless there is only 1 target left (dont leave northafrica wide open)
 

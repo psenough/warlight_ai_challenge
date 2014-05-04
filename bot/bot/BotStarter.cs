@@ -107,6 +107,8 @@ namespace bot
 
                 List<Region> lst = listofregions.OrderByDescending(p => p.tempSortValue).ToList();
 
+                state.HotStackZone = lst[0].Id;
+
                 while (armiesLeft > 0)
                 {
                     foreach (Region rn in lst)
@@ -527,6 +529,26 @@ namespace bot
             return deployArmies;
         }
 
+        public bool FinishableSuperRegion(BotState state)
+        {
+            string myName = state.MyPlayerName;
+            int armiesLeft = state.StartingArmies;
+
+            bool finishableSuperRegion = false;
+            SuperRegion targetSR = state.FullMap.GetSuperRegion(state.ExpansionTargets[0].Id);
+            if (state.ExpansionTargets.Count > 0)
+            {
+                finishableSuperRegion = targetSR.IsFinishable(armiesLeft, myName);
+            }
+            // it might be finishable but is it safe to finish without being a waste of armies?
+            if (finishableSuperRegion)
+            {
+                if (!targetSR.IsSafeToFinish(state)) finishableSuperRegion = false;
+            }
+
+            return finishableSuperRegion;
+        }
+
         public List<DeployArmies> GetDeployArmiesMoves(BotState state, long timeOut)
         {
             string myName = state.MyPlayerName;
@@ -534,6 +556,9 @@ namespace bot
             bool enemySighted = state.EnemySighted;            
             List<DeployArmies> deployArmies = new List<DeployArmies>();
             int armiesLeft = state.StartingArmies;
+
+            // figure out if the best listed superregion is finishable on this turn
+            bool finishableSuperRegion = FinishableSuperRegion(state);
 
             if (enemySighted)
             {
@@ -554,56 +579,6 @@ namespace bot
                     
                 }
 
-                // figure out if the best listed superregion is finishable on this turn
-                bool finishableSuperRegion = false;
-                SuperRegion targetSR = state.FullMap.GetSuperRegion(state.ExpansionTargets[0].Id);
-                if (state.ExpansionTargets.Count > 0) finishableSuperRegion = targetSR.IsFinishable(armiesLeft, myName);
-
-                // if superregion has enemy or is already bordered by enemy, then its not very safe
-                // might aswell not consider it finishable, don't waste armies on it
-                // unless it is only bordering in a single territory and we have stack advantage/equality on it
-                foreach (Region reg in targetSR.SubRegions)
-                {
-                    Region rn = state.FullMap.GetRegion(reg.Id);
-                    if (rn.OwnedByPlayer(opponentName)) {
-                        finishableSuperRegion = false;
-                        break;
-                    }
-                    foreach (Region neigh in rn.Neighbors)
-                    {
-                        Region ni = state.FullMap.GetRegion(neigh.Id);
-                        if (ni.OwnedByPlayer(opponentName))
-                        {
-                            // enemy is bordering, beware
-
-                            // check with how many armies and how many areas is the enemy bordering us
-                            int nborders = 0;
-                            int enarmies = 0;
-                            int ourarmies = 0;
-                            foreach (Region ourregions in ni.Neighbors)
-                            {
-                                Region our = state.FullMap.GetRegion(ourregions.Id);
-                                if (our.OwnedByPlayer(myName))
-                                {
-                                    nborders++;
-                                    ourarmies = our.Armies;
-                                    enarmies = ni.Armies;
-                                }
-                            }
-                            
-                            // if it's a 1 on 1 border and we have stack equality give or take a couple armies
-                            // or stacks are higher then 20
-                            // let it proceed (superregion is still finishable)
-                            if (((nborders == 1) && (ourarmies+2 >= enarmies)) || ((nborders == 1) && (ourarmies > 20))) continue;
-
-                            // else, it's a bad idea to finish this region
-                            finishableSuperRegion = false;
-                            break;
-                        }
-                    }
-                    if (!finishableSuperRegion) break;
-                }
-
                 if (finishableSuperRegion)
                 {
                     List<DeployArmies> deploy = FinishSuperRegion(state, armiesLeft);
@@ -616,6 +591,8 @@ namespace bot
                 } else {
                     // do minimum expansion, but only on expansiontargets that are close to being finished
                     // or we know the game has been stalled for a while (stacks bigger then, lets say 50)
+
+                    //todo: and we know are not being bordered by enemy
 
                     // check how many territories of the expansion target we already own
                     int count = 0;
@@ -631,14 +608,16 @@ namespace bot
                     {
                         if (reg.OwnedByPlayer(myName))
                         {
-                            if (reg.Armies > 50) bigstack = true;
+                            if (reg.Armies > 50)
+                            {
+                                bigstack = true;
+                            }
                         }
                     }
 
-
+                    // do minimum expansion
                     if ((count > state.ExpansionTargets[0].SubRegions.Count * 0.5) || (bigstack))
                     {
-                        // do minimum expansion
                         List<DeployArmies> deploy = ExpandMinimum(state, armiesLeft);
                         foreach (DeployArmies da in deploy)
                         {
@@ -657,13 +636,9 @@ namespace bot
                     armiesLeft -= da.Armies;
                 }
 
-                //todo: make sure the rest of the income bordering the enemy is focused on a single stack and also move leftovers there
-
-            } else { // no enemy in sight, expand normally / strategically
-
-                // figure out if the best listed superregion is finishable on this turn
-                bool finishableSuperRegion = false;
-                if (state.ExpansionTargets.Count > 0) finishableSuperRegion = state.FullMap.GetSuperRegion(state.ExpansionTargets[0].Id).IsFinishable(state.StartingArmies, myName);
+            } else {
+                
+                // no enemy in sight, expand normally / strategically
 
                 if (finishableSuperRegion)
                 {
@@ -694,58 +669,42 @@ namespace bot
 
                         if (!thereyet)
                         {
-                            // if we dont have brazil (12) but have north africa (21)
-                            if (!state.FullMap.GetRegion(12).OwnedByPlayer(myName) && state.FullMap.GetRegion(21).OwnedByPlayer(myName))
+                             // we dont have egypt (22) but have middle east (36)
+                            if (!state.FullMap.GetRegion(22).OwnedByPlayer(myName) && state.FullMap.GetRegion(36).OwnedByPlayer(myName))
                             {
-                                deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(21), armiesLeft));
-                                state.scheduledAttack.Add(new Tuple<int, int, int>(21, 12, state.FullMap.GetRegion(21).Armies - 1 + armiesLeft));
+                                deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(36), armiesLeft));
+                                state.scheduledAttack.Add(new Tuple<int, int, int>(36, 22, state.FullMap.GetRegion(36).Armies - 1 + armiesLeft));
                                 armiesLeft = 0;
                             }
-                            else // we dont have north africa (21) but have egypt (22)
-                                if (!state.FullMap.GetRegion(21).OwnedByPlayer(myName) && state.FullMap.GetRegion(22).OwnedByPlayer(myName))
+                            else // we dont have middle east (36) but have india (37)
+                                if (!state.FullMap.GetRegion(36).OwnedByPlayer(myName) && state.FullMap.GetRegion(37).OwnedByPlayer(myName))
                                 {
-                                    deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(22), armiesLeft));
-                                    state.scheduledAttack.Add(new Tuple<int, int, int>(22, 21, state.FullMap.GetRegion(22).Armies - 1 + armiesLeft));
+                                    deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(37), armiesLeft));
+                                    state.scheduledAttack.Add(new Tuple<int, int, int>(37, 36, state.FullMap.GetRegion(37).Armies - 1 + armiesLeft));
                                     armiesLeft = 0;
                                 }
-                                else // we dont have egypt (22) but have middle east (36)
-                                    if (!state.FullMap.GetRegion(22).OwnedByPlayer(myName) && state.FullMap.GetRegion(36).OwnedByPlayer(myName))
+                                else // we dont have india (37) but have siam (38)
+                                    if (!state.FullMap.GetRegion(37).OwnedByPlayer(myName) && state.FullMap.GetRegion(38).OwnedByPlayer(myName))
                                     {
-                                        deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(36), armiesLeft));
-                                        state.scheduledAttack.Add(new Tuple<int, int, int>(36, 22, state.FullMap.GetRegion(36).Armies - 1 + armiesLeft));
+                                        deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(38), armiesLeft));
+                                        state.scheduledAttack.Add(new Tuple<int, int, int>(38, 37, state.FullMap.GetRegion(38).Armies - 1 + armiesLeft));
                                         armiesLeft = 0;
                                     }
-                                    else // we dont have middle east (36) but have india (37)
-                                        if (!state.FullMap.GetRegion(36).OwnedByPlayer(myName) && state.FullMap.GetRegion(37).OwnedByPlayer(myName))
+                                    else // we dont have siam (38) but have indonesia (39)
+                                        if (!state.FullMap.GetRegion(38).OwnedByPlayer(myName) && state.FullMap.GetRegion(39).OwnedByPlayer(myName))
                                         {
-                                            deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(37), armiesLeft));
-                                            state.scheduledAttack.Add(new Tuple<int, int, int>(37, 36, state.FullMap.GetRegion(37).Armies - 1 + armiesLeft));
+                                            deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(39), armiesLeft));
+                                            state.scheduledAttack.Add(new Tuple<int, int, int>(39, 38, state.FullMap.GetRegion(39).Armies - 1 + armiesLeft));
                                             armiesLeft = 0;
                                         }
-                                        else // we dont have india (37) but have siam (38)
-                                            if (!state.FullMap.GetRegion(37).OwnedByPlayer(myName) && state.FullMap.GetRegion(38).OwnedByPlayer(myName))
-                                            {
-                                                deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(38), armiesLeft));
-                                                state.scheduledAttack.Add(new Tuple<int, int, int>(38, 37, state.FullMap.GetRegion(38).Armies - 1 + armiesLeft));
-                                                armiesLeft = 0;
-                                            }
-                                            else // we dont have siam (38) but have indonesia (39)
-                                                if (!state.FullMap.GetRegion(38).OwnedByPlayer(myName) && state.FullMap.GetRegion(39).OwnedByPlayer(myName))
-                                                {
-                                                    deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(39), armiesLeft));
-                                                    state.scheduledAttack.Add(new Tuple<int, int, int>(39, 38, state.FullMap.GetRegion(39).Armies - 1 + armiesLeft));
-                                                    armiesLeft = 0;
-                                                }
-                                                else
-                                                {
-                                                    Console.Error.WriteLine("ozbased turn without any action?! (round " + state.RoundNumber + ")");
-                                                }
+                                        else
+                                        {
+                                            Console.Error.WriteLine("ozbased turn without any action?! (round " + state.RoundNumber + ")");
+                                        }
                         }
                     }
 
-
                     if (state.AfricaBased) {
-
                         // if africaBased and not saBased, go hard into brazil
                         if (!state.SABased)
                         {
@@ -833,7 +792,7 @@ namespace bot
                     foreach (Region reg in fromRegion.Neighbors)
                     {
                         Region region = state.FullMap.GetRegion(reg.Id);
-                        if (reg.OwnedByPlayer(opponentName))
+                        if (region.OwnedByPlayer(opponentName))
                         {
                             borderingEnemy = true;
                             enemyBorders.Add(region);
@@ -842,9 +801,6 @@ namespace bot
                     enemyBorders = enemyBorders.OrderBy(p => p.Armies).ToList();
 
                     int armiesLeft = fromRegion.Armies + fromRegion.PledgedArmies - fromRegion.ReservedArmies - 1;
-
-                    //todo: before thinking of attacking, check if our stack shouldn't be better used defensively
-                    //      like backtracking to defend a region in or bordering one of our superregions
 
                     // if this region is bordering the enemy
                     if (borderingEnemy) {
@@ -867,21 +823,38 @@ namespace bot
                                     {
                                         attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, en, en.Armies * 2, 5));
                                         armiesLeft -= en.Armies * 2;
+                                        fromRegion.ReservedArmies += en.Armies * 2;
                                     }
                                 }
                             }
 
                             // attack north africa with 2 on last action
-                            if ((en.Id == 21) && (state.AfricaCount > 4))
+                            if ((en.Id == 21) && (state.AfricaCount > 3) && (armiesLeft >= 2))
                             {
                                 attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, en, 2, 10));
                                 armiesLeft -= 2;
+                                fromRegion.ReservedArmies += 2;
                             }
 
                         }
-                       
 
-                        // check if we can attack enemies biggest stack with our own stack
+                        // move any remaining armies to hotzonestack
+                        // this will make sure you're moving stacks back to important defensive position
+                        // and also merge stacks when double/triple bordering enemy
+                        if (state.HotStackZone != -1)
+                        {
+                            foreach (Region reg in fromRegion.Neighbors)
+                            {
+                                if (reg.Id == state.HotStackZone)
+                                {
+                                    attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, reg, armiesLeft, 2));
+                                    fromRegion.ReservedArmies += armiesLeft;
+                                    armiesLeft = 0;
+                                }
+                            }
+                        }
+
+                        // check if we can attack the enemies biggest stack with our own stack
                         Region enm = state.FullMap.GetRegion(enemyBorders[enemyBorders.Count - 1].Id);
                         if (armiesLeft > enm.Armies + estimatedOpponentIncome)
                         {
@@ -891,6 +864,7 @@ namespace bot
                                 // if it was already scheduled, upgrade it to use the remaining armies
                                 if ((atk.FromRegion.Id == fromRegion.Id) && (atk.ToRegion.Id == enm.Id)){
                                     atk.Armies += armiesLeft;
+                                    atk.FromRegion.ReservedArmies += armiesLeft;
                                     armiesLeft = 0;
                                     alreadyScheduled = true;
                                 }
@@ -899,6 +873,7 @@ namespace bot
                             // if not previously scheduled then test attack fullforce
                             if (!alreadyScheduled) {
                                 attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, enm, armiesLeft, 5));
+                                fromRegion.ReservedArmies += armiesLeft;
                                 armiesLeft = 0;
                             }
                         }
@@ -950,6 +925,8 @@ namespace bot
                             if (dest.OwnedByPlayer(state.MyPlayerName) && (!eborder))
                             {
                                 attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, dest, armiesLeft, 1));
+                                fromRegion.ReservedArmies += armiesLeft;
+                                armiesLeft = 0;
                             }
                         }
                     }
@@ -980,11 +957,22 @@ namespace bot
 
                 //todo: remove potential excessive armies used (due to the finish region +1 bug/feature)
 
-                // prevent from hitting a wall against opponent
-                if (to.OwnedByPlayer(opponentName) && (armyCount <= to.Armies + state.EstimatedOpponentIncome) && (atm.Priority < 8))
+                if ((from.Id == 12) && (to.Id == 21) && (state.RoundNumber == 13))
                 {
-                    Console.Error.WriteLine("prevent hitting a wall from " + from.Id + " to " + to.Id + " with " + armyCount + " armies on round " + state.RoundNumber);
-                    atmRemove.Add(atm);
+                    Console.WriteLine("dummy");
+                }
+
+                // prevent from hitting a wall against opponent
+                if (to.OwnedByPlayer(opponentName))
+                {
+                    if ( ((armyCount <= to.Armies + state.EstimatedOpponentIncome) && (atm.Priority < 8)) &&
+                         (armyCount != 2) &&
+                         (to.Armies != to.PreviousTurnArmies)
+                       )
+                    {
+                        Console.Error.WriteLine("prevent hitting a wall from " + from.Id + " to " + to.Id + " with " + armyCount + " armies on round " + state.RoundNumber);
+                        atmRemove.Add(atm);
+                    }
                 }
             }
             foreach (AttackTransferMove atm in atmRemove)
@@ -994,7 +982,7 @@ namespace bot
 
             //todo: if we have a high priority attack (>=9) then break down lower priority moves into delayer unit moves, only for leftover moves that will not border an opponent 
 
-            List<AttackTransferMove> sorted = attackTransferMoves.OrderBy(p => p.Priority).ToList();
+            List<AttackTransferMove> sorted = attackTransferMoves.OrderByDescending(p => p.Armies).OrderBy(p => p.Priority).ToList();
            
             return sorted;
         }

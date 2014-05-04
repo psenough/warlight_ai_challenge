@@ -42,6 +42,8 @@ namespace bot
 
         private int estimatedOpponentIncome;
 
+        private int hotStackZone;
+
         public BotState()
         {
             pickableStartingRegions = new List<Region>();
@@ -61,6 +63,8 @@ namespace bot
             africaCount = 0;
 
             estimatedOpponentIncome = 5;
+
+            hotStackZone = -1;
 
             roundNumber = 0;
         }
@@ -191,16 +195,6 @@ namespace bot
                     region2.PledgedArmies = 0;
                     region2.ReservedArmies = 0;
 
-                    // update pickable regions
-                    /*foreach (Region reg in pickableStartingRegions)
-                    {
-                        if (reg.Id == region.Id)
-                        {
-                            reg.Armies = region.Armies;
-                            reg.PlayerName = region.PlayerName;
-                        }
-                    }*/
-
                     i += 2;
                 }
                 catch (Exception e)
@@ -234,7 +228,6 @@ namespace bot
 
             scheduledAttack.Clear();
 
-           
             ownedSR.Clear();
             foreach (SuperRegion sr in fullMap.superRegions) {
                 sr.numberOfRegionsOwnedByUs = 0;
@@ -261,196 +254,207 @@ namespace bot
             africaBased = false;
 
             // figure out best expansion target
-            if (RoundNumber == 1) // start of round 1
+            switch (RoundNumber) // start of round 1
             {
-                expansionTargetSuperRegions = FullMap.GetMapCopy().SuperRegions;
-                
-                // sort super region by quality of expansibility
-                foreach (SuperRegion a in expansionTargetSuperRegions)
-                {
-                    // superregion is considered safe if we have all the strategic starting picks (in, or neighbouring) the superregion
-                    // this function quantifies how safe it really is
-
-                    int count = 0;
-
-                    bool redflag = false; //redflag when there is enemy or unknown on a starting pick in or neighbouring
-                    foreach (Region reg in pickableStartingRegions)
+                case 1:
                     {
-                        //bool found = false;
+                        expansionTargetSuperRegions = FullMap.GetMapCopy().SuperRegions;
 
-                        // check if we have any neighbour bordering this superregion (this selection includes picks in or countering)
-                        foreach (Region neighbour in reg.Neighbors)
+                        // sort super region by quality of expansibility
+                        foreach (SuperRegion a in expansionTargetSuperRegions)
                         {
+                            // superregion is considered safe if we have all the strategic starting picks (in, or neighbouring) the superregion
+                            // this function quantifies how safe it really is
 
-                            if (neighbour.SuperRegion.Id == a.Id)
+                            int count = 0;
+
+                            bool redflag = false; //redflag when there is enemy or unknown on a starting pick in or neighbouring
+                            foreach (Region reg in pickableStartingRegions)
                             {
-                                //if it is neighboring an area of this superregion, check who the pick was assigned to
-                                switch (reg.PlayerName)
+                                //bool found = false;
+
+                                // check if we have any neighbour bordering this superregion (this selection includes picks in or countering)
+                                foreach (Region neighbour in reg.Neighbors)
                                 {
-                                    case "player1":
-                                        if (myName == "player1")
+
+                                    if (neighbour.SuperRegion.Id == a.Id)
+                                    {
+                                        //if it is neighboring an area of this superregion, check who the pick was assigned to
+                                        switch (reg.PlayerName)
                                         {
-                                            count += 2;
-                                        } else {
-                                            redflag = true;
+                                            case "player1":
+                                                if (myName == "player1")
+                                                {
+                                                    count += 2;
+                                                }
+                                                else
+                                                {
+                                                    redflag = true;
+                                                }
+                                                break;
+                                            case "player2":
+                                                if (myName == "player2")
+                                                {
+                                                    count += 2;
+                                                }
+                                                else
+                                                {
+                                                    redflag = true;
+                                                }
+                                                break;
+                                            case "neutral":
+                                                count++;
+                                                break;
+                                            case "unknown":
+                                                //todo: check if the pick was picked by me in lower position then my last gotten pick
+                                                //count--;
+                                                //todo: instead of giving it lower priority, it could also be worth increasing the aggressivity
+                                                count--;
+                                                break;
                                         }
+
+                                        // we only need to check one of the found neighbours to know this is a relevant pick, skip the rest
+                                        //found = true;
                                         break;
-                                    case "player2":
-                                        if (myName == "player2")
-                                        {
-                                            count += 2;
-                                        } else {
-                                            redflag = true;
-                                        }
-                                        break;
-                                    case "neutral":
-                                        count++;
-                                        break;
-                                    case "unknown":
-                                        //todo: check if the pick was picked by me in lower position then my last gotten pick
-                                        //count--;
-                                        //todo: instead of giving it lower priority, it could also be worth increasing the aggressivity
-                                        count--;
-                                        break;
+                                    }
                                 }
 
-                                // we only need to check one of the found neighbours to know this is a relevant pick, skip the rest
-                                //found = true;
-                                break;
+                                //if (found) break;
+
                             }
+
+                            if (a.SubRegions.Count <= 4) count += 2;
+                            else if (a.SubRegions.Count <= 5) count++;
+
+                            if (redflag) count = -1;
+
+                            a.tempSortValue = count;
                         }
 
-                        //if (found) break;
+
+                        expansionTargetSuperRegions = expansionTargetSuperRegions.OrderByDescending(p => p.tempSortValue).ToList();
 
                     }
-
-                    if (a.SubRegions.Count <= 4) count += 2;
-                    else if (a.SubRegions.Count <= 5) count++;
-
-                    if (redflag) count = -1;
-
-                    a.tempSortValue = count;
-                }
-
-
-                expansionTargetSuperRegions = expansionTargetSuperRegions.OrderByDescending(p=>p.tempSortValue).ToList();
-            
-            }
-            else // start of other rounds
-            {
-                // update our expansion target
-                if (expansionTargetSuperRegions.Count > 0)
-                {
-                    // make sure we are not still trying to expand on a superregion we already own
-                    if (FullMap.GetSuperRegion(expansionTargetSuperRegions[0].Id).ownedByUs) expansionTargetSuperRegions.RemoveAt(0);
-                    
-                    // figure out the next best thing
-                    foreach (SuperRegion sr in expansionTargetSuperRegions)
+                    break;
+                default: // start of other rounds
                     {
-                        int count = 0;
-
-                        bool redflag = false; //redflag when there is enemy or too many unknowns
-                        int unknowns = 0;
-                        int mine = 0;
-                        int neutrals = 0;
-
-                        foreach (Region region in sr.SubRegions)
+                        // update our expansion target
+                        if (expansionTargetSuperRegions.Count > 0)
                         {
-                            Region reg = FullMap.GetRegion(region.Id);
+                            // make sure we are not still trying to expand on a superregion we already own
+                            if (FullMap.GetSuperRegion(expansionTargetSuperRegions[0].Id).ownedByUs) expansionTargetSuperRegions.RemoveAt(0);
 
-                            if (reg.OwnedByPlayer(OpponentPlayerName))
+                            // figure out the next best thing
+                            foreach (SuperRegion sr in expansionTargetSuperRegions)
                             {
-                                redflag = true;
-                                continue;
+                                int count = 0;
+
+                                bool redflag = false; //redflag when there is enemy or too many unknowns
+                                int unknowns = 0;
+                                int mine = 0;
+                                int neutrals = 0;
+
+                                foreach (Region region in sr.SubRegions)
+                                {
+                                    Region reg = FullMap.GetRegion(region.Id);
+
+                                    if (reg.OwnedByPlayer(OpponentPlayerName))
+                                    {
+                                        redflag = true;
+                                        continue;
+                                    }
+
+                                    if (reg.OwnedByPlayer(MyPlayerName)) mine++;
+                                    if (reg.OwnedByPlayer("unknown")) unknowns++;
+                                    if (reg.OwnedByPlayer("neutral")) neutrals++;
+
+                                    // check neighbours
+                                    foreach (Region rn in region.Neighbors)
+                                    {
+                                        Region regn = FullMap.GetRegion(rn.Id);
+
+                                        // more borders belonging to us the better
+                                        if (regn.OwnedByPlayer(MyPlayerName)) count += 2;
+
+                                        // if there is a border beloging to the enemy, it's not a very good area for expansion
+                                        if (regn.OwnedByPlayer(OpponentPlayerName)) count -= 5;
+                                    }
+
+                                }
+
+                                count += (sr.SubRegions.Count - unknowns); // the less unknowns ratio the better
+                                count += mine * 3;
+                                count += (10 - sr.SubRegions.Count) * 2; // less territories the better
+                                count += sr.ArmiesReward; // more army rewards the better
+
+                                //todo: later: fine tune the territory to army reward math
+
+                                if (redflag) count = -1;
+
+                                sr.tempSortValue = count;
                             }
 
-                            if (reg.OwnedByPlayer(MyPlayerName)) mine++;
-                            if (reg.OwnedByPlayer("unknown")) unknowns++;
-                            if (reg.OwnedByPlayer("neutral")) neutrals++;
-
-                            // check neighbours
-                            foreach (Region rn in region.Neighbors)
-                            {
-                                Region regn = FullMap.GetRegion(rn.Id);
-
-                                // more borders belonging to us the better
-                                if (regn.OwnedByPlayer(MyPlayerName)) count += 2;
-
-                                // if there is a border beloging to the enemy, it's not a very good area for expansion
-                                if (regn.OwnedByPlayer(OpponentPlayerName)) count -= 5;
-                            }
+                            expansionTargetSuperRegions = expansionTargetSuperRegions.OrderByDescending(p => p.tempSortValue).ToList();
 
                         }
 
-                        count += (sr.SubRegions.Count - unknowns); // the less unknowns ratio the better
-                        count += mine * 3;
-                        count += (10 - sr.SubRegions.Count)*2; // less territories the better
-                        count += sr.ArmiesReward; // more army rewards the better
 
-                        //todo: later: fine tune the territory to army reward math
+                        // check if we are based somewhere
+                        int ozCount = 0;
+                        int saCount = 0;
+                        africaCount = 0;
 
-                        if (redflag) count = -1;
+                        foreach (Region reg in FullMap.Regions)
+                        {
 
-                        sr.tempSortValue = count;
-                    }
+                            // check if we are ozBased
+                            // all 4 areas of oz are ours & siam is not enemy & brazil is not ours
+                            // brazil is main target, if we have a foot there it doesnt matter if we are oz based or not
+                            if (((reg.Id == 39) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 40) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 41) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 42) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 12) && (!reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 38) && (!reg.OwnedByPlayer(OpponentPlayerName)))
+                                )
+                            {
+                                ozCount++;
+                            }
 
-                    expansionTargetSuperRegions = expansionTargetSuperRegions.OrderByDescending(p => p.tempSortValue).ToList();
+                            //todo: refactor this to use the new SuperRegion.ownedByUs bool
 
-                }
+                            // check if we are saBased
+                            // all 4 areas of south america are ours
+                            if (((reg.Id == 10) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 11) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 12) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 13) && (reg.OwnedByPlayer(MyPlayerName)))
+                                )
+                            {
+                                saCount++;
+                            }
 
+                            // check if we are africaBased
+                            // all 6 areas of africa are ours
+                            if (((reg.Id == 21) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 22) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 23) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 24) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 25) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 26) && (reg.OwnedByPlayer(MyPlayerName)))
+                                )
+                            {
+                                africaCount++;
+                            }
+                        }
+                        if (ozCount == 6) ozBased = true;
+                        if (saCount == 4) saBased = true;
+                        if (africaCount == 6) africaBased = true;
 
-                // check if we are based somewhere
-                int ozCount = 0;
-                int saCount = 0;
-                africaCount = 0;
-
-                foreach (Region reg in FullMap.Regions) {
-
-                    // check if we are ozBased
-                    // all 4 areas of oz are ours & siam is not enemy & brazil is not ours
-                    // brazil is main target, if we have a foot there it doesnt matter if we are oz based or not
-                    if (    ((reg.Id == 39) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                            ((reg.Id == 40) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                            ((reg.Id == 41) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                            ((reg.Id == 42) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                            ((reg.Id == 12) && (!reg.OwnedByPlayer(MyPlayerName))) ||
-                            ((reg.Id == 38) && (!reg.OwnedByPlayer(OpponentPlayerName)))
-                        )
-                    {
-                        ozCount++;
-                    }
-
-                    //todo: refactor this to use the new SuperRegion.ownedByUs bool
-
-                    // check if we are saBased
-                    // all 4 areas of south america are ours
-                    if (    ((reg.Id == 10) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                            ((reg.Id == 11) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                            ((reg.Id == 12) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                            ((reg.Id == 13) && (reg.OwnedByPlayer(MyPlayerName)))
-                        )
-                    {
-                        saCount++;
-                    }
-
-                    // check if we are africaBased
-                    // all 6 areas of africa are ours
-                    if (    ((reg.Id == 21) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                            ((reg.Id == 22) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                            ((reg.Id == 23) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                            ((reg.Id == 24) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                            ((reg.Id == 25) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                            ((reg.Id == 26) && (reg.OwnedByPlayer(MyPlayerName)))
-                        )
-                    {
-                        saCount++;
-                    }
-                }
-                if (ozCount == 6) ozBased = true;
-                if (saCount == 4) saBased = true;
-                if (africaCount == 6) africaBased = true;
-
+                    } break;
             }
+
+            hotStackZone = -1;
 
         }
 
@@ -701,6 +705,12 @@ namespace bot
         public int EstimatedOpponentIncome
         {
             get { return estimatedOpponentIncome; }
+        }
+
+        public int HotStackZone
+        {
+            set { hotStackZone = value; }
+            get { return hotStackZone; }
         }
 
         public bool RegionBelongsToOurSuperRegion(int id)
