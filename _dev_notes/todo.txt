@@ -1,6 +1,4 @@
 
-dont attack with just 4 if there are more armies available
-
 if stacks are big enough (higher then 80), it means the game is stalled and we should be expanding minimally instead of deploying all on stack
 
 when finishing a superregion dont deploy more armies than necessary, deploy the rest on the region closest to the next predicted enemy starting point

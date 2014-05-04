@@ -947,7 +947,7 @@ namespace bot
 
             // buff up any scheduled attack coming from regions with armies left lying around unused
             // remove any call that might run into a wall (unless it's high priority)
-            List<AttackTransferMove> remove = new List<AttackTransferMove>();
+            List<AttackTransferMove> atmRemove = new List<AttackTransferMove>();
             foreach (AttackTransferMove atm in attackTransferMoves)
             {
                 Region from = state.FullMap.GetRegion(atm.FromRegion.Id);
@@ -972,11 +972,10 @@ namespace bot
                 if (to.OwnedByPlayer(opponentName) && (armyCount <= to.Armies + state.EstimatedOpponentIncome) && (atm.Priority < 8))
                 {
                     Console.Error.WriteLine("prevent hitting a wall from " + from.Id + " to " + to.Id + " with " + armyCount + " armies on round " + state.RoundNumber);
-                    remove.Add(atm);
-                    //attackTransferMoves.Remove(atm);
+                    atmRemove.Add(atm);
                 }
             }
-            foreach (AttackTransferMove atm in remove)
+            foreach (AttackTransferMove atm in atmRemove)
             {
                 attackTransferMoves.Remove(atm);
             }
