@@ -586,40 +586,78 @@ namespace bot
                     }
 
                 } else {
-                    // do minimum expansion, but only on expansiontargets that are close to being finished
-                    // or we know the game has been stalled for a while (stacks bigger then, lets say 50)
 
-                    //todo: and we are fairly certain are not already being bordered by enemy
-
-                    // check how many territories of the expansion target we already own
-                    int count = 0;
-                    foreach (Region reg in state.ExpansionTargets[0].SubRegions)
+                    // if we are bordering a known enemy superregion, plan to hit it hard
+                    foreach (Region enm in state.EnemyBorders)
                     {
-                        Region rn = state.FullMap.GetRegion(reg.Id);
-                        if (rn.OwnedByPlayer(myName)) count++; 
-                    }
+                        //todo: should refactor this to target the weakest of possible multiple borders, not the first seen
 
-                    // check if the game is starting to have big stacks
-                    bool bigstack = false;
-                    foreach (Region reg in state.VisibleMap.Regions)
-                    {
-                        if (reg.OwnedByPlayer(myName))
+                        if (state.RegionBelongsToEnemySuperRegion(enm.Id))
                         {
-                            if (reg.Armies > 50)
+                            Region target = state.FullMap.GetRegion(enm.Id);
+
+                            // pick the neighbour (our territory) with the highest army count
+                            foreach (Region rn in target.Neighbors)
                             {
-                                bigstack = true;
+                                int ac = 0;
+                                if (rn.OwnedByPlayer(myName))
+                                {
+                                    ac += rn.Armies;
+                                }
+                                rn.tempSortValue = ac;
                             }
+                            List<Region> lst = target.Neighbors.OrderByDescending(p => p.tempSortValue).ToList();
+                            Region attacker = lst[0];
+
+                            // validate
+                            if (target.OwnedByPlayer(opponentName) && attacker.OwnedByPlayer(myName))
+                            {
+                                deployArmies.Add(new DeployArmies(myName, attacker, armiesLeft));
+                                state.scheduledAttack.Add(new Tuple<int, int, int>(attacker.Id, target.Id, attacker.Armies - 1 + armiesLeft));
+                                armiesLeft = 0;
+                            }
+
+                            // only plan one hard attack on the first region of enemyborders spotted
+                            break;
                         }
                     }
 
-                    // do minimum expansion
-                    if ((count > state.ExpansionTargets[0].SubRegions.Count * 0.5) || (bigstack))
+                    if (armiesLeft > 0)
                     {
-                        List<DeployArmies> deploy = ExpandMinimum(state, armiesLeft);
-                        foreach (DeployArmies da in deploy)
+                        // do minimum expansion, but only on expansiontargets that are close to being finished
+                        // or we know the game has been stalled for a while (stacks bigger then, lets say 50)
+                        //todo: and we are fairly certain the target sr is not already being bordered by enemy
+
+                        // check how many territories of the expansion target we already own
+                        int count = 0;
+                        foreach (Region reg in state.ExpansionTargets[0].SubRegions)
                         {
-                            deployArmies.Add(da);
-                            armiesLeft -= da.Armies;
+                            Region rn = state.FullMap.GetRegion(reg.Id);
+                            if (rn.OwnedByPlayer(myName)) count++;
+                        }
+
+                        // check if the game is starting to have big stacks
+                        bool bigstack = false;
+                        foreach (Region reg in state.VisibleMap.Regions)
+                        {
+                            if (reg.OwnedByPlayer(myName))
+                            {
+                                if (reg.Armies > 50)
+                                {
+                                    bigstack = true;
+                                }
+                            }
+                        }
+
+                        // do minimum expansion
+                        if ((count > state.ExpansionTargets[0].SubRegions.Count * 0.5) || (bigstack))
+                        {
+                            List<DeployArmies> deploy = ExpandMinimum(state, armiesLeft);
+                            foreach (DeployArmies da in deploy)
+                            {
+                                deployArmies.Add(da);
+                                armiesLeft -= da.Armies;
+                            }
                         }
                     }
 
