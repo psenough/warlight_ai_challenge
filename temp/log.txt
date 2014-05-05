@@ -2,6 +2,7 @@ starting game 0
 ..\..\temp\mybot.exe
 ..\..\temp\mybot.exe
 bot1 stdErr...
+prevent hitting a wall from 11 to 12 with 7 armies on round 1
 
 bot1 dump...
 settings your_bot player1
@@ -9,848 +10,847 @@ settings opponent_bot player2
 setup_map super_regions 1 5 2 2 3 5 4 3 5 7 6 2
 setup_map regions 1 1 2 1 3 1 4 1 5 1 6 1 7 1 8 1 9 1 10 2 11 2 12 2 13 2 14 3 15 3 16 3 17 3 18 3 19 3 20 3 21 4 22 4 23 4 24 4 25 4 26 4 27 5 28 5 29 5 30 5 31 5 32 5 33 5 34 5 35 5 36 5 37 5 38 5 39 6 40 6 41 6 42 6
 setup_map neighbors 1 2,4,30 2 4,3,5 3 5,6,14 4 5,7 5 6,7,8 6 8 7 8,9 8 9 9 10 10 11,12 11 12,13 12 13,21 14 15,16 15 16,18,19 16 17 17 19,20,27,32,36 18 19,20,21 19 20 20 21,22,36 21 22,23,24 22 23,36 23 24,25,26,36 24 25 25 26 27 28,32,33 28 29,31,33,34 29 30,31 30 31,34,35 31 34 32 33,36,37 33 34,37,38 34 35 36 37 37 38 38 39 39 40,41 40 41,42 41 42
-pick_starting_regions 2000 1 4 13 11 14 19 22 26 33 31 39 40
-11 39 13 40 26 22 1 4 14 19 31 33 
+pick_starting_regions 2000 5 6 12 11 18 14 24 25 33 31 42 39
+42 39 12 11 24 25 5 6 18 14 33 31 
 settings starting_armies 5
-update_map 26 player1 2 39 player1 2 40 player1 2 23 neutral 2 25 neutral 2 38 neutral 2 41 neutral 2 42 neutral 2
+update_map 11 player1 2 24 player1 2 39 player1 2 10 neutral 2 12 player2 2 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 2 38 neutral 2 40 neutral 2 41 neutral 2
 opponent_moves
 Round 1
 go place_armies 2000
-player1 place_armies 40 2,player1 place_armies 40 0,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 39 1,
+player1 place_armies 11 5,
 go attack/transfer 2000
-player1 attack/transfer 40 41 4,player1 attack/transfer 40 42 4,player1 attack/transfer 39 40 1,player1 attack/transfer 40 39 1,
+No moves
 settings starting_armies 5
-update_map 26 player1 2 39 player1 4 40 player1 2 41 player1 2 23 neutral 2 25 neutral 2 38 neutral 2 42 neutral 2
-opponent_moves
+update_map 11 player1 7 24 player1 2 39 player1 2 10 neutral 2 12 player2 7 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 2 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 5
 Round 2
 go place_armies 2000
-
-player1 place_armies 41 2,player1 place_armies 41 1,player1 place_armies 40 1,player1 place_armies 26 1,
+player1 place_armies 11 5,
 go attack/transfer 2000
-player1 attack/transfer 41 42 4,player1 attack/transfer 39 40 3,player1 attack/transfer 40 39 1,player1 attack/transfer 41 39 1,
-settings starting_armies 7
-update_map 26 player1 3 39 player1 2 40 player1 5 41 player1 1 42 player1 2 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+player1 attack/transfer 11 12 17,
+settings starting_armies 5
+update_map 11 player1 4 24 player1 2 39 player1 2 10 neutral 2 12 player2 1 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 2 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 5 player2 attack/transfer 12 11 4
 Round 3
 go place_armies 2000
-player1 place_armies 40 1,player1 place_armies 26 1,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 26 1,player1 place_armies 26 1,player1 place_armies 39 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 4,player1 attack/transfer 42 41 1,
-settings starting_armies 7
-update_map 26 player1 6 39 player1 4 40 player1 3 41 player1 6 42 player1 1 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+player1 attack/transfer 11 12 2,
+settings starting_armies 5
+update_map 11 player1 5 24 player1 4 39 player1 2 10 neutral 2 12 player2 4 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 4 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 4
 go place_armies 2000
-player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 42 1,player1 place_armies 26 1,player1 place_armies 40 1,player1 place_armies 26 1,player1 place_armies 26 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 3,player1 attack/transfer 40 41 2,player1 attack/transfer 41 42 5,
-settings starting_armies 7
-update_map 26 player1 9 39 player1 3 40 player1 5 41 player1 3 42 player1 7 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 8 24 player1 6 39 player1 2 10 neutral 2 12 player2 7 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 6 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 5
 go place_armies 2000
-player1 place_armies 26 1,player1 place_armies 41 1,player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 42 1,player1 place_armies 41 1,player1 place_armies 40 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 4,player1 attack/transfer 41 42 2,player1 attack/transfer 42 41 6,
-settings starting_armies 7
-update_map 26 player1 10 39 player1 1 40 player1 5 41 player1 13 42 player1 5 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 11 24 player1 8 39 player1 2 10 neutral 2 12 player2 10 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 8 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 6
 go place_armies 2000
-player1 place_armies 39 1,player1 place_armies 26 1,player1 place_armies 42 1,player1 place_armies 39 1,player1 place_armies 42 1,player1 place_armies 39 1,player1 place_armies 26 1,
+
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 40 41 4,player1 attack/transfer 41 42 12,player1 attack/transfer 42 41 4,
-settings starting_armies 7
-update_map 26 player1 12 39 player1 4 40 player1 1 41 player1 9 42 player1 15 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 14 24 player1 10 39 player1 2 10 neutral 2 12 player2 13 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 10 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 7
 go place_armies 2000
-player1 place_armies 40 1,player1 place_armies 41 1,player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 41 1,player1 place_armies 40 1,player1 place_armies 41 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 3,player1 attack/transfer 41 42 8,player1 attack/transfer 42 41 14,
-settings starting_armies 7
-update_map 26 player1 13 39 player1 1 40 player1 6 41 player1 19 42 player1 9 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 17 24 player1 12 39 player1 2 10 neutral 2 12 player2 16 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 12 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 8
 go place_armies 2000
-player1 place_armies 26 1,player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 39 1,player1 place_armies 41 1,player1 place_armies 42 1,player1 place_armies 26 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 40 41 5,player1 attack/transfer 41 42 18,player1 attack/transfer 42 41 8,
-settings starting_armies 7
-update_map 26 player1 16 39 player1 2 40 player1 1 41 player1 16 42 player1 20 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 20 24 player1 14 39 player1 2 10 neutral 2 12 player2 19 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 14 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 9
 go place_armies 2000
-player1 place_armies 41 1,player1 place_armies 39 1,player1 place_armies 41 1,player1 place_armies 42 1,player1 place_armies 39 1,player1 place_armies 26 1,player1 place_armies 40 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 1,player1 attack/transfer 41 42 15,player1 attack/transfer 42 41 19,
-settings starting_armies 7
-update_map 26 player1 17 39 player1 3 40 player1 3 41 player1 22 42 player1 17 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 23 24 player1 16 39 player1 2 10 neutral 2 12 player2 22 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 16 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 10
 go place_armies 2000
-player1 place_armies 41 1,player1 place_armies 40 1,player1 place_armies 26 1,player1 place_armies 26 1,player1 place_armies 42 1,player1 place_armies 39 1,player1 place_armies 40 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 2,player1 attack/transfer 41 42 21,player1 attack/transfer 42 41 16,
-settings starting_armies 7
-update_map 26 player1 19 39 player1 2 40 player1 5 41 player1 20 42 player1 23 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 26 24 player1 18 39 player1 2 10 neutral 2 12 player2 25 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 18 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 11
 go place_armies 2000
-player1 place_armies 42 1,player1 place_armies 26 1,player1 place_armies 39 1,player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 39 1,player1 place_armies 41 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 4,player1 attack/transfer 41 42 19,player1 attack/transfer 42 41 22,
-settings starting_armies 7
-update_map 26 player1 21 39 player1 3 40 player1 2 41 player1 29 42 player1 21 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 29 24 player1 20 39 player1 2 10 neutral 2 12 player2 28 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 20 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 12
 go place_armies 2000
-player1 place_armies 42 1,player1 place_armies 39 1,player1 place_armies 42 1,player1 place_armies 41 1,player1 place_armies 42 1,player1 place_armies 39 1,player1 place_armies 42 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 1,player1 attack/transfer 41 42 28,player1 attack/transfer 42 41 20,
-settings starting_armies 7
-update_map 26 player1 21 39 player1 3 40 player1 3 41 player1 23 42 player1 33 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+
+No moves
+settings starting_armies 5
+update_map 11 player1 32 24 player1 22 39 player1 2 10 neutral 2 12 player2 31 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 22 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 13
 go place_armies 2000
-
-player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 26 1,player1 place_armies 40 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 2,player1 attack/transfer 41 42 22,player1 attack/transfer 42 41 32,
-settings starting_armies 7
-update_map 26 player1 23 39 player1 1 40 player1 4 41 player1 36 42 player1 26 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 35 24 player1 24 39 player1 2 10 neutral 2 12 player2 34 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 24 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 14
 go place_armies 2000
-
-player1 place_armies 42 1,player1 place_armies 26 1,player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 39 1,player1 place_armies 41 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 40 41 3,player1 attack/transfer 41 42 35,player1 attack/transfer 42 41 25,
-settings starting_armies 7
-update_map 26 player1 24 39 player1 2 40 player1 2 41 player1 30 42 player1 39 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 38 24 player1 26 39 player1 2 10 neutral 2 12 player2 37 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 26 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 15
 go place_armies 2000
-player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 26 1,player1 place_armies 39 1,player1 place_armies 41 1,player1 place_armies 39 1,player1 place_armies 26 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 1,player1 attack/transfer 41 42 29,player1 attack/transfer 42 41 38,
-settings starting_armies 7
-update_map 26 player1 27 39 player1 3 40 player1 2 41 player1 42 42 player1 30 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 41 24 player1 28 39 player1 2 10 neutral 2 12 player2 40 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 28 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 16
 go place_armies 2000
-player1 place_armies 40 1,player1 place_armies 41 1,player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 26 1,player1 place_armies 40 1,player1 place_armies 42 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 1,player1 attack/transfer 41 42 41,player1 attack/transfer 42 41 29,
-settings starting_armies 7
-update_map 26 player1 28 39 player1 1 40 player1 6 41 player1 32 42 player1 44 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+
+No moves
+settings starting_armies 5
+update_map 11 player1 44 24 player1 30 39 player1 2 10 neutral 2 12 player2 43 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 30 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 17
 go place_armies 2000
-player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 26 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 40 41 5,player1 attack/transfer 41 42 31,player1 attack/transfer 42 41 43,
-settings starting_armies 7
-update_map 26 player1 29 39 player1 5 40 player1 1 41 player1 49 42 player1 34 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 47 24 player1 32 39 player1 2 10 neutral 2 12 player2 46 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 32 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 18
 go place_armies 2000
-player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 26 1,player1 place_armies 26 1,player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 42 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 4,player1 attack/transfer 41 42 48,player1 attack/transfer 42 41 33,
-settings starting_armies 7
-update_map 26 player1 31 39 player1 3 40 player1 6 41 player1 34 42 player1 51 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 50 24 player1 34 39 player1 2 10 neutral 2 12 player2 49 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 34 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 19
 go place_armies 2000
-player1 place_armies 26 1,player1 place_armies 42 1,player1 place_armies 41 1,player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 40 1,player1 place_armies 39 1,
+
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 5,player1 attack/transfer 41 42 33,player1 attack/transfer 42 41 50,
-settings starting_armies 7
-update_map 26 player1 32 39 player1 2 40 player1 5 41 player1 57 42 player1 36 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 53 24 player1 36 39 player1 2 10 neutral 2 12 player2 52 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 36 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 20
 go place_armies 2000
-player1 place_armies 41 1,player1 place_armies 40 1,player1 place_armies 39 1,player1 place_armies 40 1,player1 place_armies 42 1,player1 place_armies 41 1,player1 place_armies 41 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 4,player1 attack/transfer 41 42 56,player1 attack/transfer 42 41 35,
-settings starting_armies 7
-update_map 26 player1 32 39 player1 2 40 player1 4 41 player1 43 42 player1 58 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 56 24 player1 38 39 player1 2 10 neutral 2 12 player2 55 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 38 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 21
 go place_armies 2000
-player1 place_armies 26 1,player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 40 1,player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 41 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 3,player1 attack/transfer 41 42 42,player1 attack/transfer 42 41 57,
-settings starting_armies 7
-update_map 26 player1 34 39 player1 1 40 player1 4 41 player1 63 42 player1 44 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 59 24 player1 40 39 player1 2 10 neutral 2 12 player2 58 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 40 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 22
 go place_armies 2000
-player1 place_armies 39 1,player1 place_armies 26 1,player1 place_armies 26 1,player1 place_armies 41 1,player1 place_armies 41 1,player1 place_armies 39 1,player1 place_armies 41 1,
+
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 40 41 3,player1 attack/transfer 41 42 62,player1 attack/transfer 42 41 43,
-settings starting_armies 7
-update_map 26 player1 36 39 player1 3 40 player1 1 41 player1 50 42 player1 63 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+
+No moves
+settings starting_armies 5
+update_map 11 player1 62 24 player1 42 39 player1 2 10 neutral 2 12 player2 61 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 42 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 23
 go place_armies 2000
-
-player1 place_armies 41 1,player1 place_armies 41 1,player1 place_armies 40 1,player1 place_armies 40 1,player1 place_armies 26 1,player1 place_armies 26 1,player1 place_armies 42 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 41 42 49,player1 attack/transfer 42 41 62,
-settings starting_armies 7
-update_map 26 player1 38 39 player1 1 40 player1 5 41 player1 65 42 player1 51 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 65 24 player1 44 39 player1 2 10 neutral 2 12 player2 64 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 44 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 24
 go place_armies 2000
-player1 place_armies 41 1,player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 26 1,player1 place_armies 26 1,
+
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 40 41 4,player1 attack/transfer 41 42 64,player1 attack/transfer 42 41 50,
-settings starting_armies 7
-update_map 26 player1 42 39 player1 1 40 player1 1 41 player1 58 42 player1 65 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 68 24 player1 46 39 player1 2 10 neutral 2 12 player2 67 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 46 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 25
 go place_armies 2000
-player1 place_armies 39 1,player1 place_armies 26 1,player1 place_armies 40 1,player1 place_armies 26 1,player1 place_armies 26 1,player1 place_armies 26 1,player1 place_armies 39 1,
+
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 41 42 57,player1 attack/transfer 42 41 64,
-settings starting_armies 7
-update_map 26 player1 46 39 player1 3 40 player1 2 41 player1 65 42 player1 58 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 71 24 player1 48 39 player1 2 10 neutral 2 12 player2 70 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 48 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 26
 go place_armies 2000
-player1 place_armies 39 1,player1 place_armies 41 1,player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 41 1,player1 place_armies 40 1,player1 place_armies 40 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 1,player1 attack/transfer 41 42 64,player1 attack/transfer 42 41 57,
-settings starting_armies 7
-update_map 26 player1 46 39 player1 2 40 player1 6 41 player1 61 42 player1 66 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 74 24 player1 50 39 player1 2 10 neutral 2 12 player2 73 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 50 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 27
 go place_armies 2000
-
-player1 place_armies 40 1,player1 place_armies 41 1,player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 40 1,player1 place_armies 39 1,player1 place_armies 26 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 5,player1 attack/transfer 41 42 60,player1 attack/transfer 42 41 65,
-settings starting_armies 7
-update_map 26 player1 47 39 player1 2 40 player1 5 41 player1 72 42 player1 62 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 77 24 player1 52 39 player1 2 10 neutral 2 12 player2 76 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 52 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 28
 go place_armies 2000
-player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 42 1,player1 place_armies 26 1,player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 40 1,
+
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 4,player1 attack/transfer 41 42 71,player1 attack/transfer 42 41 61,
-settings starting_armies 7
-update_map 26 player1 49 39 player1 1 40 player1 4 41 player1 67 42 player1 74 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 80 24 player1 54 39 player1 2 10 neutral 2 12 player2 79 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 54 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 29
 go place_armies 2000
-
-player1 place_armies 40 1,player1 place_armies 41 1,player1 place_armies 42 1,player1 place_armies 26 1,player1 place_armies 39 1,player1 place_armies 42 1,player1 place_armies 41 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 40 41 3,player1 attack/transfer 41 42 66,player1 attack/transfer 42 41 73,
-settings starting_armies 7
-update_map 26 player1 50 39 player1 2 40 player1 2 41 player1 79 42 player1 69 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 83 24 player1 56 39 player1 2 10 neutral 2 12 player2 82 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 56 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 30
 go place_armies 2000
-player1 place_armies 40 1,player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 42 1,player1 place_armies 39 1,player1 place_armies 40 1,player1 place_armies 39 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 1,player1 attack/transfer 41 42 78,player1 attack/transfer 42 41 68,
-settings starting_armies 7
-update_map 26 player1 50 39 player1 3 40 player1 5 41 player1 70 42 player1 81 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 86 24 player1 58 39 player1 2 10 neutral 2 12 player2 85 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 58 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 31
 go place_armies 2000
-
-player1 place_armies 26 1,player1 place_armies 39 1,player1 place_armies 26 1,player1 place_armies 40 1,player1 place_armies 41 1,player1 place_armies 42 1,player1 place_armies 41 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 4,player1 attack/transfer 41 42 69,player1 attack/transfer 42 41 80,
-settings starting_armies 7
-update_map 26 player1 52 39 player1 2 40 player1 4 41 player1 87 42 player1 71 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+
+No moves
+settings starting_armies 5
+update_map 11 player1 89 24 player1 60 39 player1 2 10 neutral 2 12 player2 88 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 60 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 32
 go place_armies 2000
-player1 place_armies 40 1,player1 place_armies 41 1,player1 place_armies 42 1,player1 place_armies 41 1,player1 place_armies 39 1,player1 place_armies 41 1,player1 place_armies 26 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 3,player1 attack/transfer 41 42 86,player1 attack/transfer 42 41 70,
-settings starting_armies 7
-update_map 26 player1 53 39 player1 2 40 player1 3 41 player1 77 42 player1 88 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 92 24 player1 62 39 player1 2 10 neutral 2 12 player2 91 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 62 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 33
 go place_armies 2000
-player1 place_armies 39 1,player1 place_armies 42 1,player1 place_armies 39 1,player1 place_armies 41 1,player1 place_armies 42 1,player1 place_armies 41 1,player1 place_armies 39 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 2,player1 attack/transfer 41 42 76,player1 attack/transfer 42 41 87,
-settings starting_armies 7
-update_map 26 player1 53 39 player1 4 40 player1 2 41 player1 92 42 player1 79 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+
+No moves
+settings starting_armies 5
+update_map 11 player1 95 24 player1 64 39 player1 2 10 neutral 2 12 player2 94 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 64 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 34
 go place_armies 2000
-player1 place_armies 39 1,player1 place_armies 26 1,player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 41 1,player1 place_armies 41 1,player1 place_armies 40 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 3,player1 attack/transfer 40 41 1,player1 attack/transfer 41 42 91,player1 attack/transfer 42 41 78,
-settings starting_armies 7
-update_map 26 player1 54 39 player1 2 40 player1 5 41 player1 82 42 player1 94 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 98 24 player1 66 39 player1 2 10 neutral 2 12 player2 97 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 66 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 35
 go place_armies 2000
 
-player1 place_armies 42 1,player1 place_armies 39 1,player1 place_armies 41 1,player1 place_armies 39 1,player1 place_armies 26 1,player1 place_armies 42 1,player1 place_armies 26 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 4,player1 attack/transfer 41 42 81,player1 attack/transfer 42 41 93,
-settings starting_armies 7
-update_map 26 player1 56 39 player1 3 40 player1 2 41 player1 99 42 player1 84 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 101 24 player1 68 39 player1 2 10 neutral 2 12 player2 100 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 68 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 36
 go place_armies 2000
-player1 place_armies 40 1,player1 place_armies 40 1,player1 place_armies 40 1,player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 42 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 1,player1 attack/transfer 41 42 98,player1 attack/transfer 42 41 83,
-settings starting_armies 7
-update_map 26 player1 56 39 player1 1 40 player1 7 41 player1 85 42 player1 102 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 104 24 player1 70 39 player1 2 10 neutral 2 12 player2 103 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 70 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 37
 go place_armies 2000
-
-player1 place_armies 40 1,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 26 1,player1 place_armies 39 1,player1 place_armies 26 1,player1 place_armies 26 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 40 41 6,player1 attack/transfer 41 42 84,player1 attack/transfer 42 41 101,
-settings starting_armies 7
-update_map 26 player1 59 39 player1 4 40 player1 2 41 player1 108 42 player1 85 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 107 24 player1 72 39 player1 2 10 neutral 2 12 player2 106 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 72 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 38
 go place_armies 2000
-player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 41 1,player1 place_armies 40 1,player1 place_armies 41 1,player1 place_armies 41 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 3,player1 attack/transfer 40 41 1,player1 attack/transfer 41 42 107,player1 attack/transfer 42 41 84,
-settings starting_armies 7
-update_map 26 player1 59 39 player1 1 40 player1 5 41 player1 89 42 player1 111 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 110 24 player1 74 39 player1 2 10 neutral 2 12 player2 109 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 74 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 39
 go place_armies 2000
-player1 place_armies 40 1,player1 place_armies 41 1,player1 place_armies 40 1,player1 place_armies 26 1,player1 place_armies 41 1,player1 place_armies 39 1,player1 place_armies 42 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 40 41 4,player1 attack/transfer 41 42 88,player1 attack/transfer 42 41 110,
-settings starting_armies 7
-update_map 26 player1 60 39 player1 2 40 player1 3 41 player1 117 42 player1 90 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 113 24 player1 76 39 player1 2 10 neutral 2 12 player2 112 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 76 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 40
 go place_armies 2000
-player1 place_armies 41 1,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 40 1,player1 place_armies 41 1,player1 place_armies 39 1,player1 place_armies 40 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 2,player1 attack/transfer 41 42 116,player1 attack/transfer 42 41 89,
-settings starting_armies 7
-update_map 26 player1 60 39 player1 4 40 player1 4 41 player1 94 42 player1 117 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+
+No moves
+settings starting_armies 5
+update_map 11 player1 116 24 player1 78 39 player1 2 10 neutral 2 12 player2 115 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 78 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 41
 go place_armies 2000
-player1 place_armies 41 1,player1 place_armies 41 1,player1 place_armies 41 1,player1 place_armies 40 1,player1 place_armies 39 1,player1 place_armies 26 1,player1 place_armies 39 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 3,player1 attack/transfer 40 41 3,player1 attack/transfer 41 42 93,player1 attack/transfer 42 41 116,
-settings starting_armies 7
-update_map 26 player1 61 39 player1 3 40 player1 5 41 player1 123 42 player1 94 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 119 24 player1 80 39 player1 2 10 neutral 2 12 player2 118 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 80 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 42
 go place_armies 2000
-player1 place_armies 42 1,player1 place_armies 41 1,player1 place_armies 39 1,player1 place_armies 26 1,player1 place_armies 40 1,player1 place_armies 39 1,player1 place_armies 26 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 4,player1 attack/transfer 41 42 122,player1 attack/transfer 42 41 93,
-settings starting_armies 7
-update_map 26 player1 63 39 player1 3 40 player1 4 41 player1 99 42 player1 124 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 122 24 player1 82 39 player1 2 10 neutral 2 12 player2 121 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 82 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 43
 go place_armies 2000
-player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 40 1,player1 place_armies 42 1,player1 place_armies 41 1,player1 place_armies 40 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 3,player1 attack/transfer 41 42 98,player1 attack/transfer 42 41 123,
-settings starting_armies 7
-update_map 26 player1 63 39 player1 1 40 player1 6 41 player1 128 42 player1 102 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 125 24 player1 84 39 player1 2 10 neutral 2 12 player2 124 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 84 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 44
 go place_armies 2000
-player1 place_armies 40 1,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 26 1,player1 place_armies 40 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 40 41 5,player1 attack/transfer 41 42 127,player1 attack/transfer 42 41 101,
-settings starting_armies 7
-update_map 26 player1 65 39 player1 3 40 player1 3 41 player1 108 42 player1 128 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 128 24 player1 86 39 player1 2 10 neutral 2 12 player2 127 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 86 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 45
 go place_armies 2000
-player1 place_armies 40 1,player1 place_armies 40 1,player1 place_armies 26 1,player1 place_armies 39 1,player1 place_armies 41 1,player1 place_armies 42 1,player1 place_armies 42 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 2,player1 attack/transfer 41 42 107,player1 attack/transfer 42 41 127,
-settings starting_armies 7
-update_map 26 player1 66 39 player1 2 40 player1 5 41 player1 131 42 player1 110 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 131 24 player1 88 39 player1 2 10 neutral 2 12 player2 130 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 88 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 46
 go place_armies 2000
 
-player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 41 1,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 41 1,player1 place_armies 26 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 4,player1 attack/transfer 41 42 130,player1 attack/transfer 42 41 109,
-settings starting_armies 7
-update_map 26 player1 67 39 player1 3 40 player1 2 41 player1 116 42 player1 133 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 134 24 player1 90 39 player1 2 10 neutral 2 12 player2 133 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 90 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 47
 go place_armies 2000
-player1 place_armies 39 1,player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 40 1,player1 place_armies 39 1,player1 place_armies 41 1,player1 place_armies 42 1,
+
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 1,player1 attack/transfer 41 42 115,player1 attack/transfer 42 41 132,
-settings starting_armies 7
-update_map 26 player1 68 39 player1 3 40 player1 4 41 player1 136 42 player1 117 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 137 24 player1 92 39 player1 2 10 neutral 2 12 player2 136 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 92 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 48
 go place_armies 2000
-
-player1 place_armies 26 1,player1 place_armies 39 1,player1 place_armies 41 1,player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 41 1,player1 place_armies 26 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
 
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 3,player1 attack/transfer 41 42 135,player1 attack/transfer 42 41 116,
-settings starting_armies 7
-update_map 26 player1 71 39 player1 2 40 player1 3 41 player1 123 42 player1 136 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 140 24 player1 94 39 player1 2 10 neutral 2 12 player2 139 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 94 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 49
 go place_armies 2000
-
-player1 place_armies 26 1,player1 place_armies 42 1,player1 place_armies 39 1,player1 place_armies 40 1,player1 place_armies 42 1,player1 place_armies 39 1,player1 place_armies 40 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 2,player1 attack/transfer 41 42 122,player1 attack/transfer 42 41 135,
-settings starting_armies 7
-update_map 26 player1 72 39 player1 3 40 player1 4 41 player1 138 42 player1 125 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+
+No moves
+settings starting_armies 5
+update_map 11 player1 143 24 player1 96 39 player1 2 10 neutral 2 12 player2 142 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 96 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 50
 go place_armies 2000
 
-player1 place_armies 42 1,player1 place_armies 41 1,player1 place_armies 41 1,player1 place_armies 40 1,player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 42 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 3,player1 attack/transfer 41 42 137,player1 attack/transfer 42 41 124,
-settings starting_armies 7
-update_map 26 player1 72 39 player1 1 40 player1 4 41 player1 130 42 player1 142 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 146 24 player1 98 39 player1 2 10 neutral 2 12 player2 145 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 98 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 51
 go place_armies 2000
-player1 place_armies 39 1,player1 place_armies 26 1,player1 place_armies 40 1,player1 place_armies 40 1,player1 place_armies 41 1,player1 place_armies 39 1,player1 place_armies 39 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 40 41 3,player1 attack/transfer 41 42 129,player1 attack/transfer 42 41 141,
-settings starting_armies 7
-update_map 26 player1 73 39 player1 4 40 player1 3 41 player1 146 42 player1 130 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 149 24 player1 100 39 player1 2 10 neutral 2 12 player2 148 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 100 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 52
 go place_armies 2000
-player1 place_armies 42 1,player1 place_armies 39 1,player1 place_armies 26 1,player1 place_armies 41 1,player1 place_armies 41 1,player1 place_armies 39 1,player1 place_armies 39 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 3,player1 attack/transfer 40 41 2,player1 attack/transfer 41 42 145,player1 attack/transfer 42 41 129,
-settings starting_armies 7
-update_map 26 player1 74 39 player1 4 40 player1 4 41 player1 134 42 player1 147 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 152 24 player1 102 39 player1 2 10 neutral 2 12 player2 151 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 102 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 53
 go place_armies 2000
-
-player1 place_armies 41 1,player1 place_armies 41 1,player1 place_armies 41 1,player1 place_armies 40 1,player1 place_armies 40 1,player1 place_armies 42 1,player1 place_armies 42 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 3,player1 attack/transfer 40 41 3,player1 attack/transfer 41 42 133,player1 attack/transfer 42 41 146,
-settings starting_armies 7
-update_map 26 player1 74 39 player1 1 40 player1 6 41 player1 153 42 player1 136 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 155 24 player1 104 39 player1 2 10 neutral 2 12 player2 154 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 104 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 54
 go place_armies 2000
-player1 place_armies 40 1,player1 place_armies 42 1,player1 place_armies 41 1,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 42 1,player1 place_armies 40 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 40 41 5,player1 attack/transfer 41 42 152,player1 attack/transfer 42 41 135,
-settings starting_armies 7
-update_map 26 player1 74 39 player1 3 40 player1 3 41 player1 142 42 player1 155 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 158 24 player1 106 39 player1 2 10 neutral 2 12 player2 157 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 106 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 55
 go place_armies 2000
-player1 place_armies 42 1,player1 place_armies 39 1,player1 place_armies 40 1,player1 place_armies 39 1,player1 place_armies 26 1,player1 place_armies 41 1,player1 place_armies 39 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
 
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 2,player1 attack/transfer 41 42 141,player1 attack/transfer 42 41 154,
-settings starting_armies 7
-update_map 26 player1 75 39 player1 4 40 player1 4 41 player1 158 42 player1 143 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 161 24 player1 108 39 player1 2 10 neutral 2 12 player2 160 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 108 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 56
 go place_armies 2000
-
-player1 place_armies 26 1,player1 place_armies 40 1,player1 place_armies 42 1,player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 40 1,player1 place_armies 41 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-
-player1 attack/transfer 39 40 3,player1 attack/transfer 40 41 3,player1 attack/transfer 41 42 157,player1 attack/transfer 42 41 142,
-settings starting_armies 7
-update_map 26 player1 77 39 player1 1 40 player1 6 41 player1 148 42 player1 159 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 164 24 player1 110 39 player1 2 10 neutral 2 12 player2 163 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 110 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 57
 go place_armies 2000
-
-player1 place_armies 26 1,player1 place_armies 39 1,player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 39 1,player1 place_armies 42 1,player1 place_armies 41 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 40 41 5,player1 attack/transfer 41 42 147,player1 attack/transfer 42 41 158,
-settings starting_armies 7
-update_map 26 player1 78 39 player1 3 40 player1 1 41 player1 165 42 player1 151 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 167 24 player1 112 39 player1 2 10 neutral 2 12 player2 166 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 112 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 58
 go place_armies 2000
-player1 place_armies 40 1,player1 place_armies 26 1,player1 place_armies 26 1,player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 42 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 41 42 164,player1 attack/transfer 42 41 150,
-settings starting_armies 7
-update_map 26 player1 80 39 player1 1 40 player1 5 41 player1 151 42 player1 168 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 170 24 player1 114 39 player1 2 10 neutral 2 12 player2 169 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 114 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 59
 go place_armies 2000
-player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 40 1,player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 39 1,
+
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 40 41 4,player1 attack/transfer 41 42 150,player1 attack/transfer 42 41 167,
-settings starting_armies 7
-update_map 26 player1 80 39 player1 2 40 player1 4 41 player1 172 42 player1 154 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 173 24 player1 116 39 player1 2 10 neutral 2 12 player2 172 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 116 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 60
 go place_armies 2000
-player1 place_armies 26 1,player1 place_armies 26 1,player1 place_armies 26 1,player1 place_armies 41 1,player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 41 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 3,player1 attack/transfer 41 42 171,player1 attack/transfer 42 41 153,
-settings starting_armies 7
-update_map 26 player1 83 39 player1 1 40 player1 2 41 player1 159 42 player1 174 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 176 24 player1 118 39 player1 2 10 neutral 2 12 player2 175 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 118 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 61
 go place_armies 2000
-player1 place_armies 39 1,player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 26 1,player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 39 1,
+
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 40 41 1,player1 attack/transfer 41 42 158,player1 attack/transfer 42 41 173,
-settings starting_armies 7
-update_map 26 player1 85 39 player1 3 40 player1 2 41 player1 176 42 player1 160 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 179 24 player1 120 39 player1 2 10 neutral 2 12 player2 178 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 120 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 62
 go place_armies 2000
-player1 place_armies 41 1,player1 place_armies 42 1,player1 place_armies 26 1,player1 place_armies 42 1,player1 place_armies 41 1,player1 place_armies 42 1,player1 place_armies 26 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 1,player1 attack/transfer 41 42 175,player1 attack/transfer 42 41 159,
-settings starting_armies 7
-update_map 26 player1 87 39 player1 1 40 player1 3 41 player1 163 42 player1 179 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 182 24 player1 122 39 player1 2 10 neutral 2 12 player2 181 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 122 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 63
 go place_armies 2000
-
-player1 place_armies 39 1,player1 place_armies 40 1,player1 place_armies 42 1,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 40 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-
-player1 attack/transfer 40 41 2,player1 attack/transfer 41 42 162,player1 attack/transfer 42 41 178,
-settings starting_armies 7
-update_map 26 player1 87 39 player1 5 40 player1 3 41 player1 181 42 player1 164 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 185 24 player1 124 39 player1 2 10 neutral 2 12 player2 184 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 124 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 64
 go place_armies 2000
-player1 place_armies 39 1,player1 place_armies 40 1,player1 place_armies 26 1,player1 place_armies 26 1,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 26 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 4,player1 attack/transfer 40 41 2,player1 attack/transfer 41 42 180,player1 attack/transfer 42 41 163,
-settings starting_armies 7
-update_map 26 player1 90 39 player1 4 40 player1 6 41 player1 166 42 player1 181 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+
+No moves
+settings starting_armies 5
+update_map 11 player1 188 24 player1 126 39 player1 2 10 neutral 2 12 player2 187 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 126 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 65
 go place_armies 2000
-player1 place_armies 26 1,player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 39 1,player1 place_armies 42 1,player1 place_armies 26 1,player1 place_armies 42 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 3,player1 attack/transfer 40 41 5,player1 attack/transfer 41 42 165,player1 attack/transfer 42 41 180,
-settings starting_armies 7
-update_map 26 player1 92 39 player1 2 40 player1 4 41 player1 186 42 player1 170 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 191 24 player1 128 39 player1 2 10 neutral 2 12 player2 190 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 128 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 66
 go place_armies 2000
-player1 place_armies 40 1,player1 place_armies 41 1,player1 place_armies 41 1,player1 place_armies 39 1,player1 place_armies 42 1,player1 place_armies 26 1,player1 place_armies 26 1,
+
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 3,player1 attack/transfer 41 42 185,player1 attack/transfer 42 41 169,
-settings starting_armies 7
-update_map 26 player1 94 39 player1 2 40 player1 3 41 player1 175 42 player1 187 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 194 24 player1 130 39 player1 2 10 neutral 2 12 player2 193 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 130 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 67
 go place_armies 2000
-player1 place_armies 40 1,player1 place_armies 41 1,player1 place_armies 41 1,player1 place_armies 40 1,player1 place_armies 26 1,player1 place_armies 41 1,player1 place_armies 40 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 2,player1 attack/transfer 41 42 174,player1 attack/transfer 42 41 186,
-settings starting_armies 7
-update_map 26 player1 95 39 player1 1 40 player1 5 41 player1 192 42 player1 175 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 197 24 player1 132 39 player1 2 10 neutral 2 12 player2 196 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 132 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 68
 go place_armies 2000
-player1 place_armies 39 1,player1 place_armies 40 1,player1 place_armies 42 1,player1 place_armies 41 1,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 39 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 40 41 4,player1 attack/transfer 41 42 191,player1 attack/transfer 42 41 174,
-settings starting_armies 7
-update_map 26 player1 95 39 player1 5 40 player1 2 41 player1 180 42 player1 193 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 200 24 player1 134 39 player1 2 10 neutral 2 12 player2 199 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 134 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 69
 go place_armies 2000
-player1 place_armies 39 1,player1 place_armies 26 1,player1 place_armies 42 1,player1 place_armies 39 1,player1 place_armies 42 1,player1 place_armies 41 1,player1 place_armies 39 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 4,player1 attack/transfer 40 41 1,player1 attack/transfer 41 42 179,player1 attack/transfer 42 41 192,
-settings starting_armies 7
-update_map 26 player1 96 39 player1 4 40 player1 5 41 player1 195 42 player1 182 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 203 24 player1 136 39 player1 2 10 neutral 2 12 player2 202 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 136 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 70
 go place_armies 2000
-player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 42 1,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 26 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 3,player1 attack/transfer 40 41 4,player1 attack/transfer 41 42 194,player1 attack/transfer 42 41 181,
-settings starting_armies 7
-update_map 26 player1 97 39 player1 3 40 player1 5 41 player1 186 42 player1 198 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 206 24 player1 138 39 player1 2 10 neutral 2 12 player2 205 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 138 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 71
 go place_armies 2000
-
-player1 place_armies 42 1,player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 41 1,player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 40 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 4,player1 attack/transfer 41 42 185,player1 attack/transfer 42 41 197,
-settings starting_armies 7
-update_map 26 player1 99 39 player1 1 40 player1 4 41 player1 205 42 player1 187 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 209 24 player1 140 39 player1 2 10 neutral 2 12 player2 208 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 140 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 72
 go place_armies 2000
-player1 place_armies 26 1,player1 place_armies 42 1,player1 place_armies 39 1,player1 place_armies 26 1,player1 place_armies 40 1,player1 place_armies 39 1,player1 place_armies 42 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 40 41 3,player1 attack/transfer 41 42 204,player1 attack/transfer 42 41 186,
-settings starting_armies 7
-update_map 26 player1 101 39 player1 3 40 player1 2 41 player1 190 42 player1 207 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 212 24 player1 142 39 player1 2 10 neutral 2 12 player2 211 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 142 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 73
 go place_armies 2000
-player1 place_armies 39 1,player1 place_armies 26 1,player1 place_armies 39 1,player1 place_armies 40 1,player1 place_armies 40 1,player1 place_armies 41 1,player1 place_armies 42 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 1,player1 attack/transfer 41 42 189,player1 attack/transfer 42 41 206,
-settings starting_armies 7
-update_map 26 player1 102 39 player1 3 40 player1 5 41 player1 209 42 player1 191 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 215 24 player1 144 39 player1 2 10 neutral 2 12 player2 214 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 144 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 74
 go place_armies 2000
-
-player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 41 1,player1 place_armies 41 1,player1 place_armies 40 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 4,player1 attack/transfer 41 42 208,player1 attack/transfer 42 41 190,
-settings starting_armies 7
-update_map 26 player1 103 39 player1 1 40 player1 5 41 player1 198 42 player1 210 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 218 24 player1 146 39 player1 2 10 neutral 2 12 player2 217 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 146 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 75
 go place_armies 2000
-
-player1 place_armies 39 1,player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 26 1,player1 place_armies 39 1,player1 place_armies 42 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 40 41 4,player1 attack/transfer 41 42 197,player1 attack/transfer 42 41 209,
-settings starting_armies 7
-update_map 26 player1 104 39 player1 3 40 player1 2 41 player1 214 42 player1 201 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+
+No moves
+settings starting_armies 5
+update_map 11 player1 221 24 player1 148 39 player1 2 10 neutral 2 12 player2 220 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 148 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 76
 go place_armies 2000
-
-player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 40 1,player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 41 1,player1 place_armies 42 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 1,player1 attack/transfer 41 42 213,player1 attack/transfer 42 41 200,
-settings starting_armies 7
-update_map 26 player1 104 39 player1 1 40 player1 5 41 player1 203 42 player1 218 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 224 24 player1 150 39 player1 2 10 neutral 2 12 player2 223 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 150 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 77
 go place_armies 2000
-player1 place_armies 40 1,player1 place_armies 40 1,player1 place_armies 41 1,player1 place_armies 39 1,player1 place_armies 41 1,player1 place_armies 39 1,player1 place_armies 39 1,
+
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 40 41 4,player1 attack/transfer 41 42 202,player1 attack/transfer 42 41 217,
-settings starting_armies 7
-update_map 26 player1 104 39 player1 4 40 player1 3 41 player1 224 42 player1 203 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 227 24 player1 152 39 player1 2 10 neutral 2 12 player2 226 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 152 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 78
 go place_armies 2000
-player1 place_armies 26 1,player1 place_armies 40 1,player1 place_armies 39 1,player1 place_armies 40 1,player1 place_armies 40 1,player1 place_armies 42 1,player1 place_armies 40 1,
+
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 3,player1 attack/transfer 40 41 2,player1 attack/transfer 41 42 223,player1 attack/transfer 42 41 202,
-settings starting_armies 7
-update_map 26 player1 105 39 player1 2 40 player1 8 41 player1 205 42 player1 225 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+
+No moves
+settings starting_armies 5
+update_map 11 player1 230 24 player1 154 39 player1 2 10 neutral 2 12 player2 229 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 154 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 79
 go place_armies 2000
-player1 place_armies 41 1,player1 place_armies 41 1,player1 place_armies 40 1,player1 place_armies 41 1,player1 place_armies 40 1,player1 place_armies 42 1,player1 place_armies 26 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 7,player1 attack/transfer 41 42 204,player1 attack/transfer 42 41 224,
-settings starting_armies 7
-update_map 26 player1 106 39 player1 1 40 player1 4 41 player1 235 42 player1 206 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 233 24 player1 156 39 player1 2 10 neutral 2 12 player2 232 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 156 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 80
 go place_armies 2000
 
-player1 place_armies 41 1,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 26 1,player1 place_armies 40 1,player1 place_armies 41 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 40 41 3,player1 attack/transfer 41 42 234,player1 attack/transfer 42 41 205,
-settings starting_armies 7
-update_map 26 player1 107 39 player1 4 40 player1 2 41 player1 211 42 player1 235 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 236 24 player1 158 39 player1 2 10 neutral 2 12 player2 235 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 158 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 81
 go place_armies 2000
-player1 place_armies 26 1,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 40 1,player1 place_armies 42 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 3,player1 attack/transfer 40 41 1,player1 attack/transfer 41 42 210,player1 attack/transfer 42 41 234,
-settings starting_armies 7
-update_map 26 player1 108 39 player1 5 40 player1 5 41 player1 236 42 player1 212 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 239 24 player1 160 39 player1 2 10 neutral 2 12 player2 238 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 160 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 82
 go place_armies 2000
-player1 place_armies 39 1,player1 place_armies 41 1,player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 40 1,player1 place_armies 26 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 4,player1 attack/transfer 40 41 4,player1 attack/transfer 41 42 235,player1 attack/transfer 42 41 211,
-settings starting_armies 7
-update_map 26 player1 109 39 player1 2 40 player1 7 41 player1 217 42 player1 238 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+
+No moves
+settings starting_armies 5
+update_map 11 player1 242 24 player1 162 39 player1 2 10 neutral 2 12 player2 241 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 162 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 83
 go place_armies 2000
-player1 place_armies 42 1,player1 place_armies 41 1,player1 place_armies 40 1,player1 place_armies 26 1,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 41 1,
+
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 6,player1 attack/transfer 41 42 216,player1 attack/transfer 42 41 237,
-settings starting_armies 7
-update_map 26 player1 110 39 player1 3 40 player1 3 41 player1 246 42 player1 218 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+
+No moves
+settings starting_armies 5
+update_map 11 player1 245 24 player1 164 39 player1 2 10 neutral 2 12 player2 244 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 164 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 84
 go place_armies 2000
-
-player1 place_armies 40 1,player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 42 1,player1 place_armies 41 1,player1 place_armies 41 1,player1 place_armies 39 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 2,player1 attack/transfer 41 42 245,player1 attack/transfer 42 41 217,
-settings starting_armies 7
-update_map 26 player1 111 39 player1 2 40 player1 4 41 player1 223 42 player1 247 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 248 24 player1 166 39 player1 2 10 neutral 2 12 player2 247 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 166 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 85
 go place_armies 2000
-player1 place_armies 39 1,player1 place_armies 40 1,player1 place_armies 26 1,player1 place_armies 40 1,player1 place_armies 26 1,player1 place_armies 39 1,player1 place_armies 26 1,
+
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
 
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 3,player1 attack/transfer 41 42 222,player1 attack/transfer 42 41 246,
-settings starting_armies 7
-update_map 26 player1 114 39 player1 3 40 player1 4 41 player1 250 42 player1 223 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 251 24 player1 168 39 player1 2 10 neutral 2 12 player2 250 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 168 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 86
 go place_armies 2000
-
-player1 place_armies 39 1,player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 40 1,player1 place_armies 40 1,player1 place_armies 40 1,player1 place_armies 42 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 3,player1 attack/transfer 41 42 249,player1 attack/transfer 42 41 222,
-settings starting_armies 7
-update_map 26 player1 115 39 player1 2 40 player1 6 41 player1 227 42 player1 251 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 254 24 player1 170 39 player1 2 10 neutral 2 12 player2 253 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 170 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 87
 go place_armies 2000
-player1 place_armies 40 1,player1 place_armies 39 1,player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 26 1,player1 place_armies 42 1,player1 place_armies 39 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 5,player1 attack/transfer 41 42 226,player1 attack/transfer 42 41 250,
-settings starting_armies 7
-update_map 26 player1 116 39 player1 3 40 player1 4 41 player1 256 42 player1 229 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 257 24 player1 172 39 player1 2 10 neutral 2 12 player2 256 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 172 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 88
 go place_armies 2000
-player1 place_armies 26 1,player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 40 1,player1 place_armies 40 1,player1 place_armies 40 1,player1 place_armies 40 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 3,player1 attack/transfer 41 42 255,player1 attack/transfer 42 41 228,
-settings starting_armies 7
-update_map 26 player1 117 39 player1 1 40 player1 8 41 player1 232 42 player1 257 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 260 24 player1 174 39 player1 2 10 neutral 2 12 player2 259 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 174 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 89
 go place_armies 2000
-player1 place_armies 42 1,player1 place_armies 26 1,player1 place_armies 42 1,player1 place_armies 40 1,player1 place_armies 41 1,player1 place_armies 39 1,player1 place_armies 26 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 40 41 7,player1 attack/transfer 41 42 231,player1 attack/transfer 42 41 256,
-settings starting_armies 7
-update_map 26 player1 119 39 player1 2 40 player1 2 41 player1 265 42 player1 234 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 263 24 player1 176 39 player1 2 10 neutral 2 12 player2 262 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 176 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 90
 go place_armies 2000
-player1 place_armies 42 1,player1 place_armies 26 1,player1 place_armies 26 1,player1 place_armies 40 1,player1 place_armies 39 1,player1 place_armies 40 1,player1 place_armies 39 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 1,player1 attack/transfer 41 42 264,player1 attack/transfer 42 41 233,
-settings starting_armies 7
-update_map 26 player1 121 39 player1 3 40 player1 4 41 player1 235 42 player1 266 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 266 24 player1 178 39 player1 2 10 neutral 2 12 player2 265 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 178 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 91
 go place_armies 2000
-player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 40 1,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 41 1,
+
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 3,player1 attack/transfer 41 42 234,player1 attack/transfer 42 41 265,
-settings starting_armies 7
-update_map 26 player1 122 39 player1 4 40 player1 4 41 player1 271 42 player1 235 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+
+No moves
+settings starting_armies 5
+update_map 11 player1 269 24 player1 180 39 player1 2 10 neutral 2 12 player2 268 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 180 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 92
 go place_armies 2000
-player1 place_armies 39 1,player1 place_armies 41 1,player1 place_armies 40 1,player1 place_armies 40 1,player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 39 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
 
-player1 attack/transfer 39 40 3,player1 attack/transfer 40 41 3,player1 attack/transfer 41 42 270,player1 attack/transfer 42 41 234,
-settings starting_armies 7
-update_map 26 player1 123 39 player1 3 40 player1 6 41 player1 240 42 player1 271 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 272 24 player1 182 39 player1 2 10 neutral 2 12 player2 271 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 182 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 93
 go place_armies 2000
-player1 place_armies 40 1,player1 place_armies 40 1,player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 41 1,player1 place_armies 40 1,player1 place_armies 39 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 5,player1 attack/transfer 41 42 239,player1 attack/transfer 42 41 270,
-settings starting_armies 7
-update_map 26 player1 124 39 player1 2 40 player1 6 41 player1 278 42 player1 240 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 275 24 player1 184 39 player1 2 10 neutral 2 12 player2 274 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 184 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 94
 go place_armies 2000
-player1 place_armies 26 1,player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 26 1,player1 place_armies 40 1,player1 place_armies 39 1,player1 place_armies 39 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 5,player1 attack/transfer 41 42 277,player1 attack/transfer 42 41 239,
-settings starting_armies 7
-update_map 26 player1 126 39 player1 3 40 player1 3 41 player1 245 42 player1 280 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+
+No moves
+settings starting_armies 5
+update_map 11 player1 278 24 player1 186 39 player1 2 10 neutral 2 12 player2 277 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 186 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 95
 go place_armies 2000
-
-player1 place_armies 26 1,player1 place_armies 39 1,player1 place_armies 26 1,player1 place_armies 39 1,player1 place_armies 39 1,player1 place_armies 26 1,player1 place_armies 41 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 2,player1 attack/transfer 41 42 244,player1 attack/transfer 42 41 279,
-settings starting_armies 7
-update_map 26 player1 129 39 player1 4 40 player1 3 41 player1 283 42 player1 245 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 281 24 player1 188 39 player1 2 10 neutral 2 12 player2 280 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 188 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 96
 go place_armies 2000
-player1 place_armies 39 1,player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 26 1,player1 place_armies 41 1,player1 place_armies 40 1,
+
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 3,player1 attack/transfer 40 41 2,player1 attack/transfer 41 42 282,player1 attack/transfer 42 41 244,
-settings starting_armies 7
-update_map 26 player1 130 39 player1 2 40 player1 5 41 player1 248 42 player1 286 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 284 24 player1 190 39 player1 2 10 neutral 2 12 player2 283 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 190 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 97
 go place_armies 2000
-player1 place_armies 39 1,player1 place_armies 41 1,player1 place_armies 42 1,player1 place_armies 42 1,player1 place_armies 26 1,player1 place_armies 26 1,player1 place_armies 41 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 4,player1 attack/transfer 41 42 247,player1 attack/transfer 42 41 285,
-settings starting_armies 7
-update_map 26 player1 132 39 player1 2 40 player1 2 41 player1 292 42 player1 250 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 287 24 player1 192 39 player1 2 10 neutral 2 12 player2 286 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 192 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 98
 go place_armies 2000
-player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 40 1,player1 place_armies 39 1,player1 place_armies 41 1,player1 place_armies 40 1,player1 place_armies 41 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 1,player1 attack/transfer 41 42 291,player1 attack/transfer 42 41 249,
-settings starting_armies 7
-update_map 26 player1 133 39 player1 2 40 player1 4 41 player1 254 42 player1 292 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 290 24 player1 194 39 player1 2 10 neutral 2 12 player2 289 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 194 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 99
 go place_armies 2000
-player1 place_armies 26 1,player1 place_armies 42 1,player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 39 1,player1 place_armies 41 1,player1 place_armies 39 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 1,player1 attack/transfer 40 41 3,player1 attack/transfer 41 42 253,player1 attack/transfer 42 41 291,
-settings starting_armies 7
-update_map 26 player1 135 39 player1 3 40 player1 2 41 player1 297 42 player1 255 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 293 24 player1 196 39 player1 2 10 neutral 2 12 player2 292 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 196 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 Round 100
 go place_armies 2000
-player1 place_armies 41 1,player1 place_armies 41 1,player1 place_armies 26 1,player1 place_armies 26 1,player1 place_armies 39 1,player1 place_armies 41 1,player1 place_armies 40 1,
+player1 place_armies 11 3,player1 place_armies 24 2,
 go attack/transfer 2000
-player1 attack/transfer 39 40 2,player1 attack/transfer 40 41 1,player1 attack/transfer 41 42 296,player1 attack/transfer 42 41 254,
-settings starting_armies 7
-update_map 26 player1 137 39 player1 2 40 player1 4 41 player1 259 42 player1 297 23 neutral 2 25 neutral 2 38 neutral 2
-opponent_moves
+No moves
+settings starting_armies 5
+update_map 11 player1 296 24 player1 198 39 player1 2 10 neutral 2 12 player2 295 13 neutral 2 21 neutral 2 23 neutral 2 25 player2 198 38 neutral 2 40 neutral 2 41 neutral 2
+opponent_moves player2 place_armies 12 3 player2 place_armies 25 2
 

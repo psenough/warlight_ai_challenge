@@ -674,6 +674,31 @@ namespace bot
                     }
 
                 }
+
+                // if game is stuck with high stacks expand to get more income
+                if (armiesLeft > 0)
+                {
+                    bool bigstack = false;
+                    foreach (Region reg in state.VisibleMap.Regions)
+                    {
+                        if (reg.OwnedByPlayer(myName))
+                        {
+                            if (reg.Armies > 150)
+                            {
+                                bigstack = true;
+                            }
+                        }
+                    }
+                    if (bigstack)
+                    {
+                        List<DeployArmies> expand = ExpandNormal(state, armiesLeft);
+                        foreach (DeployArmies da in expand)
+                        {
+                            deployArmies.Add(da);
+                            armiesLeft -= da.Armies;
+                        }
+                    }
+                }
                 
                 // deploy rest of your income bordering the enemy
                 List<DeployArmies> placings = DeployBorderingEnemy(state, armiesLeft);
@@ -786,31 +811,6 @@ namespace bot
                         state.ScheduleFullAttack(rnn, r, armiesLeft);
                         deployArmies.Add(new DeployArmies(myName, rnn, armiesLeft));
                         armiesLeft = 0;
-                    }
-                }
-
-                // if game is stuck with high stacks expand to get more income
-                if (armiesLeft > 0)
-                {
-                    bool bigstack = false;
-                    foreach (Region reg in state.VisibleMap.Regions)
-                    {
-                        if (reg.OwnedByPlayer(myName))
-                        {
-                            if (reg.Armies > 200)
-                            {
-                                bigstack = true;
-                            }
-                        }
-                    }
-                    if (bigstack)
-                    {
-                        List<DeployArmies> expand = ExpandNormal(state, armiesLeft);
-                        foreach (DeployArmies da in expand)
-                        {
-                            deployArmies.Add(da);
-                            armiesLeft -= da.Armies;
-                        }
                     }
                 }
 
