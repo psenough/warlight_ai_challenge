@@ -937,7 +937,7 @@ namespace bot
                         enemyBorders = enemyBorders.OrderBy(p => p.Armies).ToList();
                         foreach (Region en in enemyBorders) {
                             Region enm = state.FullMap.GetRegion(en.Id);
-                            int needed = (int)((enm.Armies + estimatedOpponentIncome) * 1.2);
+                            int needed = (int)((enm.Armies + estimatedOpponentIncome) * 1.1);
                             if (armiesLeft > needed)
                             {
                                 bool alreadyScheduled = false;
