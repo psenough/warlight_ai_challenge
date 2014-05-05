@@ -976,6 +976,22 @@ namespace bot
                             foreach (Region a in fromRegion.Neighbors)
                             {
                                 Region an = state.FullMap.GetRegion(a.Id);
+
+                                // if we are already attacking a neutral and have troops to spare
+                                // why not use them to make sure we get the neutral?
+                                foreach (AttackTransferMove atm in attackTransferMoves)
+                                {
+                                    if ((armiesLeft > 0) && (atm.FromRegion.Id == fromRegion.Id) && (atm.ToRegion.Id == an.Id) && an.OwnedByPlayer("neutral"))
+                                    {
+                                        atm.FromRegion.ReservedArmies++;
+                                        atm.Armies++;
+                                        armiesLeft--;
+                                    }
+                                }
+
+                                // if not bordering an enemy
+                                // move leftover to where they can border an enemy
+                                // or finish the highest ranked expansion target superregion more easily
                                 int count = 0;
 
                                 // neighbour doesnt belong to us, can't move there
@@ -990,10 +1006,6 @@ namespace bot
                                     continue;
                                 }
 
-                                // if not bordering an enemy
-                                // move leftover to where they can border an enemy
-                                // or finish the highest ranked expansion target superregion more easily
-
                                 // we can also give a little bonus if it's bordering an area that will help finish the superregion
                                 foreach (Region neigh in a.Neighbors)
                                 {
@@ -1003,15 +1015,22 @@ namespace bot
                                 }
 
                                 a.tempSortValue = count;
+
                             }
 
-                            var lst = fromRegion.Neighbors.OrderByDescending(p => p.tempSortValue).ToList();
-                            Region dest = state.FullMap.GetRegion(lst[0].Id);
-                            if (dest.OwnedByPlayer(state.MyPlayerName) && (!eborder))
-                            {
-                                attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, dest, armiesLeft, 1));
-                                fromRegion.ReservedArmies += armiesLeft;
-                                armiesLeft = 0;
+                            //todo: if we have leftovers when finishing an area, dont move them around to just the next neutral
+                            //      move them either into the region that will be conquered this turn
+                            //      or to border another superregion
+
+                            if (armiesLeft > 0) { 
+                                var lst = fromRegion.Neighbors.OrderByDescending(p => p.tempSortValue).ToList();
+                                Region dest = state.FullMap.GetRegion(lst[0].Id);
+                                if (dest.OwnedByPlayer(state.MyPlayerName) && (!eborder))
+                                {
+                                    attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, dest, armiesLeft, 1));
+                                    fromRegion.ReservedArmies += armiesLeft;
+                                    armiesLeft = 0;
+                                }
                             }
                         }
                     }
