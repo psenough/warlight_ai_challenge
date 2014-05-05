@@ -339,13 +339,8 @@ namespace bot
                     Region neigh = state.FullMap.GetRegion(lst[0].Id);
                     if (neigh.OwnedByPlayer(myName))
                     {
-                        int deployed = state.ScheduleNeutralAttack(neigh, region, armiesLeft);
-                        if (armiesLeft >= deployed)
-                        {
-                            deployArmies.Add(new DeployArmies(myName, neigh, armiesLeft));
-                            //neigh.PledgedArmies += armiesLeft;
-                            armiesLeft = 0;
-                        }
+                        deployArmies.Add(new DeployArmies(myName, neigh, armiesLeft));
+                        state.ScheduleAttack(neigh, region, armiesLeft, neigh.Armies + armiesLeft - 1 );
                     }
                 }
             }
@@ -1008,11 +1003,6 @@ namespace bot
                 Region from = state.FullMap.GetRegion(atm.FromRegion.Id);
                 Region to = state.FullMap.GetRegion(atm.ToRegion.Id);
                 int armyCount = atm.Armies;
-
-                if ((from.Id == 21) && (to.Id == 12) && (state.RoundNumber == 7))
-                {
-                    Console.Error.WriteLine("dummy");
-                }
 
                 // if we have move orders in regions with leftover troops, use them up
                 int armiesAvail = from.Armies + from.PledgedArmies - 1;
