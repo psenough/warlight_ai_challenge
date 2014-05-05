@@ -347,6 +347,7 @@ namespace bot
                     foreach (Region a in region.Neighbors)
                     {
                         int aArmies = a.Armies + a.PledgedArmies - a.ReservedArmies;
+                        if (aArmies < 0) aArmies = 0;
                         if (!a.OwnedByPlayer(myName)) aArmies = -1;
                         a.tempSortValue = aArmies;
                     }
