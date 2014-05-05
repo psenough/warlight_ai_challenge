@@ -1,9 +1,11 @@
 
-test new deployment / defensive stack moves / stack piling moves
-
-the first expansiontarget might not be safe to finish but the second might, we should be finishing the second then
+when deploying, give priority to regions bordering superregions that might be owned by the opponent (only opponent and unknowns and enough rounds to have finished it)
 
 prioritize heavy attack to always try to break estimated superregion instead of enemies largest stack (situation where we are in north africa, enemy has troops in africa or europe with bigger stack then in south america, we want to break south america while we have stack advantage to do it)
+
+expandnormal priority should be in reaching enemy with stack, not finish our second superregion
+
+there are situation where the first expansiontarget might not be safe to finish this turn but the second is, we should be finishing the second then
 
 stacks exception to expand minimally should only be applied when we have safe superregions to expand into
 
