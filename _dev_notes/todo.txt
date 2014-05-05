@@ -1,4 +1,8 @@
 
+if we have a stack protecting a superregion, dont attack out of position hard, unless there is only 1 target left (dont leave northafrica wide open)
+
+stack should split in multiple when having overwhelming army advantage (4 times the opponent)
+
 there are situation where the first expansiontarget might not be safe to finish this turn but the second is, we should be finishing the second then
 
 stacks exception to expand minimally should only be applied when we have safe superregions to expand into
@@ -6,8 +10,6 @@ stacks exception to expand minimally should only be applied when we have safe su
 when finishing a superregion dont deploy more armies than necessary, deploy the rest on the region closest to the next predicted enemy starting point
 
 when finishing a superregion, make sure you're giving attack priority to the territories that only have 1 neutral border (will help finish africa faster / more elegantly)
-
-if we have a stack protecting a superregion, dont attack out of position hard, unless there is only 1 target left (dont leave northafrica wide open)
 
 dont run into walls (improve estimated opponent income) - re-calc estimate of opponent income after we have successful attack. (we could have broken one of their areas)
 

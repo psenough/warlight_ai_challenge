@@ -264,7 +264,7 @@ namespace bot
                         int deployed = state.ScheduleNeutralAttack(neigh, region, armiesLeft);
                         if (armiesLeft >= deployed) {
                             deployArmies.Add(new DeployArmies(myName, neigh, deployed));
-                            neigh.PledgedArmies += deployed;
+                            //neigh.PledgedArmies += deployed;
                             armiesLeft -= deployed;
                         }
                     }
@@ -343,7 +343,7 @@ namespace bot
                         if (armiesLeft >= deployed)
                         {
                             deployArmies.Add(new DeployArmies(myName, neigh, armiesLeft));
-                            neigh.PledgedArmies += armiesLeft;
+                            //neigh.PledgedArmies += armiesLeft;
                             armiesLeft = 0;
                         }
                     }
@@ -450,7 +450,6 @@ namespace bot
                     {
                         int deployed = state.ScheduleNeutralAttack(attacker, target, armiesLeft);
                         deployArmies.Add(new DeployArmies(myName, attacker, deployed));
-                        attacker.PledgedArmies += deployed;
                         armiesLeft -= deployed;
                     }
                     else
@@ -519,7 +518,8 @@ namespace bot
             if (target.OwnedByPlayer(opponentName) && attacker.OwnedByPlayer(myName))
             {
                 deployArmies.Add(new DeployArmies(myName, attacker, armiesLeft));
-                state.scheduledAttack.Add(new Tuple<int, int, int>(attacker.Id, target.Id, attacker.Armies - 1 + armiesLeft));
+                state.ScheduleAttack(attacker, target, armiesLeft, attacker.Armies - 1 + armiesLeft);
+                //state.scheduledAttack.Add(new Tuple<int, int, int>(attacker.Id, target.Id, attacker.Armies - 1 + armiesLeft));
                 armiesLeft = 0;
             }
 
@@ -613,7 +613,8 @@ namespace bot
                             if (target.OwnedByPlayer(opponentName) && attacker.OwnedByPlayer(myName))
                             {
                                 deployArmies.Add(new DeployArmies(myName, attacker, armiesLeft));
-                                state.scheduledAttack.Add(new Tuple<int, int, int>(attacker.Id, target.Id, attacker.Armies - 1 + armiesLeft));
+                                state.ScheduleAttack(attacker, target, armiesLeft, attacker.Armies - 1 + armiesLeft);
+                                //state.scheduledAttack.Add(new Tuple<int, int, int>(attacker.Id, target.Id, attacker.Armies - 1 + armiesLeft));
                                 armiesLeft = 0;
                             }
 
@@ -708,28 +709,32 @@ namespace bot
                             if (!state.FullMap.GetRegion(22).OwnedByPlayer(myName) && state.FullMap.GetRegion(36).OwnedByPlayer(myName))
                             {
                                 deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(36), armiesLeft));
-                                state.scheduledAttack.Add(new Tuple<int, int, int>(36, 22, state.FullMap.GetRegion(36).Armies - 1 + armiesLeft));
+                                state.ScheduleAttack(state.FullMap.GetRegion(36), state.FullMap.GetRegion(22), armiesLeft, state.FullMap.GetRegion(36).Armies - 1 + armiesLeft);
+                                //state.scheduledAttack.Add(new Tuple<int, int, int>(36, 22, state.FullMap.GetRegion(36).Armies - 1 + armiesLeft));
                                 armiesLeft = 0;
                             }
                             else // we dont have middle east (36) but have india (37)
                                 if (!state.FullMap.GetRegion(36).OwnedByPlayer(myName) && state.FullMap.GetRegion(37).OwnedByPlayer(myName))
                                 {
                                     deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(37), armiesLeft));
-                                    state.scheduledAttack.Add(new Tuple<int, int, int>(37, 36, state.FullMap.GetRegion(37).Armies - 1 + armiesLeft));
+                                    state.ScheduleAttack(state.FullMap.GetRegion(37), state.FullMap.GetRegion(36), armiesLeft, state.FullMap.GetRegion(37).Armies - 1 + armiesLeft);
+                                    //state.scheduledAttack.Add(new Tuple<int, int, int>(37, 36, state.FullMap.GetRegion(37).Armies - 1 + armiesLeft));
                                     armiesLeft = 0;
                                 }
                                 else // we dont have india (37) but have siam (38)
                                     if (!state.FullMap.GetRegion(37).OwnedByPlayer(myName) && state.FullMap.GetRegion(38).OwnedByPlayer(myName))
                                     {
                                         deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(38), armiesLeft));
-                                        state.scheduledAttack.Add(new Tuple<int, int, int>(38, 37, state.FullMap.GetRegion(38).Armies - 1 + armiesLeft));
+                                        state.ScheduleAttack(state.FullMap.GetRegion(38), state.FullMap.GetRegion(37), armiesLeft, state.FullMap.GetRegion(38).Armies - 1 + armiesLeft);
+                                        //state.scheduledAttack.Add(new Tuple<int, int, int>(38, 37, state.FullMap.GetRegion(38).Armies - 1 + armiesLeft));
                                         armiesLeft = 0;
                                     }
                                     else // we dont have siam (38) but have indonesia (39)
                                         if (!state.FullMap.GetRegion(38).OwnedByPlayer(myName) && state.FullMap.GetRegion(39).OwnedByPlayer(myName))
                                         {
                                             deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(39), armiesLeft));
-                                            state.scheduledAttack.Add(new Tuple<int, int, int>(39, 38, state.FullMap.GetRegion(39).Armies - 1 + armiesLeft));
+                                            state.ScheduleAttack(state.FullMap.GetRegion(39), state.FullMap.GetRegion(38), armiesLeft, state.FullMap.GetRegion(39).Armies - 1 + armiesLeft);
+                                            //state.scheduledAttack.Add(new Tuple<int, int, int>(39, 38, state.FullMap.GetRegion(39).Armies - 1 + armiesLeft));
                                             armiesLeft = 0;
                                         }
                                         else
@@ -994,6 +999,7 @@ namespace bot
                 }
             }
 
+
             // buff up any scheduled attack coming from regions with armies left lying around unused
             // remove any call that might run into a wall (unless it's high priority)
             List<AttackTransferMove> atmRemove = new List<AttackTransferMove>();
@@ -1002,6 +1008,11 @@ namespace bot
                 Region from = state.FullMap.GetRegion(atm.FromRegion.Id);
                 Region to = state.FullMap.GetRegion(atm.ToRegion.Id);
                 int armyCount = atm.Armies;
+
+                if ((from.Id == 21) && (to.Id == 12) && (state.RoundNumber == 7))
+                {
+                    Console.Error.WriteLine("dummy");
+                }
 
                 // if we have move orders in regions with leftover troops, use them up
                 int armiesAvail = from.Armies + from.PledgedArmies - 1;
@@ -1016,11 +1027,6 @@ namespace bot
                 //todo: refactor code above to distribute evenly when there are multiple attacks originating from same region
 
                 //todo: remove potential excessive armies used (due to the finish region +1 bug/feature)
-
-                if ((from.Id == 12) && (to.Id == 21) && (state.RoundNumber == 13))
-                {
-                    Console.WriteLine("dummy");
-                }
 
                 // prevent from hitting a wall against opponent
                 if (to.OwnedByPlayer(opponentName))

@@ -671,6 +671,22 @@ namespace bot
             scheduledAttack.Add(new Tuple<int, int, int>(attacker.Id, target.Id, totalArmies));
         }
 
+        public void ScheduleAttack(Region attacker, Region target, int deployArmies, int attackArmies)
+        {
+            // validate our inputs
+            if (!attacker.OwnedByPlayer(MyPlayerName) || target.OwnedByPlayer("unknown") || target.OwnedByPlayer(MyPlayerName))
+            {
+                // there must have been an error somewhere on the algo
+                Console.Error.WriteLine("trying to schedule an attack with invalid inputs (on round " + RoundNumber + ")");
+                return;
+            }
+
+            attacker.PledgedArmies += deployArmies;
+
+            attacker.ReservedArmies += attackArmies;
+            scheduledAttack.Add(new Tuple<int, int, int>(attacker.Id, target.Id, attackArmies));
+        }
+
 
         public List<Region> EnemyBorders
         {
