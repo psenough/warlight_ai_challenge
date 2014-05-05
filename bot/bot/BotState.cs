@@ -713,6 +713,21 @@ namespace bot
             get { return hotStackZone; }
         }
 
+        public bool RegionBelongsToEnemySuperRegion(int id)
+        {
+            Region thisregion = fullMap.GetRegion(id);
+            SuperRegion thissr = fullMap.GetSuperRegion(thisregion.SuperRegion.Id);
+
+            foreach (Region reg in thissr.SubRegions)
+            {
+                Region rn = fullMap.GetRegion(reg.Id);
+                if (rn.OwnedByPlayer(myName)) return false;
+                if (rn.OwnedByPlayer("neutral")) return false;
+            }
+
+            return true;
+        }
+
         public bool RegionBelongsToOurSuperRegion(int id)
         {
             Region thisregion = fullMap.GetRegion(id);

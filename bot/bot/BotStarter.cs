@@ -70,6 +70,8 @@ namespace bot
 
                 foreach (Region reg in state.EnemyBorders)
                 {
+                    bool enemysr = state.RegionBelongsToEnemySuperRegion(reg.Id);
+
                     foreach (Region regn in reg.Neighbors)
                     {
                         Region rn = state.FullMap.GetRegion(regn.Id);
@@ -77,19 +79,25 @@ namespace bot
                         {
                             int count = 1;
 
-                            // if the threat is to a region belonging to a superregion we own: count += 3;
+                            // if the threat is coming from a superregion the enemy owns
+                            if (enemysr)
+                            {
+                                count += 10;
+                            }
+
+                            // if the threat is to a region belonging to a superregion we own
                             if (state.RegionBelongsToOurSuperRegion(rn.Id))
                             {
                                 count += 12;
                             }
 
-                            // if the threat is to a region bordering a superregion we own: count += 2;
+                            // if the threat is to a region bordering a superregion we own
                             if (state.RegionBordersOneOfOurOwnSuperRegions(rn.Id))
                             {
                                 count += 8;
                             }
 
-                            // if the threat is to a region being double bordered by enemy: count +=1;
+                            // if the threat is to a region being double bordered by enemy
                             int countenemy = 0;
                             foreach (Region nnnn in rn.Neighbors)
                             {
