@@ -587,6 +587,31 @@ namespace bot
                     
                 }
 
+                // if game is stuck with high stacks expand to get more income
+                if (armiesLeft > 0)
+                {
+                    bool bigstack = false;
+                    foreach (Region reg in state.VisibleMap.Regions)
+                    {
+                        if (reg.OwnedByPlayer(myName))
+                        {
+                            if (reg.Armies > 180)
+                            {
+                                bigstack = true;
+                            }
+                        }
+                    }
+                    if (bigstack)
+                    {
+                        List<DeployArmies> expand = ExpandNormal(state, armiesLeft);
+                        foreach (DeployArmies da in expand)
+                        {
+                            deployArmies.Add(da);
+                            armiesLeft -= da.Armies;
+                        }
+                    }
+                }
+
                 if (finishableSuperRegion)
                 {
                     List<DeployArmies> deploy = FinishSuperRegion(state, armiesLeft);
@@ -673,31 +698,6 @@ namespace bot
                         }
                     }
 
-                }
-
-                // if game is stuck with high stacks expand to get more income
-                if (armiesLeft > 0)
-                {
-                    bool bigstack = false;
-                    foreach (Region reg in state.VisibleMap.Regions)
-                    {
-                        if (reg.OwnedByPlayer(myName))
-                        {
-                            if (reg.Armies > 150)
-                            {
-                                bigstack = true;
-                            }
-                        }
-                    }
-                    if (bigstack)
-                    {
-                        List<DeployArmies> expand = ExpandNormal(state, armiesLeft);
-                        foreach (DeployArmies da in expand)
-                        {
-                            deployArmies.Add(da);
-                            armiesLeft -= da.Armies;
-                        }
-                    }
                 }
                 
                 // deploy rest of your income bordering the enemy
