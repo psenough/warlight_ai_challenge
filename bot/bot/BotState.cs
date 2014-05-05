@@ -377,14 +377,14 @@ namespace bot
                                         if (regn.OwnedByPlayer(MyPlayerName)) count += 2;
 
                                         // if there is a border beloging to the enemy, it's not a very good area for expansion
-                                        if (regn.OwnedByPlayer(OpponentPlayerName)) count -= 5;
+                                        if (regn.OwnedByPlayer(OpponentPlayerName)) count -= 6;
                                     }
 
                                 }
 
                                 count += (sr.SubRegions.Count - unknowns); // the less unknowns ratio the better
                                 count += mine * 3;
-                                count += (10 - sr.SubRegions.Count) * 2; // less territories the better
+                                count += (12 - sr.SubRegions.Count) * 2; // less territories the better, easier to defend
                                 count += sr.ArmiesReward; // more army rewards the better
 
                                 //todo: later: fine tune the territory to army reward math

@@ -189,9 +189,24 @@ namespace bot
                 foreach (Region an in region.Neighbors)
                 {
                     Region a = state.FullMap.GetRegion(an.Id);
-                    int aArmies = a.Armies + a.PledgedArmies - a.ReservedArmies;
-                    if (!a.OwnedByPlayer(myName)) aArmies = -1;
-                    an.tempSortValue = aArmies;
+                    if (!a.OwnedByPlayer(myName)) {
+                        an.tempSortValue = -1;
+                    } else { 
+                        // more armies available the better
+                        int aArmies = a.Armies + a.PledgedArmies - a.ReservedArmies;
+                        an.tempSortValue = aArmies;
+
+                        // if that attacker has only one neutral of this superregion in sight, give it a little bonus
+                        // this will help determine that this is the territory attacking when there are others with same armies available
+                        int neutralcnt = 0;
+                        foreach (Region un in a.Neighbors)
+                        {
+                            Region u = state.FullMap.GetRegion(un.Id);
+                        
+                            if (u.OwnedByPlayer("neutral") && (u.SuperRegion.Id == reg.Id)) neutralcnt++;
+                        }
+                        if (neutralcnt == 1) an.tempSortValue++;
+                    }
                 }
                 var neigh = region.Neighbors.OrderByDescending(p => p.tempSortValue).ToList();
 
@@ -867,7 +882,7 @@ namespace bot
 
                         //todo: later: apply machine learning heuristic to determine best small attacks behavior through game
 
-                        // attack regions with small number of armies, to clear them out
+                        // attack regions that only have small number of armies, to clear them out
                         foreach (Region enmm in enemyBorders)
                         {
                             Region en = state.FullMap.GetRegion(enmm.Id);
@@ -889,12 +904,12 @@ namespace bot
                             }
 
                             // attack north africa with 2 on last action
-                            if ((en.Id == 21) && (state.AfricaCount > 3) && (armiesLeft >= 2))
+                            /*if ((en.Id == 21) && (state.AfricaCount > 3) && (armiesLeft >= 2))
                             {
                                 attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, en, 2, 10));
                                 armiesLeft -= 2;
                                 fromRegion.ReservedArmies += 2;
-                            }
+                            }*/
 
                         }
 
@@ -914,31 +929,40 @@ namespace bot
                             }
                         }
 
-                        // check if we can attack the enemies biggest stack with our own stack
-                        Region enm = state.FullMap.GetRegion(enemyBorders[enemyBorders.Count - 1].Id);
-                        if (armiesLeft > enm.Armies + estimatedOpponentIncome)
-                        {
-                            bool alreadyScheduled = false;
-                            foreach (AttackTransferMove atk in attackTransferMoves)
+                        //todo: need to also estimate first order transfers (from previous round who went into unknown; and from visible neighbours)
+
+                        //todo: beware of attacking out when there is another enemy border with more then one large stack
+
+                        enemyBorders = enemyBorders.OrderBy(p => p.Armies).ToList();
+                        foreach (Region en in enemyBorders) {
+                            Region enm = state.FullMap.GetRegion(en.Id);
+                            int needed = (int)((enm.Armies + estimatedOpponentIncome) * 1.2);
+                            if (armiesLeft > needed)
                             {
-                                // if it was already scheduled, upgrade it to use the remaining armies
-                                if ((atk.FromRegion.Id == fromRegion.Id) && (atk.ToRegion.Id == enm.Id)){
-                                    atk.Armies += armiesLeft;
-                                    atk.FromRegion.ReservedArmies += armiesLeft;
+                                bool alreadyScheduled = false;
+                                foreach (AttackTransferMove atk in attackTransferMoves)
+                                {
+                                    // if it was already scheduled, upgrade it to use the remaining armies
+                                    if ((atk.FromRegion.Id == fromRegion.Id) && (atk.ToRegion.Id == enm.Id)){
+                                        atk.Armies += needed;
+                                        atk.FromRegion.ReservedArmies += needed;
+                                        armiesLeft -= needed;
+                                        alreadyScheduled = true;
+                                        break;
+                                    }
+                                }
+
+                                // if not previously scheduled then test attack fullforce
+                                if (!alreadyScheduled) {
+                                    attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, enm, needed, 5));
+                                    fromRegion.ReservedArmies += needed;
                                     armiesLeft = 0;
-                                    alreadyScheduled = true;
                                 }
                             }
 
-                            // if not previously scheduled then test attack fullforce
-                            if (!alreadyScheduled) {
-                                attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, enm, armiesLeft, 5));
-                                fromRegion.ReservedArmies += armiesLeft;
-                                armiesLeft = 0;
-                            }
                         }
-                        
-                        //todo: later: if we have multiple areas bordering an enemy, decide if we should attack with all or sit, delay a lot and attack with 2
+
+                        //todo: later: if we have multiple areas bordering an enemy, decide in which situations we should attack with all or sit, delay a lot and attack with 2
 
                     } else {
 
