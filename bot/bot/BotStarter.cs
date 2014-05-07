@@ -180,6 +180,7 @@ namespace bot
             //string opponentName = state.OpponentPlayerName;
 
             List<DeployArmies> deployArmies = new List<DeployArmies>();
+            if (state.ExpansionTargets.Count == 0) return deployArmies;
             
             //todo: later: calculate if we should be attacking a particular region more strongly (in case there is chance of counter or defensive positioning)
 
@@ -264,6 +265,7 @@ namespace bot
             string myName = state.MyPlayerName;
             //string opponentName = state.OpponentPlayerName;
             List<DeployArmies> deployArmies = new List<DeployArmies>();
+            if (state.ExpansionTargets.Count == 0) return deployArmies;
 
             // expand on the main expansion target
             SuperRegion expansionTarget = state.FullMap.GetSuperRegion(state.ExpansionTargets[0].Id);
@@ -348,6 +350,7 @@ namespace bot
             string myName = state.MyPlayerName;
             string opponentName = state.OpponentPlayerName;
             List<DeployArmies> deployArmies = new List<DeployArmies>();
+            if (state.ExpansionTargets.Count == 0) return deployArmies;
 
             //todo: later: dont bother expanding on areas that might have enemy in a few turns
 
@@ -520,6 +523,7 @@ namespace bot
         {
             string myName = state.MyPlayerName;
             int armiesLeft = state.StartingArmies;
+            if (state.ExpansionTargets.Count == 0) return false;
 
             bool finishableSuperRegion = false;
             SuperRegion targetSR = state.FullMap.GetSuperRegion(state.ExpansionTargets[0].Id);
@@ -638,7 +642,7 @@ namespace bot
                         }
                     }
 
-                    if (armiesLeft > 0)
+                    if ((armiesLeft > 0) && (state.ExpansionTargets.Count > 0))
                     {
                         // do minimum expansion, but only on expansiontargets that are close to being finished
                         // or we know the game has been stalled for a while (stacks bigger then, lets say 50)
@@ -993,13 +997,15 @@ namespace bot
                                 }
 
                                 // we can also give a little bonus if it's bordering an area that will help finish the superregion
-                                foreach (Region neigh in a.Neighbors)
+                                if (state.ExpansionTargets.Count > 1)
                                 {
-                                    an = state.FullMap.GetRegion(neigh.Id);
-                                    if (an.OwnedByPlayer(opponentName)) count += 10;
-                                    if (an.OwnedByPlayer("neutral") && ((an.SuperRegion.Id == state.ExpansionTargets[0].Id) || (an.SuperRegion.Id == state.ExpansionTargets[1].Id))) count++;
+                                    foreach (Region neigh in a.Neighbors)
+                                    {
+                                        an = state.FullMap.GetRegion(neigh.Id);
+                                        if (an.OwnedByPlayer(opponentName)) count += 10;
+                                        if (an.OwnedByPlayer("neutral") && ((an.SuperRegion.Id == state.ExpansionTargets[0].Id) || (an.SuperRegion.Id == state.ExpansionTargets[1].Id))) count++;
+                                    }
                                 }
-
                                 a.tempSortValue = count;
 
                             }

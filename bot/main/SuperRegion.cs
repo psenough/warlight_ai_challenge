@@ -101,12 +101,13 @@ namespace main
             }
 
             // if player1 + income has double number of armies of neutrals, we can finish this territory
-            if (p1n > nn * 2) return true;
+            if (p1c >= nn * 4 - 1) return true;
+            // -1 because we can get lucky with a 3vs2 on FTB but we usually want all attacks to be 4vs2, no more then 1 3vs2 per attempt to finish superregion
 
             //todo: might be worth to refactor this to return or store an array of deployment and move instruction
             //todo: might be worth to refactor this later to create strategy to attack player2
 
-            return true;
+            return false;
         }
 
 
