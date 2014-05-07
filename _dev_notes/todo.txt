@@ -1,5 +1,11 @@
 
+if you're attacking out of a stack facing multiple enemies, only use double the possible that the enemy can deploy, not more
+
 when transfering leftovers to an enemy border estimate if enemy has a stack nearby (from a visible neighbor or from last turn)
+
+if stacking in Africa against an enemy that is not on another superregion, walk towards the next hotspot with your stack...
+
+if SA based, stack in north africa and slowly expand to north america instead of expanding in africa
 
 dont run into walls (improve estimated opponent income) - re-calc estimate of opponent income after we have successful attack. (we could have broken one of their areas)
 
@@ -11,3 +17,5 @@ have better heuristics on how to handle bordering enemy regions with 1 or 2 armi
 - only do small attacks when having a bigger stack
 - only do small attacks when region is bordering multiple areas
 - only do small attacks when region has had no change of armies on last 2 turns
+
+is safe triple pick in europe worth it? (might just be lucky, not smart)

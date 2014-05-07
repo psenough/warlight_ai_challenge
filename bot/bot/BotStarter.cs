@@ -72,6 +72,18 @@ namespace bot
                 {
                     bool enemysr = state.RegionBelongsToEnemySuperRegion(reg.Id);
 
+                    //double check if enemy had enough turns to actually take the superregion
+                    //if (enemysr) { 
+                    //    int nregions = state.FullMap.GetSuperRegion(reg.SuperRegion.Id).SubRegions.Count;
+                    //    if ((nregions > 4) && (state.RoundNumber < nregions * 2)) enemysr = false;
+                    //}
+                    // not very reliable
+
+                    // let's assume enemy will never finish asia
+                    // yes, it might be dangerous on games that drag out
+                    // but a lot less dangerous then deploying in egypt and leaving north africa wide open on a regular basis
+                    if (reg.SuperRegion.Id == 5) enemysr = false;
+
                     foreach (Region regn in reg.Neighbors)
                     {
                         Region rn = state.FullMap.GetRegion(regn.Id);
@@ -777,6 +789,13 @@ namespace bot
                                         {
                                             Console.Error.WriteLine("ozbased turn without any action?! (round " + state.RoundNumber + ")");
                                         }
+                        }
+                        else
+                        {
+                            // we have foot in africa/europe/south america but enemy could be expanding safely on north america...
+
+                            //todo: how can we be sure we are not wasting armies going to alaska? need to track historic of enemy deployments...
+
                         }
                     }
 
