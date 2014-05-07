@@ -338,6 +338,66 @@ namespace bot
                     break;
                 default: // start of other rounds
                     {
+
+                        // check if we are based somewhere
+                        int ozCount = 0;
+                        int saCount = 0;
+                        africaCount = 0;
+                        foreach (Region reg in FullMap.Regions)
+                        {
+
+                            // check if we are ozBased
+                            // all 4 areas of oz are ours & siam is not enemy & brazil is not ours
+                            // brazil is main target, if we have a foot there it doesnt matter if we are oz based or not
+                            if (((reg.Id == 39) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 40) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 41) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 42) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 12) && (!reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 38) && (!reg.OwnedByPlayer(OpponentPlayerName)))
+                                )
+                            {
+                                ozCount++;
+                            }
+
+                            //todo: refactor this to use the new SuperRegion.ownedByUs bool
+
+                            // check if we are saBased
+                            // all 4 areas of south america are ours
+                            if (((reg.Id == 10) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 11) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 12) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 13) && (reg.OwnedByPlayer(MyPlayerName)))
+                                )
+                            {
+                                saCount++;
+                            }
+
+                            // check if we are africaBased
+                            // all 6 areas of africa are ours
+                            if (((reg.Id == 21) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 22) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 23) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 24) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 25) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 26) && (reg.OwnedByPlayer(MyPlayerName)))
+                                )
+                            {
+                                africaCount++;
+                            }
+                        }
+                        if (ozCount == 6) ozBased = true;
+                        if (saCount == 4) saBased = true;
+                        if (africaCount == 6) africaBased = true;
+
+                        bool enemyOnAfrica = false;
+                        for (int j = 21; j <= 26; j++)
+                        {
+                            Region reg = fullMap.GetRegion(j);
+                            if (reg.OwnedByPlayer(opponentName)) enemyOnAfrica = true;
+                        }
+
+
                         // update our expansion target
                         if (expansionTargetSuperRegions.Count > 0)
                         {
@@ -387,7 +447,31 @@ namespace bot
                                 count += (12 - sr.SubRegions.Count) * 2; // less territories the better, easier to defend
                                 count += sr.ArmiesReward; // more army rewards the better
 
-                                //todo: later: fine tune the territory to army reward math
+                                //todo: later: fine tune this heuristic math
+
+                                
+                                // priority exceptions:
+                                
+                                // if we are ozbased and africa has enemies, main expansion target should be asia
+                                if (sr.Id == 5) // asia 
+                                {
+                                    if ((OZBased) && (enemyOnAfrica)) count += 10;
+                                }
+
+                                // if we are ozbased and enemy is stuck in south america, finish up africa
+                                if (sr.Id == 4) // africa
+                                {
+                                    if ((OZBased) && (!enemyOnAfrica)) count += 2;
+                                }
+
+                                // if we are sabased main expansion target should always be north america
+                                // africa is too vulnerable!
+                                if (sr.Id == 1) // north america
+                                {
+                                    if (SABased) count += 15;
+                                }
+
+
 
                                 if (redflag) count = -1;
 
@@ -399,57 +483,6 @@ namespace bot
                         }
 
 
-                        // check if we are based somewhere
-                        int ozCount = 0;
-                        int saCount = 0;
-                        africaCount = 0;
-
-                        foreach (Region reg in FullMap.Regions)
-                        {
-
-                            // check if we are ozBased
-                            // all 4 areas of oz are ours & siam is not enemy & brazil is not ours
-                            // brazil is main target, if we have a foot there it doesnt matter if we are oz based or not
-                            if (((reg.Id == 39) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                                    ((reg.Id == 40) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                                    ((reg.Id == 41) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                                    ((reg.Id == 42) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                                    ((reg.Id == 12) && (!reg.OwnedByPlayer(MyPlayerName))) ||
-                                    ((reg.Id == 38) && (!reg.OwnedByPlayer(OpponentPlayerName)))
-                                )
-                            {
-                                ozCount++;
-                            }
-
-                            //todo: refactor this to use the new SuperRegion.ownedByUs bool
-
-                            // check if we are saBased
-                            // all 4 areas of south america are ours
-                            if (((reg.Id == 10) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                                    ((reg.Id == 11) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                                    ((reg.Id == 12) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                                    ((reg.Id == 13) && (reg.OwnedByPlayer(MyPlayerName)))
-                                )
-                            {
-                                saCount++;
-                            }
-
-                            // check if we are africaBased
-                            // all 6 areas of africa are ours
-                            if (((reg.Id == 21) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                                    ((reg.Id == 22) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                                    ((reg.Id == 23) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                                    ((reg.Id == 24) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                                    ((reg.Id == 25) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                                    ((reg.Id == 26) && (reg.OwnedByPlayer(MyPlayerName)))
-                                )
-                            {
-                                africaCount++;
-                            }
-                        }
-                        if (ozCount == 6) ozBased = true;
-                        if (saCount == 4) saBased = true;
-                        if (africaCount == 6) africaBased = true;
 
                     } break;
             }

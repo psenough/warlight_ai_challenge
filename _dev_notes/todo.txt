@@ -5,8 +5,6 @@ when transfering leftovers to an enemy border estimate if enemy has a stack near
 
 if stacking in Africa against an enemy that is not on another superregion, walk towards the next hotspot with your stack...
 
-if SA based, stack in north africa and slowly expand to north america instead of expanding in africa
-
 dont run into walls (improve estimated opponent income) - re-calc estimate of opponent income after we have successful attack. (we could have broken one of their areas)
 
 if we have leftovers when finishing an area, dont move them around aimlessly, move them into the finished region (if > 1) or to bordering another super region instead of a neutral inside the superregion that will be finished this turn

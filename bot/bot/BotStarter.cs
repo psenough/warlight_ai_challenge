@@ -258,78 +258,45 @@ namespace bot
             return deployArmies;
         }
 
-        // is only called when no enemy is in sight
-        public List<DeployArmies> ExpandNormal(BotState state, int armiesLeft)
+        // more aggressive expansion, used only when game is stalled to help move things along for minimal expansion and finishregion to complete it
+        public List<DeployArmies> ExpandGameStalled(BotState state, int armiesLeft)
         {
             string myName = state.MyPlayerName;
             string opponentName = state.OpponentPlayerName;
             List<DeployArmies> deployArmies = new List<DeployArmies>();
 
             // expand on the main expansion target
-            for (int i = 0; i < 2; i++)
-            //int i = 0;
+            SuperRegion expansionTarget = state.FullMap.GetSuperRegion(state.ExpansionTargets[0].Id);
+            foreach (Region reg in expansionTarget.SubRegions)
             {
-                foreach (Region reg in state.ExpansionTargets[i].SubRegions)
+                Region region = state.FullMap.GetRegion(reg.Id);
+
+                // skip if you already own this region
+                if (region.OwnedByPlayer(myName)) continue;
+
+                // find our neighbour with highest available armies
+                foreach (Region a in region.Neighbors)
                 {
-                    Region region = state.FullMap.GetRegion(reg.Id);
-
-                    // skip if you already own this region
-                    if (region.OwnedByPlayer(myName)) continue;
-
-                    // find our neighbour with highest available armies
-                    foreach (Region a in region.Neighbors)
-                    {
-                        int aArmies = a.Armies + a.PledgedArmies - a.ReservedArmies;
-                        if (!a.OwnedByPlayer(myName)) aArmies = -1;
-                        a.tempSortValue = aArmies;
-                    }
-                    var lst = region.Neighbors.OrderByDescending(p => p.tempSortValue).ToList();
-                    Region neigh = state.FullMap.GetRegion(lst[0].Id);
-
-                    if (neigh.OwnedByPlayer(myName))
-                    {
-                        int deployed = state.ScheduleNeutralAttack(neigh, region, armiesLeft);
-                        if (armiesLeft >= deployed) {
-                            deployArmies.Add(new DeployArmies(myName, neigh, deployed));
-                            //neigh.PledgedArmies += deployed;
-                            armiesLeft -= deployed;
-                        }
-                    }
-
-                    // only do the expansion for the first neutral region found
-                    //break;
-
+                    int aArmies = a.Armies + a.PledgedArmies - a.ReservedArmies;
+                    if (!a.OwnedByPlayer(myName)) aArmies = -1;
+                    a.tempSortValue = aArmies;
                 }
+                var lst = region.Neighbors.OrderByDescending(p => p.tempSortValue).ToList();
+                Region neigh = state.FullMap.GetRegion(lst[0].Id);
 
-            }
-            
-            // deploy the rest of our armies randomly
-            if (armiesLeft > 0)
-            {
-                // do not deploy in areas that are safe
-                List<Region> list = new List<Region>();
-                foreach (Region reg in state.VisibleMap.Regions)
+                if (neigh.OwnedByPlayer(myName))
                 {
-                    if (!reg.IsSafe(state))
-                    {
-                        // dont deploy on venezuela if we have south america
-                        if (state.SABased && (reg.Id == 10)) continue;
-
-                        // dont deploy on north africa if we have africa
-                        if (state.AfricaBased && (reg.Id == 21)) continue;
-
-                        // dont deploy on east africa if we have africa
-                        if (state.AfricaBased && (reg.Id == 23)) continue;
-
-                        list.Add(reg);
+                    int deployed = state.ScheduleNeutralAttack(neigh, region, armiesLeft);
+                    if (armiesLeft >= deployed) {
+                        deployArmies.Add(new DeployArmies(myName, neigh, deployed));
+                        //neigh.PledgedArmies += deployed;
+                        armiesLeft -= deployed;
                     }
                 }
 
-                List<DeployArmies> placings = DeployAtRandom(list, state, myName, armiesLeft);
-                foreach (DeployArmies pl in placings)
-                {
-                    deployArmies.Add(pl);
-                }
+                // only do the expansion for the first neutral region found
+                //break;
+
             }
 
             return deployArmies;
@@ -615,7 +582,7 @@ namespace bot
                     }
                     if (bigstack)
                     {
-                        List<DeployArmies> expand = ExpandNormal(state, armiesLeft);
+                        List<DeployArmies> expand = ExpandGameStalled(state, armiesLeft);
                         foreach (DeployArmies da in expand)
                         {
                             deployArmies.Add(da);
