@@ -177,7 +177,7 @@ namespace bot
         public List<DeployArmies> FinishSuperRegion(BotState state, int armiesLeft)
         {
             string myName = state.MyPlayerName;
-            string opponentName = state.OpponentPlayerName;
+            //string opponentName = state.OpponentPlayerName;
 
             List<DeployArmies> deployArmies = new List<DeployArmies>();
             
@@ -262,7 +262,7 @@ namespace bot
         public List<DeployArmies> ExpandGameStalled(BotState state, int armiesLeft)
         {
             string myName = state.MyPlayerName;
-            string opponentName = state.OpponentPlayerName;
+            //string opponentName = state.OpponentPlayerName;
             List<DeployArmies> deployArmies = new List<DeployArmies>();
 
             // expand on the main expansion target
@@ -307,7 +307,7 @@ namespace bot
         public List<DeployArmies> ExpandTowardsEnemyWithFullStack(BotState state, int armiesLeft)
         {
             string myName = state.MyPlayerName;
-            string opponentName = state.OpponentPlayerName;
+            //string opponentName = state.OpponentPlayerName;
             List<DeployArmies> deployArmies = new List<DeployArmies>();
 
             // determine the best region the opponent is most likely in

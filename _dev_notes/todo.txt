@@ -1,9 +1,9 @@
 
-if you're attacking out of a stack facing multiple enemies, only use double the possible that the enemy can deploy, not more
-
 when transfering leftovers to an enemy border estimate if enemy has a stack nearby (from a visible neighbor or from last turn)
 
-if stacking in Africa against an enemy that is not on another superregion, walk towards the next hotspot with your stack...
+if you're attacking out of a stack facing multiple enemies, only use double the possible that the enemy can deploy, not more (test if it's not already implemented)
+
+if stacking in the middle of Africa against an enemy that is not on another superregion, walk towards north africa with your stack...
 
 dont run into walls (improve estimated opponent income) - re-calc estimate of opponent income after we have successful attack. (we could have broken one of their areas)
 
