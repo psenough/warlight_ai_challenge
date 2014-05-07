@@ -707,7 +707,12 @@ namespace bot
                 }
 
             } else {
-                
+
+                if (state.RoundNumber == 18)
+                {
+                    Console.Error.WriteLine("dummy");
+                }
+
                 // no enemy in sight, expand normally / strategically
 
                 if (finishableSuperRegion)
@@ -802,9 +807,12 @@ namespace bot
                             // so go hard into middle east
                             Region rnn = state.FullMap.GetRegion(22); // deploy all on egypt
                             Region r = state.FullMap.GetRegion(36); // attack middle east
-                            state.ScheduleFullAttack(rnn, r, armiesLeft);
-                            deployArmies.Add(new DeployArmies(myName, rnn, armiesLeft));
-                            armiesLeft = 0;
+                            if (!r.OwnedByPlayer(myName))
+                            {
+                                state.ScheduleFullAttack(rnn, r, armiesLeft);
+                                deployArmies.Add(new DeployArmies(myName, rnn, armiesLeft));
+                                armiesLeft = 0;
+                            }
                         }
                     }
 
@@ -813,9 +821,12 @@ namespace bot
                     {
                         Region rnn = state.FullMap.GetRegion(12); // deploy all on brazil
                         Region r = state.FullMap.GetRegion(21); // attack north africa
-                        state.ScheduleFullAttack(rnn, r, armiesLeft);
-                        deployArmies.Add(new DeployArmies(myName, rnn, armiesLeft));
-                        armiesLeft = 0;
+                        if (!r.OwnedByPlayer(myName))
+                        {
+                            state.ScheduleFullAttack(rnn, r, armiesLeft);
+                            deployArmies.Add(new DeployArmies(myName, rnn, armiesLeft));
+                            armiesLeft = 0;
+                        }
                     }
                 }
 
