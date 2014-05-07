@@ -129,6 +129,21 @@ namespace bot
 
                 state.HotStackZone = lst[0].Id;
 
+
+                // dispel hotstackzone if it has double the number of armies of all the enemy neighbours combined
+                Region hreg = state.FullMap.GetRegion(state.HotStackZone);
+                int enemycount = 0;
+                foreach (Region regn in hreg.Neighbors)
+                {
+                    Region nn = state.FullMap.GetRegion(regn.Id);
+                    if (nn.OwnedByPlayer(state.OpponentPlayerName))
+                    {
+                        enemycount += nn.Armies;
+                    }
+                }
+                if (hreg.Armies > enemycount * 2) state.HotStackZone = -1;
+
+
                 while (armiesLeft > 0)
                 {
                     foreach (Region rn in lst)

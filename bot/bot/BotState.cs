@@ -491,6 +491,7 @@ namespace bot
                     } break;
             }
 
+            // reset hotstackzone
             hotStackZone = -1;
 
         }
