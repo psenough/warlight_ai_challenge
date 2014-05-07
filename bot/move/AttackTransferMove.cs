@@ -21,6 +21,7 @@ namespace move
 		private Region toRegion;
 		private int armies;
         private int priority;
+        private bool locked;
 		
 		public AttackTransferMove(String playerName, Region fromRegion, Region toRegion, int armies)
 		{
@@ -29,6 +30,7 @@ namespace move
 			this.toRegion = toRegion;
 			this.armies = armies;
             this.priority = 0;
+            this.locked = false;
 		}
 
         public AttackTransferMove(String playerName, Region fromRegion, Region toRegion, int armies, int priority)
@@ -38,6 +40,7 @@ namespace move
             this.toRegion = toRegion;
             this.armies = armies;
             this.priority = priority;
+            this.locked = false;
         }
 
 		public int Armies
@@ -70,5 +73,11 @@ namespace move
         {
             get { return priority; }
         }
-	}
+        
+        public bool Locked
+        {
+            set { locked = value; }
+            get { return locked; }
+        }
+    }
 }

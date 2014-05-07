@@ -902,68 +902,131 @@ namespace bot
                                 {
                                     if (armiesLeft > en.Armies * 2)
                                     {
-                                        attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, en, en.Armies * 2, 5));
+                                        attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, en, en.Armies * 2, 3));
                                         armiesLeft -= en.Armies * 2;
                                         fromRegion.ReservedArmies += en.Armies * 2;
                                     }
                                 }
                             }
 
-                            // attack north africa with 2 on last action
-                            /*if ((en.Id == 21) && (state.AfricaCount > 3) && (armiesLeft >= 2))
-                            {
-                                attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, en, 2, 10));
-                                armiesLeft -= 2;
-                                fromRegion.ReservedArmies += 2;
-                            }*/
-
                         }
 
                         // move any remaining armies to hotzonestack
                         // this will make sure you're moving stacks back to important defensive position
-                        // and also merge stacks when double/triple bordering enemy
+                        // and also help merge stacks when double/triple bordering enemy
                         if (state.HotStackZone != -1)
                         {
                             foreach (Region reg in fromRegion.Neighbors)
                             {
                                 if (reg.Id == state.HotStackZone)
                                 {
-                                    attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, reg, armiesLeft, 2));
+                                    attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, state.FullMap.GetRegion(reg.Id), armiesLeft, 6));
                                     fromRegion.ReservedArmies += armiesLeft;
                                     armiesLeft = 0;
                                 }
                             }
                         }
 
-                        //todo: need to also estimate first order transfers (from previous round who went into unknown; and from visible neighbours)
-
-                        //todo: beware of attacking out when there is another enemy border with more then one large stack
-
+                        // divide stack armies on planned attacks
                         enemyBorders = enemyBorders.OrderBy(p => p.Armies).ToList();
                         foreach (Region en in enemyBorders) {
                             Region enm = state.FullMap.GetRegion(en.Id);
-                            int needed = (int)((enm.Armies + estimatedOpponentIncome) * 1.1);
-                            if (armiesLeft > needed)
+                            
+                            // determine how much is needed to not hit a wall
+                            int nstackcount = 0;
+                            foreach (Region reg in en.Neighbors)
                             {
+                                Region regn = state.FullMap.GetRegion(reg.Id);
+                                if (regn.OwnedByPlayer(state.OpponentPlayerName))
+                                {
+                                    nstackcount += regn.Armies - 1;
+                                }
+                            }
+                            int needed = (int)((enm.Armies + estimatedOpponentIncome + nstackcount) * 1.1);
+                            int max = (int)((enm.Armies + estimatedOpponentIncome + nstackcount) * 2);
+
+                            //todo: enemy stack could be hidden, we can use history to check
+
+                            // if it's bordering a suspected superregion we should be hitting it and it alone fullforce
+                            if ((armiesLeft > 0) && (state.RegionBelongsToEnemySuperRegion(enm.Id)))
+                            {
+                                
                                 bool alreadyScheduled = false;
+
+                                // check if it's already scheduled
                                 foreach (AttackTransferMove atk in attackTransferMoves)
                                 {
-                                    // if it was already scheduled, upgrade it to use the remaining armies
+                                    // if it was already scheduled buff it to use all armies
                                     if ((atk.FromRegion.Id == fromRegion.Id) && (atk.ToRegion.Id == enm.Id)){
-                                        atk.Armies += needed;
-                                        atk.FromRegion.ReservedArmies += needed;
-                                        armiesLeft -= needed;
+                                        int used = armiesLeft;
+                                        if (armiesLeft > max)
+                                        {
+                                            armiesLeft = max;
+                                            atk.Locked = true;
+                                        }
+                                        atk.Armies += used;
+                                        atk.FromRegion.ReservedArmies += used;
+                                        armiesLeft -= used;
                                         alreadyScheduled = true;
                                         break;
                                     }
                                 }
 
-                                // if not previously scheduled then test attack fullforce
-                                if (!alreadyScheduled) {
-                                    attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, enm, needed, 5));
-                                    fromRegion.ReservedArmies += needed;
-                                    armiesLeft = 0;
+                                // if not previously scheduled then try to schedule it with whatever we have
+                                if (!alreadyScheduled)
+                                {
+                                    int used = armiesLeft;
+                                    if (armiesLeft > max) armiesLeft = max;
+                                    attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, enm, used, 5));
+                                    if (armiesLeft >= max) attackTransferMoves[attackTransferMoves.Count - 1].Locked = true;
+                                    fromRegion.ReservedArmies += used;
                                 }
+                            }
+
+                            // distribute the rest evenly
+                         
+                            // divide it equally amongst the different targets
+                            if (armiesLeft > 0)
+                            {
+                                bool allLocked = false;
+
+                                while ((armiesLeft > 0) && (!allLocked)) {
+
+                                    bool alreadyScheduled = false;
+
+                                    // buff already scheduled
+                                    bool testLock = true;
+                                    foreach (AttackTransferMove atk in attackTransferMoves)
+                                    {
+                                        // if it was already scheduled buff it to use more armies until it's reached max
+                                        // don't buff if it's a small army attack (which always has priority of 3)
+                                        if ((atk.FromRegion.Id == fromRegion.Id) && (atk.ToRegion.Id == enm.Id) && (atk.Priority != 3) && (!atk.Locked)){
+                                            atk.Armies += 1;
+                                            atk.FromRegion.ReservedArmies += 1;
+                                            armiesLeft -= 1;
+                                            alreadyScheduled = true;
+                                            if (atk.Armies >= max) atk.Locked = true;
+                                        }
+                                        
+                                        if (armiesLeft <= 0) break;
+
+                                        if (!atk.Locked) testLock = false;
+                                    }
+                                    allLocked = testLock;
+
+                                    // if not previously scheduled then try to schedule it with minimum needed
+                                    if (!alreadyScheduled)
+                                    {
+                                        if (armiesLeft > needed)
+                                        {
+                                            attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, enm, needed, 5));
+                                            fromRegion.ReservedArmies += needed;
+                                        }
+                                        armiesLeft -= needed;
+                                    }
+                                }
+
+                                
                             }
 
                         }
