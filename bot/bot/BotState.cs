@@ -481,6 +481,10 @@ namespace bot
                             expansionTargetSuperRegions = expansionTargetSuperRegions.OrderByDescending(p => p.tempSortValue).ToList();
 
                         }
+                        else
+                        {
+                            //todo: we have run out of expansion targets, very rare situation but i guess we should go into another mode of some sort
+                        }
 
 
 
