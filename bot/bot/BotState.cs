@@ -171,6 +171,7 @@ namespace bot
             {
                 r.PlayerName = "unknown";
             }
+            
             visibleMap = fullMap.GetMapCopy();
             for (int i = 1; i < mapInput.Length; i++)
             {
@@ -209,6 +210,11 @@ namespace bot
        
             enemySighted = false;
             enemyBorders.Clear();
+
+            foreach (SuperRegion r in fullMap.superRegions)
+            {
+                r.checkInSight(fullMap);
+            }
 
             List<Region> unknownRegions = new List<Region>();
 
@@ -553,9 +559,21 @@ namespace bot
                 }
             }
 
-            // assume opponent has same armies as us 
-            estimatedOpponentIncome = startingArmies;
- 
+            // estimate enemy income
+            if (fullMap.AllSuperRegionsInSight())
+            {
+                int baseincome = 5;
+                foreach(SuperRegion sr in fullMap.superRegions) {
+                    if (sr.MightBeOwnedBy(fullMap, OpponentPlayerName)) baseincome += sr.ArmiesReward;
+                }
+                estimatedOpponentIncome = baseincome;
+            }
+            else
+            {
+                // assume opponent has same armies as us 
+                estimatedOpponentIncome = startingArmies;
+            }
+
             // if they deploy more, then they obviously have more
             if (tempArmies > estimatedOpponentIncome) estimatedOpponentIncome = tempArmies;
 

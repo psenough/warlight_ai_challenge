@@ -13,17 +13,25 @@ namespace main
         private int id;
         private int armiesReward;
         private List<Region> subRegions;
+
         public int tempSortValue;
 
         public int numberOfRegionsOwnedByUs;
         public int numberOfRegionsOwnedByOpponent;
         public bool ownedByUs;
+        public bool inSight;
 
         public SuperRegion(int id, int armiesReward)
         {
             this.id = id;
             this.armiesReward = armiesReward;
-            subRegions = new List<Region>();
+            this.subRegions = new List<Region>();
+
+            this.tempSortValue = 0;
+            this.numberOfRegionsOwnedByUs = -1;
+            this.numberOfRegionsOwnedByOpponent = -1;
+            this.ownedByUs = false;
+            this.inSight = false;
         }
 
         public void AddSubRegion(Region subRegion)
@@ -35,19 +43,29 @@ namespace main
         /**
          * @return A string with the name of the player that fully owns this SuperRegion
          */
-       /* public string OwnedByPlayer()
+        public string OwnedByPlayer(Map map)
     	{
-    		String playerName = subRegions.First().PlayerName;
+    		String playerName = map.GetRegion(subRegions.First().Id).PlayerName;
     		foreach(Region region in subRegions)
     		{
-    			if (playerName != region.PlayerName)
+                Region mapr = map.GetRegion(region.Id);
+    			if (playerName != mapr.PlayerName)
     				return null;
     		}
     		return playerName;
     	}
-        
-        useless function if our subregions are not updated every turn
-        */
+
+        public bool MightBeOwnedBy(Map map, String enemyName)
+        {
+            bool owned = true;
+            foreach (Region region in subRegions)
+            {
+                Region mapr = map.GetRegion(region.Id);
+                String playerName = mapr.PlayerName;
+                if ((playerName != enemyName) && (playerName != "unknown")) owned = false;
+            }
+            return owned;
+        }
 
         public int Id
         {
@@ -164,6 +182,22 @@ namespace main
             }
 
             return finishableSuperRegion;
+        }
+
+        public bool InSight
+        {
+            set { inSight = value; }
+            get { return inSight; }
+        }
+
+        public void checkInSight(Map map)
+        {
+            inSight = false;
+
+            foreach (Region reg in SubRegions)
+            {
+                if (!map.GetRegion(reg.Id).OwnedByPlayer("unknown")) inSight = true;
+            }
         }
     }
 

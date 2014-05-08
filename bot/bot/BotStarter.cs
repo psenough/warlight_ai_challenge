@@ -943,10 +943,9 @@ namespace bot
                         //todo: we should do a second layer of move neighbors towards stack
 
                         //todo: enemy stack could be hidden and moving in, we can use history to check
-
-
+                        
+                        
                         // divide stack armies on planned attacks
-                        enemyBorders = enemyBorders.OrderBy(p => p.Armies).ToList();
                         foreach (Region en in enemyBorders) {
                             Region enm = state.FullMap.GetRegion(en.Id);
                             
@@ -983,18 +982,19 @@ namespace bot
                                 }
 
                                 // if not previously scheduled then try to schedule it with whatever we have
-                                if (!alreadyScheduled)
+                                if ((!alreadyScheduled) && (armiesLeft > 0))
                                 {
                                     int used = armiesLeft;
                                     if (armiesLeft > max) armiesLeft = max;
                                     attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, enm, used, 5));
                                     if (armiesLeft >= max) attackTransferMoves[attackTransferMoves.Count - 1].Locked = true;
                                     fromRegion.ReservedArmies += used;
+                                    armiesLeft -= used;
                                 }
                             }
                         }
 
-                        // if we armiesleft at this point it means we are not threatening a superregion or have multiple borders
+                        // if we have armiesleft at this point it means we are not threatening a superregion or have multiple borders
                         // we should distribute the rest of the armies evenly
                         if (armiesLeft > 0)
                         {
@@ -1031,6 +1031,7 @@ namespace bot
                             while ((armiesLeft > 0) && (!allLocked) && (gotany))
                             {
                                 gotany = false;
+                                int biggestenemystack = -1;
                                 foreach (Region en in enemyBorders)
                                 {
                                     Region enm = state.FullMap.GetRegion(en.Id);
@@ -1041,23 +1042,27 @@ namespace bot
                                     int max = (int)((enm.Armies + estimatedOpponentIncome + nstackcount) * 2);
  
                                     // divide it equally amongst the different targets
+
+                                    // but give a little advantage against the highest stack
+                                    if (biggestenemystack < needed) biggestenemystack = needed;
                            
                                     // buff already scheduled
                                     bool testLock = true;
-
-                                    //if (state.RoundNumber == 6)
-                                    //{
-                                    //    Console.Error.WriteLine("dummy");
-                                    //}
 
                                     foreach (AttackTransferMove atk in attackTransferMoves)
                                     {
                                         // buff it to use more armies until it's reached max
                                         // don't buff if it's a small army attack (which always has priority of 3)
                                         if ((atk.FromRegion.Id == fromRegion.Id) && (atk.ToRegion.Id == enm.Id) && (atk.Priority != 3) && (!atk.Locked)){
-                                            atk.Armies += 1;
-                                            atk.FromRegion.ReservedArmies += 1;
-                                            armiesLeft -= 1;
+
+                                            int deploy = 1;
+                                            if (biggestenemystack == needed) deploy = 3;
+                                            if (armiesLeft > deploy)
+                                            {
+                                                atk.Armies += deploy;
+                                                atk.FromRegion.ReservedArmies += deploy;
+                                                armiesLeft -= deploy;
+                                            }
                                             if (atk.Armies >= max) atk.Locked = true;
                                             gotany = true;
                                         }
@@ -1069,7 +1074,6 @@ namespace bot
                                     }
                                     allLocked = testLock;
                                     
-
                                 }
                                 
                             }
@@ -1173,8 +1177,6 @@ namespace bot
                     armyCount += narmies;
                 }
 
-                //todo: refactor code above to distribute evenly when there are multiple attacks originating from same region
-
                 //todo: remove potential excessive armies used (due to the finish region +1 bug/feature)
 
                 // prevent from hitting a wall against opponent
@@ -1195,7 +1197,7 @@ namespace bot
                     if (armyCount <= to.Armies + state.EstimatedOpponentIncome + nstackcount) attack = false;
 
                     // if armies are the same and there was no deployortransfer: keep attack scheduled
-                    if ((to.Armies == to.PreviousTurnArmies) && (!to.DeployedOrTransferedThisTurn)) attack = true;
+                    if ((armyCount > 1) && (to.Armies == to.PreviousTurnArmies) && (!to.DeployedOrTransferedThisTurn)) attack = true;
 
                     // if priority is higher then 8: keep attack scheduled
                     if (atm.Priority >= 8) attack = true;

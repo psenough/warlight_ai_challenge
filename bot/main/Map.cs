@@ -133,5 +133,15 @@ namespace main
         {
             get { return string.Join(" ", regions.Select(region => region.Id + ";" + region.PlayerName + ";" + region.Armies)); }
         }
+
+        public bool AllSuperRegionsInSight()
+        {
+            bool all = true;
+            foreach (SuperRegion sr in superRegions)
+            {
+                if (!sr.InSight) all = false;
+            }
+            return all;
+        }
     }
 }
