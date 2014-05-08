@@ -118,6 +118,12 @@ namespace bot
                             }
                             if (countenemy > 1) count += 1;
 
+                            // if the threat is to a crucial area like brazil or north africa, little boost
+                            if ((rn.Id == 12) || (rn.Id == 21))
+                            {
+                                count++;
+                            }
+
                             rn.tempSortValue = count;
 
                             if (!listofregions.Contains(rn)) listofregions.Add(rn);
@@ -661,6 +667,7 @@ namespace bot
                     {
                         // do minimum expansion, but only on expansiontargets that are close to being finished
                         // or we know the game has been stalled for a while (stacks bigger then, lets say 50)
+                        // or we have no superregion at all, so we really need one
                         //todo: and we are fairly certain the target sr is not already being bordered by enemy
 
                         // check how many territories of the expansion target we already own
@@ -685,7 +692,7 @@ namespace bot
                         }
 
                         // do minimum expansion
-                        if ((count > state.ExpansionTargets[0].SubRegions.Count * 0.5) || (bigstack))
+                        if ((count > state.ExpansionTargets[0].SubRegions.Count * 0.5) || (bigstack) || (state.StartingArmies == 5))
                         {
                             List<DeployArmies> deploy = ExpandMinimum(state, armiesLeft);
                             foreach (DeployArmies da in deploy)
@@ -707,11 +714,6 @@ namespace bot
                 }
 
             } else {
-
-                if (state.RoundNumber == 18)
-                {
-                    Console.Error.WriteLine("dummy");
-                }
 
                 // no enemy in sight, expand normally / strategically
 
@@ -925,7 +927,7 @@ namespace bot
                         // move any remaining armies to hotzonestack
                         // this will make sure you're moving stacks back to important defensive position
                         // and also help merge stacks when double/triple bordering enemy
-                        if (state.HotStackZone != -1)
+                        if ((state.HotStackZone != -1) && (armiesLeft > 0))
                         {
                             foreach (Region reg in fromRegion.Neighbors)
                             {

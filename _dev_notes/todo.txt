@@ -1,6 +1,4 @@
 
-test.txt should be expanding into africa...
-
 when transfering leftovers to an enemy border with a stack nearby decide best action (increase priority or stack on another region)
 
 if stacking in the middle of Africa against an enemy that is not on another superregion, walk towards north africa with your stack...
