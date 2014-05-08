@@ -1146,10 +1146,30 @@ namespace bot
                 // prevent from hitting a wall against opponent
                 if (to.OwnedByPlayer(opponentName))
                 {
-                    if ( ((armyCount <= to.Armies + state.EstimatedOpponentIncome) && (atm.Priority < 8)) &&
-                         (armyCount != 2) &&
-                         (to.Armies != to.PreviousTurnArmies)
-                       )
+                    bool attack = true;
+
+                    // if army count is lower then estimated: remove attack from schedule
+                    int nstackcount = 0;
+                    foreach (Region reg in to.Neighbors)
+                    {
+                        Region regn = state.FullMap.GetRegion(reg.Id);
+                        if (regn.OwnedByPlayer(state.OpponentPlayerName))
+                        {
+                            nstackcount += regn.Armies - 1;
+                        }
+                    }
+                    if (armyCount <= to.Armies + state.EstimatedOpponentIncome + nstackcount) attack = false;
+
+                    // if armies are the same and there was no deployortransfer: keep attack scheduled
+                    if ((to.Armies == to.PreviousTurnArmies) && (!to.DeployedOrTransferedThisTurn)) attack = true;
+
+                    // if priority is higher then 8: keep attack scheduled
+                    if (atm.Priority >= 8) attack = true;
+
+                    // if armycount is 2: keep attack scheduled
+                    if (armyCount == 2) attack = true;
+
+                    if (!attack)
                     {
                         Console.Error.WriteLine("prevent hitting a wall from " + from.Id + " to " + to.Id + " with " + armyCount + " armies on round " + state.RoundNumber);
                         atmRemove.Add(atm);

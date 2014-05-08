@@ -17,6 +17,8 @@ namespace main
         private SuperRegion superRegion;
         private int armies;
         private int previousturnarmies;
+        private bool deployedthisturn;
+        //private bool deployedlastturn;
         private String playerName;
 
         // temp variables
@@ -33,6 +35,8 @@ namespace main
             this.playerName = "unknown";
             this.armies = 0;
             this.previousturnarmies = 0;
+            this.deployedthisturn = false;
+            //this.deployedlastturn = false;
 
             this.reservedArmies = 0;
             this.pledgedArmies = 0;
@@ -48,6 +52,8 @@ namespace main
             this.playerName = playerName;
             this.armies = armies;
             this.previousturnarmies = armies;
+            this.deployedthisturn = false;
+            //this.deployedlastturn = false;
 
             this.reservedArmies = 0;
             this.pledgedArmies = 0;
@@ -142,6 +148,17 @@ namespace main
             return safe;
         }
 
+        public bool DeployedOrTransferedThisTurn
+        {
+            set { deployedthisturn = value; }
+            get { return deployedthisturn; }
+        }
+
+ //       public bool DeployedOrTransferedLastTurn
+ //       {
+ //           set { deployedlastturn = value; }
+ //           get { return deployedlastturn; }
+ //       }
     }
 
 }

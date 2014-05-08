@@ -1,7 +1,11 @@
 
+test.txt should be expanding into africa...
+
 when transfering leftovers to an enemy border with a stack nearby decide best action (increase priority or stack on another region)
 
 if stacking in the middle of Africa against an enemy that is not on another superregion, walk towards north africa with your stack...
+
+if triple bordering enemy, make sure army stacks are still being moved towards the hotstack
 
 improve estimated opponent income - re-calc estimate of opponent income after we have successful attack. (we could have broken one of their areas)
 

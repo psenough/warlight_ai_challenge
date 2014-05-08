@@ -183,6 +183,8 @@ namespace bot
                     region.PlayerName = playerName;
                     region.PreviousTurnArmies = region.Armies;
                     region.Armies = armies;
+                    //region.DeployedOrTransferedLastTurn = region.DeployedOrTransferedThisTurn;
+                    region.DeployedOrTransferedThisTurn = false;
                     // clean up temporary variables
                     region.ReservedArmies = 0;
                     region.PledgedArmies = 0;
@@ -192,6 +194,8 @@ namespace bot
                     region2.PlayerName = playerName;
                     region2.PreviousTurnArmies = region2.Armies;
                     region2.Armies = armies;
+                    //region2.DeployedOrTransferedLastTurn = region2.DeployedOrTransferedThisTurn;
+                    region2.DeployedOrTransferedThisTurn = false;
                     region2.PledgedArmies = 0;
                     region2.ReservedArmies = 0;
 
@@ -510,6 +514,9 @@ namespace bot
                     if (moveInput[i + 1] == "place_armies")
                     {
                         Region region = visibleMap.GetRegion(int.Parse(moveInput[i + 2]));
+                        region.DeployedOrTransferedThisTurn = true;
+                        Region region2 = fullMap.GetRegion(int.Parse(moveInput[i + 2]));
+                        region2.DeployedOrTransferedThisTurn = true;
                         String playerName = moveInput[i];
                         int armies = int.Parse(moveInput[i + 3]);
                         move = new DeployArmies(playerName, region, armies);
@@ -518,13 +525,16 @@ namespace bot
                     }
                     else if (moveInput[i + 1] == "attack/transfer")
                     {
-                        Region fromRegion = visibleMap.GetRegion(int.Parse(moveInput[i + 2]));
-                        if (fromRegion == null) // Might happen if the region isn't visible
-                            fromRegion = fullMap.GetRegion(int.Parse(moveInput[i + 2]));
+                        //Region fromRegion = visibleMap.GetRegion(int.Parse(moveInput[i + 2]));
+                        //if (fromRegion == null) // Might happen if the region isn't visible
+                           Region fromRegion = fullMap.GetRegion(int.Parse(moveInput[i + 2]));
 
-                        Region toRegion = visibleMap.GetRegion(int.Parse(moveInput[i + 3]));
-                        if (toRegion == null) // Might happen if the region isn't visible
-                            toRegion = fullMap.GetRegion(int.Parse(moveInput[i + 3]));
+                        //Region toRegion = visibleMap.GetRegion(int.Parse(moveInput[i + 3]));
+                        //if (toRegion == null) // Might happen if the region isn't visible
+                           Region toRegion = fullMap.GetRegion(int.Parse(moveInput[i + 3]));
+
+                        fromRegion.DeployedOrTransferedThisTurn = true;
+                        toRegion.DeployedOrTransferedThisTurn = true;
 
                         String playerName = moveInput[i];
                         int armies = int.Parse(moveInput[i + 4]);
