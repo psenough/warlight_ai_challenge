@@ -256,7 +256,7 @@ namespace bot
                 }
                 else
                 {
-                    Console.Error.WriteLine("trying to attack out of a territory owned by " + neigh[0].PlayerName + "on round " + state.RoundNumber);
+                    Console.Error.WriteLine("trying to attack out of a territory owned by " + neigh[0].PlayerName + " on round " + state.RoundNumber + "! guess we ran out of available armies :(");
                 }
 
             }
@@ -1056,13 +1056,16 @@ namespace bot
                                         if ((atk.FromRegion.Id == fromRegion.Id) && (atk.ToRegion.Id == enm.Id) && (atk.Priority != 3) && (!atk.Locked)){
 
                                             int deploy = 1;
-                                            if (biggestenemystack == needed) deploy = 3;
-                                            if (armiesLeft > deploy)
+                                            if (biggestenemystack == needed) deploy = 5;
+                                            if (armiesLeft > 1)
                                             {
-                                                atk.Armies += deploy;
-                                                atk.FromRegion.ReservedArmies += deploy;
-                                                armiesLeft -= deploy;
+                                                deploy = 1;
                                             }
+
+                                            atk.Armies += deploy;
+                                            atk.FromRegion.ReservedArmies += deploy;
+                                            armiesLeft -= deploy;
+
                                             if (atk.Armies >= max) atk.Locked = true;
                                             gotany = true;
                                         }
