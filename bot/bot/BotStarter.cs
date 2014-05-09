@@ -334,7 +334,7 @@ namespace bot
             List<DeployArmies> deployArmies = new List<DeployArmies>();
 
             // determine the best region the opponent is most likely in
-            if (state.OpponentStartRegions.Count > 1)
+            if (state.OpponentStartRegions.Count > 0)
             {
 
                 // find next step on shortest path to get there
@@ -799,6 +799,11 @@ namespace bot
                     }
                 }
 
+                if (state.RoundNumber == 17)
+                {
+                    Console.Error.WriteLine("dummy");
+                }
+
                 // if no priority predictions occurs
                 if (armiesLeft > 0)
                 {
@@ -876,11 +881,6 @@ namespace bot
                             // only do small attacks when we are bordering multiple enemies
                             // or target hasn't changed it's income on last turn and didn't receive any deploys/transfers either
                             // or it's in another superregion
-
-                            if (state.RoundNumber == 10)
-                            {
-                                Console.Error.WriteLine("dummy");
-                            }
 
                             if ((enemyBorders.Count > 2) || ((en.Armies == en.PreviousTurnArmies) && (!en.DeployedOrTransferedThisTurn)))
                             {
