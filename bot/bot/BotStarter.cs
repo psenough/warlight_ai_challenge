@@ -627,42 +627,9 @@ namespace bot
 
                 } else {
 
-                    // if we are bordering a known enemy superregion, plan to hit it hard
-                    foreach (Region enm in state.EnemyBorders)
-                    {
-                        //todo: should refactor this to target the weakest of possible multiple borders, not the first seen
+                    // used to have full attack against spotted enemy super region here, but it's now being taken care of during the next phase
 
-                        if (state.RegionBelongsToEnemySuperRegion(enm.Id))
-                        {
-                            Region target = state.FullMap.GetRegion(enm.Id);
-
-                            // pick the neighbour (our territory) with the highest army count
-                            foreach (Region rn in target.Neighbors)
-                            {
-                                int ac = 0;
-                                if (rn.OwnedByPlayer(myName))
-                                {
-                                    ac += rn.Armies;
-                                }
-                                rn.tempSortValue = ac;
-                            }
-                            List<Region> lst = target.Neighbors.OrderByDescending(p => p.tempSortValue).ToList();
-                            Region attacker = lst[0];
-
-                            // validate
-                            if (target.OwnedByPlayer(opponentName) && attacker.OwnedByPlayer(myName))
-                            {
-                                deployArmies.Add(new DeployArmies(myName, attacker, armiesLeft));
-                                state.ScheduleAttack(attacker, target, armiesLeft, attacker.Armies - 1 + armiesLeft);
-                                //state.scheduledAttack.Add(new Tuple<int, int, int>(attacker.Id, target.Id, attacker.Armies - 1 + armiesLeft));
-                                armiesLeft = 0;
-                            }
-
-                            // only plan one hard attack on the first region of enemyborders spotted
-                            break;
-                        }
-                    }
-
+                    // minimum expansion
                     if ((armiesLeft > 0) && (state.ExpansionTargets.Count > 0))
                     {
                         // do minimum expansion, but only on expansiontargets that are close to being finished
@@ -908,6 +875,13 @@ namespace bot
 
                             // only do small attacks when we are bordering multiple enemies
                             // or target hasn't changed it's income on last turn and didn't receive any deploys/transfers either
+                            // or it's in another superregion
+
+                            if (state.RoundNumber == 10)
+                            {
+                                Console.Error.WriteLine("dummy");
+                            }
+
                             if ((enemyBorders.Count > 2) || ((en.Armies == en.PreviousTurnArmies) && (!en.DeployedOrTransferedThisTurn)))
                             {
                                 // attack small armies with little armies
@@ -966,6 +940,7 @@ namespace bot
                             // if it's bordering a suspected superregion
                             // or there is only one enemyborder
                             // we should be hitting it and it alone fullforce
+                            //todo: unless the border to super region is actually a double border (like middle east)
                             if (state.RegionBelongsToEnemySuperRegion(enm.Id) || (enemyBorders.Count == 1))
                             {
                                 
