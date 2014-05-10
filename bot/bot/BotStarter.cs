@@ -655,18 +655,29 @@ namespace bot
                                 if (reg.Armies > 50)
                                 {
                                     bigstack = true;
+                                    
+                                    //todo: test this below...
+                                    // check if we are building a bigstack in middle of africa without having eyes on SA
+                                    if (state.FullMap.GetRegion(12).OwnedByPlayer("unknown") && state.FullMap.GetRegion(21).OwnedByPlayer(opponentName))
+                                    {
+                                        //todo: find the shortest neutral / unknown / low enemy army count path there, needs to be less then 3 steps max
+
+                                        //todo: schedule our way there
+                                    }
                                 }
                             }
                         }
 
                         // do minimum expansion
-                        if ((count > state.ExpansionTargets[0].SubRegions.Count * 0.5) || (bigstack) || (state.StartingArmies == 5))
-                        {
-                            List<DeployArmies> deploy = ExpandMinimum(state, armiesLeft);
-                            foreach (DeployArmies da in deploy)
+                        if (armiesLeft > 0) { 
+                            if ((count > state.ExpansionTargets[0].SubRegions.Count * 0.5) || (bigstack) || (state.StartingArmies == 5))
                             {
-                                deployArmies.Add(da);
-                                armiesLeft -= da.Armies;
+                                List<DeployArmies> deploy = ExpandMinimum(state, armiesLeft);
+                                foreach (DeployArmies da in deploy)
+                                {
+                                    deployArmies.Add(da);
+                                    armiesLeft -= da.Armies;
+                                }
                             }
                         }
                     }
@@ -930,7 +941,7 @@ namespace bot
                                 }
                             }
                             enm.tempSortValue = nstackcount;
-                            int needed = (int)((enm.Armies + estimatedOpponentIncome + nstackcount) * 1.1);
+                            int needed = (int)((enm.Armies + estimatedOpponentIncome + nstackcount) * 1.15);
                             int max = (int)((enm.Armies + estimatedOpponentIncome + nstackcount) * 2);
 
                             // if it's bordering a suspected superregion
@@ -1009,7 +1020,7 @@ namespace bot
 
                                     // determine how much is needed to not hit a wall
                                     int nstackcount = enm.tempSortValue;
-                                    int needed = (int)((enm.Armies + estimatedOpponentIncome + nstackcount) * 1.1);
+                                    int needed = (int)((enm.Armies + estimatedOpponentIncome + nstackcount) * 1.15);
                                     int max = (int)((enm.Armies + estimatedOpponentIncome + nstackcount) * 2);
  
                                     // divide it equally amongst the different targets
