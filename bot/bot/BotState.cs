@@ -35,10 +35,11 @@ namespace bot
         private List<Region> enemyBorders;
         private List<SuperRegion> ownedSR;
 
-        private bool ozBased;
+        private bool naBased;
         private bool saBased;
         private bool africaBased;
         private int africaCount;
+        private bool ozBased;
 
         private int estimatedOpponentIncome;
 
@@ -57,10 +58,11 @@ namespace bot
             enemyBorders = new List<Region>();
             ownedSR = new List<SuperRegion>();
 
-            ozBased = false;
+            naBased = false;
             saBased = false;
             africaBased = false;
             africaCount = 0;
+            ozBased = false;
 
             estimatedOpponentIncome = 5;
 
@@ -259,9 +261,10 @@ namespace bot
             // update list of opponent start regions
             UpdateOpponentStartRegions();
 
-            ozBased = false;
+            naBased = false;
             saBased = false;
             africaBased = false;
+            ozBased = false;
 
             // figure out best expansion target
             switch (RoundNumber) // start of round 1
@@ -350,27 +353,28 @@ namespace bot
                     {
 
                         // check if we are based somewhere
-                        int ozCount = 0;
+                        int naCount = 0;
                         int saCount = 0;
                         africaCount = 0;
+                        int ozCount = 0;
                         foreach (Region reg in FullMap.Regions)
                         {
-
-                            // check if we are ozBased
-                            // all 4 areas of oz are ours & siam is not enemy & brazil is not ours
-                            // brazil is main target, if we have a foot there it doesnt matter if we are oz based or not
-                            if (((reg.Id == 39) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                                    ((reg.Id == 40) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                                    ((reg.Id == 41) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                                    ((reg.Id == 42) && (reg.OwnedByPlayer(MyPlayerName))) ||
-                                    ((reg.Id == 12) && (!reg.OwnedByPlayer(MyPlayerName))) ||
-                                    ((reg.Id == 38) && (!reg.OwnedByPlayer(OpponentPlayerName)))
+                            //todo: refactor this to use the new SuperRegion.ownedByUs bool
+                            
+                            // check if we are NABased
+                            // all 7 areas of north america are ours
+                            if (((reg.Id == 1) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 2) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 3) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 4) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 5) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 6) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 7) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 8) && (reg.OwnedByPlayer(MyPlayerName)))
                                 )
                             {
-                                ozCount++;
+                                naCount++;
                             }
-
-                            //todo: refactor this to use the new SuperRegion.ownedByUs bool
 
                             // check if we are saBased
                             // all 4 areas of south america are ours
@@ -395,10 +399,25 @@ namespace bot
                             {
                                 africaCount++;
                             }
+
+                            // check if we are ozBased
+                            // all 4 areas of oz are ours & siam is not enemy & brazil is not ours
+                            // brazil is main target, if we have a foot there it doesnt matter if we are oz based or not
+                            if (((reg.Id == 39) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 40) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 41) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 42) && (reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 12) && (!reg.OwnedByPlayer(MyPlayerName))) ||
+                                    ((reg.Id == 38) && (!reg.OwnedByPlayer(OpponentPlayerName)))
+                                )
+                            {
+                                ozCount++;
+                            }
                         }
                         if (ozCount == 6) ozBased = true;
                         if (saCount == 4) saBased = true;
                         if (africaCount == 6) africaBased = true;
+                        if (naCount == 7) naBased = true;
 
                         bool enemyOnAfrica = false;
                         for (int j = 21; j <= 26; j++)
@@ -475,10 +494,10 @@ namespace bot
                                 }
 
                                 // if we are sabased main expansion target should always be north america
-                                // africa is too vulnerable!
+                                // africa is too vulnerable to stack from oz!
                                 if (sr.Id == 1) // north america
                                 {
-                                    if (SABased) count += 15;
+                                    if (SABased && !OZBased) count += 35;
                                 }
 
 
@@ -520,7 +539,7 @@ namespace bot
                     if (moveInput[i + 1] == "place_armies")
                     {
                         Region region = visibleMap.GetRegion(int.Parse(moveInput[i + 2]));
-                        region.DeployedOrTransferedThisTurn = true;
+                        if (region != null) region.DeployedOrTransferedThisTurn = true;
                         Region region2 = fullMap.GetRegion(int.Parse(moveInput[i + 2]));
                         region2.DeployedOrTransferedThisTurn = true;
                         String playerName = moveInput[i];
@@ -765,9 +784,9 @@ namespace bot
             get { return enemySighted; }
         }
         
-        public bool OZBased
+        public bool NABased
         {
-            get { return ozBased; }
+            get { return naBased; }
         }
 
         public bool SABased
@@ -783,6 +802,11 @@ namespace bot
         public int AfricaCount
         {
             get { return africaCount; }
+        }
+
+        public bool OZBased
+        {
+            get { return ozBased; }
         }
 
         public int EstimatedOpponentIncome

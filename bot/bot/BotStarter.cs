@@ -399,8 +399,15 @@ namespace bot
                     continue;
                 }
 
-                foreach (Region neigh in a.Neighbors)
+                foreach (Region neig in a.Neighbors)
                 {
+                    Region neigh = state.FullMap.GetRegion(neig.Id);
+
+                    //if (state.RoundNumber == 17 && neig.Id == 9)
+                    //{
+                    //    Console.Error.WriteLine("dummy");
+                    //}
+
                     // if neighbor is the enemy, we shouldnt be thinking of expansion, we want to keep our stack close to the enemy
                     if (neigh.OwnedByPlayer(opponentName))
                     {
@@ -410,14 +417,14 @@ namespace bot
                     // the more neighbours belong to me the better
                     if (neigh.OwnedByPlayer(myName))
                     {
-                        count += 3;
+                        count += 5;
                     }
 
                     // if it has neutrals on the target superregion its good
                     if (neigh.OwnedByPlayer("neutral") && (neigh.SuperRegion.Id == a.SuperRegion.Id)) count++;
 
                     // if it has unknowns on the target superregion its even better (means we will be able to finish it faster)
-                    if (neigh.OwnedByPlayer("unknown") && (neigh.SuperRegion.Id == a.SuperRegion.Id)) count += 2;
+                    if (neigh.OwnedByPlayer("unknown") && (neigh.SuperRegion.Id == a.SuperRegion.Id)) count += 1;
 
                     // if it has only has 1 army it costs less to take, so its better
                     if (neigh.Armies == 1) count++;
@@ -442,20 +449,21 @@ namespace bot
 
                     // find best region to attack from, must be my territory
 
-                    foreach (Region a in lst[0].Neighbors)
+                    foreach (Region an in lst[0].Neighbors)
                     {
+                        Region a = state.FullMap.GetRegion(an.Id);
 
                         // if it's not our territory, don't bother
                         if (!a.OwnedByPlayer(myName))
                         {
-                            a.tempSortValue = -1;
+                            an.tempSortValue = -1;
                             continue;
                         }
 
                         // best attacker is the one with more armies available
                         int armyCount = a.Armies + a.PledgedArmies - a.ReservedArmies;
                         if (armyCount < 0) armyCount = 0;
-                        a.tempSortValue = armyCount;
+                        an.tempSortValue = armyCount;
 
                     }
                     var atk = lst[0].Neighbors.OrderByDescending(p => p.tempSortValue).ToList();
@@ -840,6 +848,29 @@ namespace bot
                             armiesLeft = 0;
                         }
                     }
+
+                    if (state.SABased && state.FullMap.GetRegion(21).OwnedByPlayer(myName) && !state.NABased)
+                    {
+                        // expand minimally into north america
+                        // expansion target 0 should already be pointing at it
+                        // do minimum expansion
+                        if (armiesLeft > 0)
+                        {                            
+                            List<DeployArmies> deploy = ExpandMinimum(state, armiesLeft);
+                            foreach (DeployArmies da in deploy)
+                            {
+                                deployArmies.Add(da);
+                                armiesLeft -= da.Armies;
+                            }
+                        }
+
+                        // deploy rest on North Africa
+                        if (armiesLeft > 0) { 
+                            deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(21), armiesLeft));
+                            armiesLeft = 0;
+                        }
+                    }
+
                 }
 
                 // if no priority predictions occurs
