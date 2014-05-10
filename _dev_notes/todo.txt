@@ -1,5 +1,9 @@
 
-if we don't have eyes on SA and are stacking in the middle of Africa, take the stack to north africa
+strategy to prevent flanking through europe from pedrito when i have SA and he has OZ (dont move stack stack to meet, instead expand minimal in NA until we get it)
+
+opponent moves sometimes gives exception (visiblemap != fullmap ?!?)
+
+if we don't have eyes on SA and are stacking in the middle of Africa, take the stack to north africa (finish implementing)
 
 if triple bordering enemy, make sure army stacks are still being moved towards the hotstack
 

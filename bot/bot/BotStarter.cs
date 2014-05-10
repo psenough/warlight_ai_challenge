@@ -557,6 +557,9 @@ namespace bot
             if (finishableSuperRegion)
             {
                 if (!targetSR.IsSafeToFinish(state)) finishableSuperRegion = false;
+
+                // africa without a foot in north africa is never safe to finish
+                if ((targetSR.Id == 4) && !state.FullMap.GetRegion(21).OwnedByPlayer(myName)) finishableSuperRegion = false;
             }
 
             return finishableSuperRegion;
@@ -725,7 +728,7 @@ namespace bot
 
                         if (!thereyet)
                         {
-                             // we dont have egypt (22) but have middle east (36)
+                            // we dont have egypt (22) but have middle east (36)
                             if (!state.FullMap.GetRegion(22).OwnedByPlayer(myName) && state.FullMap.GetRegion(36).OwnedByPlayer(myName))
                             {
                                 deployArmies.Add(new DeployArmies(myName, state.FullMap.GetRegion(36), armiesLeft));
@@ -764,7 +767,35 @@ namespace bot
                         }
                         else
                         {
-                            // we have foot in africa/europe/south america but enemy could be expanding safely on north america...
+                            // lets go check north africa 
+                            Region northafrica = state.FullMap.GetRegion(21);
+                            if (northafrica.OwnedByPlayer("unknown") || northafrica.OwnedByPlayer("neutral"))
+                            {
+                                int nextstep = state.FullMap.FindNextStep(12);
+                                if (nextstep != -1)
+                                {
+                                    Region region = state.FullMap.GetRegion(nextstep);
+
+                                    // find our neighbour with highest available armies
+                                    foreach (Region a in region.Neighbors)
+                                    {
+                                        int aArmies = a.Armies + a.PledgedArmies - a.ReservedArmies;
+                                        if (aArmies < 0) aArmies = 0;
+                                        if (!a.OwnedByPlayer(myName)) aArmies = -1;
+                                        a.tempSortValue = aArmies;
+                                    }
+                                    var lst = region.Neighbors.OrderByDescending(p => p.tempSortValue).ToList();
+                                    Region neigh = state.FullMap.GetRegion(lst[0].Id);
+                                    if (neigh.OwnedByPlayer(myName))
+                                    {
+                                        deployArmies.Add(new DeployArmies(myName, neigh, armiesLeft));
+                                        state.ScheduleAttack(neigh, region, armiesLeft, neigh.Armies + armiesLeft - 1);
+                                        armiesLeft = 0;
+                                    }
+                                }
+                            }
+
+                            //todo: we have foot in africa/europe/south america but enemy could be expanding safely on north america...
 
                             //todo: how can we be sure we are not wasting armies going to alaska? need to track historic of enemy deployments...
 
@@ -941,7 +972,8 @@ namespace bot
                                 }
                             }
                             enm.tempSortValue = nstackcount;
-                            int needed = (int)((enm.Armies + estimatedOpponentIncome + nstackcount) * 1.15);
+                            int needed = (int)Math.Ceiling((enm.Armies + estimatedOpponentIncome + nstackcount) * 1.15f);
+                            Console.Error.WriteLine(needed);
                             int max = (int)((enm.Armies + estimatedOpponentIncome + nstackcount) * 2);
 
                             // if it's bordering a suspected superregion
@@ -1204,16 +1236,17 @@ namespace bot
                             nstackcount += regn.Armies - 1;
                         }
                     }
+
                     if (armyCount <= to.Armies + state.EstimatedOpponentIncome + nstackcount) attack = false;
 
                     // if armies are the same and there was no deployortransfer: keep attack scheduled
-                    if ((armyCount > 1) && (to.Armies == to.PreviousTurnArmies) && (!to.DeployedOrTransferedThisTurn)) attack = true;
+                    if ((armyCount > 1) && (armyCount > to.Armies * 2) && (to.Armies == to.PreviousTurnArmies) && (!to.DeployedOrTransferedThisTurn)) attack = true;
 
                     // if priority is higher then 8: keep attack scheduled
                     if (atm.Priority >= 8) attack = true;
 
                     // if armycount is 2: keep attack scheduled
-                    if (armyCount == 2) attack = true;
+                    if ((armyCount == 2) && (to.Armies == 1)) attack = true;
 
                     if (!attack)
                     {

@@ -556,6 +556,7 @@ namespace bot
                 catch (Exception e)
                 {
                     Console.Error.WriteLine("Unable to parse Opponent moves " + e);
+                    Console.Error.WriteLine("inner exc: " + e.InnerException.Message);
                 }
             }
 
