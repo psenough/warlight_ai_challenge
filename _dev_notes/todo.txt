@@ -1,14 +1,12 @@
 
-if having visual on all superregions, use that to estimate opponent income instead of assuming its same as ours (debug test.txt)
-improve estimated opponent income - re-calc estimate of opponent income after we have successful attack. (we could have broken one of their areas)
+when transfering leftovers to an enemy border which has a stack nearby decide best action (increase priority if area is critical or stack on another region if its not)
 
-when transfering leftovers to an enemy border with a stack nearby decide best action (increase priority or stack on another region)
+if stacking in the middle of Africa against an enemy that is not on another superregion, walk towards north africa with the stack...
 
-if stacking in the middle of Africa against an enemy that is not on another superregion, walk towards north africa with your stack...
+if spotting a failed enemy attack from an unknown region to a neutral, set it as target for hard hit next turn
 
 if triple bordering enemy, make sure army stacks are still being moved towards the hotstack
 
-if we have leftovers when finishing an area, dont move them around aimlessly, move them into the finished region (if > 1) or to bordering another super region instead of a neutral inside the superregion that will be finished this turn
 
 debug -1 on deploying to finish superregion
 
