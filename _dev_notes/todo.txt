@@ -1,11 +1,15 @@
 
-when transfering leftovers to an enemy border which has a stack nearby decide best action (increase priority if area is critical or stack on another region if its not)
+when transfering leftovers to an enemy border with a stack nearby: increase priority for highest army count transfer to that region
 
-if stacking in the middle of Africa against an enemy that is not on another superregion, walk towards north africa with the stack...
+when transfering leftovers to a non crucial enemy border with a stack nearby: dont transfer if it's doomed to fail (deploys and transfers will be less then half the estimated enemy income)
+
+if we don't have eyes on SA and are stacking in the middle of Africa, take the stack to north africa
 
 if spotting a failed enemy attack from an unknown region to a neutral, set it as target for hard hit next turn
 
 if triple bordering enemy, make sure army stacks are still being moved towards the hotstack
+
+if we have a last action attack (priority>=9) then try to break down the lower priority moves into delayer unit moves, only for leftover moves that will not border an opponent 
 
 
 debug -1 on deploying to finish superregion

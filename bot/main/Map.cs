@@ -143,5 +143,102 @@ namespace main
             }
             return all;
         }
+
+        public bool RegionBelongsToEnemySuperRegion(int id, String myName)
+        {
+            Region thisregion = GetRegion(id);
+            SuperRegion thissr = GetSuperRegion(thisregion.SuperRegion.Id);
+
+            foreach (Region reg in thissr.SubRegions)
+            {
+                Region rn = GetRegion(reg.Id);
+                if (rn.OwnedByPlayer(myName)) return false;
+                if (rn.OwnedByPlayer("neutral")) return false;
+            }
+
+            return true;
+        }
+
+        public bool RegionBelongsToOurSuperRegion(int id, String myName)
+        {
+            Region thisregion = GetRegion(id);
+            SuperRegion thissr = GetSuperRegion(thisregion.SuperRegion.Id);
+
+            foreach (Region reg in thissr.SubRegions)
+            {
+                Region rn = GetRegion(reg.Id);
+                if (!rn.OwnedByPlayer(myName)) return false;
+            }
+
+            return true;
+        }
+
+        public bool RegionBordersOneOfOurOwnSuperRegions(int id)
+        {
+            Region thisregion = GetRegion(id);
+
+            foreach (Region ne in thisregion.Neighbors)
+            {
+                SuperRegion sr = GetSuperRegion(ne.SuperRegion.Id);
+                if (sr.ownedByUs) return true;
+            }
+
+            return false;
+        }
+
+        public int FindNextStep(int dest)
+        {
+            // reset
+            foreach (Region reg in regions)
+            {
+                reg.tempSortValue = 0;
+            }
+
+            // initial list
+            List<Region> list = new List<Region>();
+            foreach (Region reg in GetRegion(dest).Neighbors)
+            {
+                list.Add(reg);
+            }
+
+            // first iteration
+            int it = 1;
+
+            while (list.Count > 0)
+            {
+                List<Region> newlist = new List<Region>();
+                foreach (Region testRegion in list)
+                {
+                    Region reg = GetRegion(testRegion.Id);
+                    if (reg.OwnedByPlayer("neutral"))
+                    {
+                        return testRegion.Id;
+                    }
+                    else
+                    {
+                        // havent found home yet, prepare next iteration
+                        if (reg.tempSortValue == 0)
+                        {
+                            reg.tempSortValue = it;
+                            foreach (Region neigh in reg.Neighbors)
+                            {
+                                if (!newlist.Contains(neigh) && (neigh.tempSortValue == 0)) newlist.Add(neigh);
+                            }
+                        }
+                    }
+                }
+
+                list.Clear();
+                foreach (Region nl in newlist)
+                {
+                    list.Add(nl);
+                }
+
+                it++;
+            }
+
+            return -1; // failed to find home
+        }
+
     }
 }

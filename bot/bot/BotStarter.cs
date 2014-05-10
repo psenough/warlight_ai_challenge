@@ -61,6 +61,7 @@ namespace bot
 
         public List<DeployArmies> DeployBorderingEnemy(bot.BotState state, int armiesLeft)
         {
+            String myName = state.MyPlayerName;
             List<DeployArmies> deployArmies = new List<DeployArmies>();
 
             if (state.EnemyBorders.Count > 0)
@@ -70,7 +71,7 @@ namespace bot
 
                 foreach (Region reg in state.EnemyBorders)
                 {
-                    bool enemysr = state.RegionBelongsToEnemySuperRegion(reg.Id);
+                    bool enemysr = state.FullMap.RegionBelongsToEnemySuperRegion(reg.Id, myName);
 
                     //double check if enemy had enough turns to actually take the superregion
                     //if (enemysr) { 
@@ -87,7 +88,7 @@ namespace bot
                     foreach (Region regn in reg.Neighbors)
                     {
                         Region rn = state.FullMap.GetRegion(regn.Id);
-                        if (rn.OwnedByPlayer(state.MyPlayerName))
+                        if (rn.OwnedByPlayer(myName))
                         {
                             int count = 1;
 
@@ -98,13 +99,13 @@ namespace bot
                             }
 
                             // if the threat is to a region belonging to a superregion we own
-                            if (state.RegionBelongsToOurSuperRegion(rn.Id))
+                            if (state.FullMap.RegionBelongsToOurSuperRegion(rn.Id, myName))
                             {
                                 count += 12;
                             }
 
                             // if the threat is to a region bordering a superregion we own
-                            if (state.RegionBordersOneOfOurOwnSuperRegions(rn.Id))
+                            if (state.FullMap.RegionBordersOneOfOurOwnSuperRegions(rn.Id))
                             {
                                 count += 8;
                             }
@@ -340,7 +341,7 @@ namespace bot
                 // find next step on shortest path to get there
                 // and schedule an attack in that direction
 
-                int nextstep = state.FindNextStep(state.OpponentStartRegions[0].Id);
+                int nextstep = state.FullMap.FindNextStep(state.OpponentStartRegions[0].Id);
                 if (nextstep != -1)
                 {
                     Region region = state.FullMap.GetRegion(nextstep);
@@ -936,7 +937,7 @@ namespace bot
                             // or there is only one enemyborder
                             // we should be hitting it and it alone fullforce
                             //todo: unless the border to super region is actually a double border (like middle east)
-                            if (state.RegionBelongsToEnemySuperRegion(enm.Id) || (enemyBorders.Count == 1))
+                            if (state.FullMap.RegionBelongsToEnemySuperRegion(enm.Id, myName) || (enemyBorders.Count == 1))
                             {
                                 
                                 bool alreadyScheduled = false;
@@ -1214,8 +1215,6 @@ namespace bot
             {
                 attackTransferMoves.Remove(atm);
             }
-
-            //todo: if we have a high priority attack (>=9) then break down lower priority moves into delayer unit moves, only for leftover moves that will not border an opponent 
 
             List<AttackTransferMove> sorted = attackTransferMoves.OrderByDescending(p => p.Armies).OrderBy(p => p.Priority).ToList();
            
