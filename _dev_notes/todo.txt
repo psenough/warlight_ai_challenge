@@ -1,4 +1,6 @@
 
+on first turns, bordering enemy, dont do minimum expansion if you know the enemy is on the expansion zone, instead stack distributively
+
 if we don't have eyes on SA and are stacking in the middle of Africa, take the stack to north africa (finish implementing)
 
 if triple bordering enemy, make sure army stacks are still being moved towards the hotstack

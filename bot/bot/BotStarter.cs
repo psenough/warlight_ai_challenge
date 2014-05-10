@@ -73,13 +73,6 @@ namespace bot
                 {
                     bool enemysr = state.FullMap.RegionBelongsToEnemySuperRegion(reg.Id, myName);
 
-                    //double check if enemy had enough turns to actually take the superregion
-                    //if (enemysr) { 
-                    //    int nregions = state.FullMap.GetSuperRegion(reg.SuperRegion.Id).SubRegions.Count;
-                    //    if ((nregions > 4) && (state.RoundNumber < nregions * 2)) enemysr = false;
-                    //}
-                    // not very reliable
-
                     // let's assume enemy will never finish asia
                     // yes, it might be dangerous on games that drag out
                     // but a lot less dangerous then deploying in egypt and leaving north africa wide open on a regular basis
@@ -124,6 +117,9 @@ namespace bot
                             {
                                 count++;
                             }
+
+                            // the more armies it has the more it should be the source of our income
+                            count += rn.Armies % 6;
 
                             rn.tempSortValue = count;
 
@@ -385,28 +381,19 @@ namespace bot
                 // only try to expand if enemy is not on it
                 if (a.OwnedByPlayer(opponentName)) doMinimumExpansion = false;
 
-                // find best subregion to expand into, must be a neutral
+                // find best subregion to expand into
                 int count = 0;
 
-                if (a.OwnedByPlayer(opponentName))
+                // must be a neutral
+                if (!a.OwnedByPlayer("neutral"))
                 {
-                    a.tempSortValue = -5;
-                    continue;
-                }
-                if (a.OwnedByPlayer(myName))
-                {
-                    a.tempSortValue = -10;
+                    reg.tempSortValue = -1;
                     continue;
                 }
 
                 foreach (Region neig in a.Neighbors)
                 {
                     Region neigh = state.FullMap.GetRegion(neig.Id);
-
-                    //if (state.RoundNumber == 17 && neig.Id == 9)
-                    //{
-                    //    Console.Error.WriteLine("dummy");
-                    //}
 
                     // if neighbor is the enemy, we shouldnt be thinking of expansion, we want to keep our stack close to the enemy
                     if (neigh.OwnedByPlayer(opponentName))
@@ -680,7 +667,7 @@ namespace bot
                         }
 
                         // do minimum expansion
-                        if (armiesLeft > 0) { 
+                        if (armiesLeft > 0) {
                             if ((count > state.ExpansionTargets[0].SubRegions.Count * 0.5) || (bigstack) || (state.StartingArmies == 5))
                             {
                                 List<DeployArmies> deploy = ExpandMinimum(state, armiesLeft);
@@ -1004,8 +991,7 @@ namespace bot
                             }
                             enm.tempSortValue = nstackcount;
                             int needed = (int)Math.Ceiling((enm.Armies + estimatedOpponentIncome + nstackcount) * 1.15f);
-                            Console.Error.WriteLine(needed);
-                            int max = (int)((enm.Armies + estimatedOpponentIncome + nstackcount) * 2);
+                            int max = (int)Math.Ceiling((enm.Armies + estimatedOpponentIncome + nstackcount) * 2.0f);
 
                             // if it's bordering a suspected superregion
                             // or there is only one enemyborder
@@ -1083,8 +1069,8 @@ namespace bot
 
                                     // determine how much is needed to not hit a wall
                                     int nstackcount = enm.tempSortValue;
-                                    int needed = (int)((enm.Armies + estimatedOpponentIncome + nstackcount) * 1.15);
-                                    int max = (int)((enm.Armies + estimatedOpponentIncome + nstackcount) * 2);
+                                    int needed = (int)Math.Ceiling((enm.Armies + estimatedOpponentIncome + nstackcount) * 1.15f);
+                                    int max = (int)Math.Ceiling((enm.Armies + estimatedOpponentIncome + nstackcount) * 2.0f);
  
                                     // divide it equally amongst the different targets
 
