@@ -484,10 +484,10 @@ namespace bot
                                 // priority exceptions:
                                 
                                 // if we are ozbased and africa has enemies, main expansion target should be asia
-                                if (sr.Id == 5) // asia 
-                                {
-                                    if ((OZBased) && (enemyOnAfrica)) count += 10;
-                                }
+                                //if (sr.Id == 5) // asia 
+                                //{
+                                //    if ((OZBased) && (enemyOnAfrica)) count += 10;
+                                //}
 
                                 // if we are ozbased and enemy is stuck in south america, finish up africa
                                 if (sr.Id == 4) // africa
