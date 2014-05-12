@@ -1,11 +1,7 @@
 
-if you're on OZ dont bother expanding into asia, you'll never get it on time, either take stack through europe or go to alaska
-
-on first turns, bordering enemy, dont do minimum expansion if you know the enemy is on the expansion zone, instead stack distributively
+improve OZBased strategy: if enemy is stacking in north africa, either take stack through europe or go to alaska
 
 if we don't have eyes on SA and are stacking in the middle of Africa, take the stack to north africa (finish implementing)
-
-if triple bordering enemy, make sure army stacks are still being moved towards the hotstack
 
 when transfering leftovers to an enemy border with a stack nearby: increase priority for highest army count transfer to that region
 

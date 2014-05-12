@@ -978,7 +978,7 @@ namespace bot
 
                         // move any remaining armies to hotzonestack
                         // this will make sure you're moving stacks back to important defensive position
-                        // and also help merge stacks when double/triple bordering enemy
+                        // and also help merge stacks when double bordering enemy
                         if ((state.HotStackZone != -1) && (armiesLeft > 0))
                         {
                             foreach (Region reg in fromRegion.Neighbors)
@@ -992,7 +992,24 @@ namespace bot
                             }
                         }
 
-                        //todo: we should do a second layer of move neighbors towards stack
+                        // do a sweep to second degree neighbors to also move them towards stack
+                        // needs to be in a different loop from first degree sweep, otherwise it would steal priority from moving into hotstockzone directly due to multiple neighboring
+                        if ((state.HotStackZone != -1) && (armiesLeft > 0))
+                        {
+                            foreach (Region reg in fromRegion.Neighbors)
+                            {
+                                foreach (Region reg2 in reg.Neighbors)
+                                {
+                                    if (reg2.Id == state.HotStackZone)
+                                    {
+                                        attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, state.FullMap.GetRegion(reg.Id), armiesLeft, 6));
+                                        fromRegion.ReservedArmies += armiesLeft;
+                                        armiesLeft = 0;
+                                    }
+                                }
+                            }
+                        }
+
 
                         //todo: enemy stack could be hidden and moving in, we can use history to check
                         
