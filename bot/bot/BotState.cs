@@ -27,6 +27,7 @@ namespace bot
 
         private int roundNumber;
 
+        private int verifiedOpponentStartRegions;
         private List<Region> opponentStartRegions;
         private List<SuperRegion> expansionTargetSuperRegions;
         public List<Tuple<int, int, int>> scheduledAttack; // attacker region id, target region id, armies to attack with
@@ -50,6 +51,7 @@ namespace bot
             pickableStartingRegions = new List<Region>();
             opponentMoves = new List<Move>();
 
+            verifiedOpponentStartRegions = 0;
             opponentStartRegions = new List<Region>();
             expansionTargetSuperRegions = new List<SuperRegion>();
             this.scheduledAttack = new List<Tuple<int, int, int>>();
@@ -664,12 +666,12 @@ namespace bot
                         switch (mapreg.PlayerName)
                         {
                             case "player1":
-                                if (myName == "player1") remRegions.Add(reg);
-                                else reg.PlayerName = "player1";
-                                break;
                             case "player2":
-                                if (myName == "player2") remRegions.Add(reg);
-                                else reg.PlayerName = "player2";
+                                if (opponentName == mapreg.PlayerName)
+                                {
+                                    verifiedOpponentStartRegions++;
+                                }
+                                remRegions.Add(reg);                                
                                 break;
                             case "neutral":
                                 remRegions.Add(reg);

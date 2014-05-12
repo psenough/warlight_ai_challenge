@@ -42,10 +42,6 @@ namespace bot
                 
                 a.tempSortValue += lst.Count - bestindex;
                 
-                if (lst[bestindex].Id == 6)
-                {
-                    a.tempSortValue += 2;
-                }
             }
             var picks = state.PickableStartingRegions.OrderByDescending(p => p.tempSortValue).ToList();
 
@@ -370,7 +366,26 @@ namespace bot
             List<DeployArmies> deployArmies = new List<DeployArmies>();
             if (state.ExpansionTargets.Count == 0) return deployArmies;
 
-            //todo: later: dont bother expanding on areas that might have enemy in a few turns
+            // check if opponent might be there (or neighboring)
+            // map has 12 starting spots, 3 of them are ours, 3 estimated for opponent
+            // each gets removed as they are seen for the first time
+            // so we can estimate decently the 
+            // so only apply this filter between 9 and 6
+            if ( state.OpponentStartRegions.Count > 6 )
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    foreach (Region reg in state.OpponentStartRegions[i].Neighbors)
+                    {
+                        Region neigh = state.FullMap.GetRegion(reg.Id);
+                        if (neigh.SuperRegion.Id == state.ExpansionTargets[0].Id)
+                        {
+                            // don't do minimum expansion here
+                            if (state.ExpansionTargets.Count == 0) return deployArmies;
+                        }
+                    }
+                }
+            }       
 
             // check if we can do minimum expansion on our best found expansion target
             bool doMinimumExpansion = true;
@@ -574,11 +589,8 @@ namespace bot
             if (enemySighted)
             {
                 
-                // early in the game bordering plenty of enemy areas
-                if (
-                    ((state.RoundNumber <= 2) && (state.EnemyBorders.Count > 1 )) ||
-                    ((state.RoundNumber <= 15) && (state.EnemyBorders.Count == 3) && (state.StartingArmies == 5))
-                   )
+                // on first rounds, attack any enemies on sight, unless we can finish a super region
+                if ((state.RoundNumber < 5) && !finishableSuperRegion)
                 {
                     // if we have atleast 2 enemy sightings, pick one and hit it hard
                     List<DeployArmies> deploy = AttackHard(state, armiesLeft);
@@ -644,6 +656,17 @@ namespace bot
                             if (rn.OwnedByPlayer(myName)) count++;
                         }
 
+                        // check if there are any estimated opponentstartingregions bordering this superregion
+                        bool issafe = false;
+                        foreach (Region border in state.OpponentStartRegions)
+                        {
+                            foreach (Region n in border.Neighbors)
+                            {
+                                Region b = state.FullMap.GetRegion(n.Id);
+                                if (b.SuperRegion.Id == state.ExpansionTargets[0].Id) issafe = false;
+                            }
+                        }
+
                         // check if the game is starting to have big stacks
                         bool bigstack = false;
                         foreach (Region reg in state.VisibleMap.Regions)
@@ -667,7 +690,7 @@ namespace bot
                         }
 
                         // do minimum expansion
-                        if (armiesLeft > 0) {
+                        if ((armiesLeft > 0) && issafe) {
                             if ((count > state.ExpansionTargets[0].SubRegions.Count * 0.5) || (bigstack) || (state.StartingArmies == 5))
                             {
                                 List<DeployArmies> deploy = ExpandMinimum(state, armiesLeft);
@@ -838,9 +861,8 @@ namespace bot
 
                     if (state.SABased && state.FullMap.GetRegion(21).OwnedByPlayer(myName) && !state.NABased)
                     {
-                        // expand minimally into north america
+                        // do minimum expansion into north america
                         // expansion target 0 should already be pointing at it
-                        // do minimum expansion
                         if (armiesLeft > 0)
                         {                            
                             List<DeployArmies> deploy = ExpandMinimum(state, armiesLeft);
