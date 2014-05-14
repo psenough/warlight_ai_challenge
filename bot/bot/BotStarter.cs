@@ -39,9 +39,22 @@ namespace bot
                     // if we had more starting armies this value should be +=1
                     a.tempSortValue -= 1;
                 }
-                
+
                 a.tempSortValue += lst.Count - bestindex;
-                
+
+
+                // little bonus for australia
+                if (a.SuperRegion.Id == 6) a.tempSortValue++;
+
+                // little bonus for north africa
+                if (a.Id == 21) a.tempSortValue++;
+
+                // little bonus if it's bordering north africa
+                foreach (Region nei in a.Neighbors)
+                {
+                    if (nei.Id == 21) a.tempSortValue++;
+                }
+
             }
             var picks = state.PickableStartingRegions.OrderByDescending(p => p.tempSortValue).ToList();
 
@@ -657,14 +670,17 @@ namespace bot
                             if (rn.OwnedByPlayer(myName)) count++;
                         }
 
-                        // check if there are any estimated opponentstartingregions bordering this superregion
-                        bool issafe = false;
-                        foreach (Region border in state.OpponentStartRegions)
-                        {
-                            foreach (Region n in border.Neighbors)
+                        bool issafe = true;
+                        // check if there are any estimated opponentstartingregions in or bordering this superregion
+                        // only check for south america and australia, rest can be considered safe by default
+                        if (state.ExpansionTargets[0].ArmiesReward < 3) { 
+                            foreach (Region border in state.OpponentStartRegions)
                             {
-                                Region b = state.FullMap.GetRegion(n.Id);
-                                if (b.SuperRegion.Id == state.ExpansionTargets[0].Id) issafe = false;
+                                foreach (Region n in border.Neighbors)
+                                {
+                                    Region b = state.FullMap.GetRegion(n.Id);
+                                    if (b.SuperRegion.Id == state.ExpansionTargets[0].Id) issafe = false;
+                                }
                             }
                         }
 
