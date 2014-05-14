@@ -1,5 +1,5 @@
 
-if we don't have eyes on SA and are stacking in the middle of Africa, take the stack to north africa through shortest path (finish implementing)
+if we don't have eyes on SA and are stacking somewhere, try to take the stack to north africa through shortest path (attack through neutral or enemy with minimum armies if we have to detour too much) - finish implementing this
 
 when transfering leftovers to an enemy border with a stack nearby: increase priority for highest army count transfer to that region
 
@@ -10,6 +10,7 @@ improve OZBased strategy: if enemy is stacking in north africa, either take stac
 if spotting a failed enemy attack from an unknown region to a neutral, set it as target for hard hit next turn
 
 
+clean up attack transfer moves of 0 armies (no need to show them to opponent) - think this is fixed already...
 
 debug -1 on deploying to finish superregion
 

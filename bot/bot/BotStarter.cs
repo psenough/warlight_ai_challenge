@@ -44,7 +44,10 @@ namespace bot
 
 
                 // little bonus for australia
-                if (a.SuperRegion.Id == 6) a.tempSortValue++;
+                if (a.SuperRegion.Id == 6)
+                {
+                    a.tempSortValue += 2;
+                }
 
                 // little bonus for north africa
                 if (a.Id == 21) a.tempSortValue++;
@@ -939,13 +942,14 @@ namespace bot
                 }
             }
 
+            Region northafrica = state.FullMap.GetRegion(21);
+
             foreach (Region re in state.VisibleMap.Regions)
             {
                 Region fromRegion = state.FullMap.GetRegion(re.Id);
 
                 if (fromRegion.OwnedByPlayer(myName))
-                {      
-
+                {
                     bool borderingEnemy = false;
                     List<Region> enemyBorders = new List<Region>();
                     int estimatedOpponentIncome = state.EstimatedOpponentIncome;
@@ -963,12 +967,18 @@ namespace bot
 
                     int armiesLeft = fromRegion.Armies + fromRegion.PledgedArmies - fromRegion.ReservedArmies - 1;
 
+                    // if we are neighboring a neutral north africa, go there
+                    if (fromRegion.HasNeighbour(21) && northafrica.OwnedByPlayer("neutral") && (state.StartingArmies > 5) && (armiesLeft > 4))
+                    {
+                        attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, northafrica, armiesLeft, 4));
+                        fromRegion.ReservedArmies += armiesLeft;
+                        armiesLeft = 0;
+                    }
+
                     // if this region is bordering the enemy
                     if (borderingEnemy) {
 
-                        //todo: later: apply machine learning heuristic to determine best small attacks behavior through game
-
-                        // attack regions that only have small number of armies, to clear them out
+                        // attack regions that have small number of armies with small number of armies, just to clear them out
                         foreach (Region enmm in enemyBorders)
                         {
                             Region en = state.FullMap.GetRegion(enmm.Id);
@@ -1011,7 +1021,7 @@ namespace bot
 
                         // do a sweep to second degree neighbors to also move them towards stack
                         // needs to be in a different loop from first degree sweep, otherwise it would steal priority from moving into hotstockzone directly due to multiple neighboring
-                        if ((state.HotStackZone != -1) && (armiesLeft > 0))
+                        if ((state.HotStackZone != -1) && (armiesLeft > 0) && (fromRegion.Id != state.HotStackZone))
                         {
                             foreach (Region reg in fromRegion.Neighbors)
                             {

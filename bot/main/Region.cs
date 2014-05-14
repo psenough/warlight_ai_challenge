@@ -159,6 +159,15 @@ namespace main
  //           set { deployedlastturn = value; }
  //           get { return deployedlastturn; }
  //       }
+
+        public bool HasNeighbour(int id)
+        {
+            foreach (Region neigh in neighbors)
+            {
+                if (neigh.Id == id) return true;
+            }
+            return false;
+        }
     }
 
 }
