@@ -351,7 +351,8 @@ namespace bot
                     if (neigh.OwnedByPlayer(myName))
                     {
                         deployArmies.Add(new DeployArmies(myName, neigh, armiesLeft));
-                        state.ScheduleAttack(neigh, region, armiesLeft, neigh.Armies + armiesLeft - 1 );
+                        int armiesCount = neigh.Armies + neigh.PledgedArmies - neigh.ReservedArmies + armiesLeft - 1;
+                        state.ScheduleAttack(neigh, region, armiesLeft, armiesCount );
                     }
                 }
             }
@@ -960,7 +961,7 @@ namespace bot
                             // or target hasn't changed it's income on last turn and didn't receive any deploys/transfers either
                             // or it's in another superregion
 
-                            if ((enemyBorders.Count > 2) || ((en.Armies == en.PreviousTurnArmies) && (!en.DeployedOrTransferedThisTurn)))
+                            if ((enemyBorders.Count > 2) || ((en.Armies == en.PreviousTurnArmies) && (!en.DeployedOrTransferedThisTurn) && (enemyBorders.Count > 2)))
                             {
                                 // attack small armies with little armies
                                 if ((en.Armies == 1) || (en.Armies == 2))
@@ -1028,7 +1029,7 @@ namespace bot
                                     nstackcount += regn.Armies - 1;
                                 }
                             }
-                            enm.tempSortValue = nstackcount;
+                            enm.tempSortValue = nstackcount; // store this value, we will use it further down on another enemyBorders cycle
                             int needed = (int)Math.Ceiling((enm.Armies + estimatedOpponentIncome + nstackcount) * 1.15f);
                             int max = (int)Math.Ceiling((enm.Armies + estimatedOpponentIncome + nstackcount) * 2.0f);
 
@@ -1265,7 +1266,7 @@ namespace bot
                 Region to = state.FullMap.GetRegion(atm.ToRegion.Id);
                 int armyCount = atm.Armies;
 
-                // if we have move orders in regions with leftover troops, use them up
+                // if we have orders to in region with some unused troops, use them to buff up the attack
                 int armiesAvail = from.Armies + from.PledgedArmies - 1;
                 if (armiesAvail > from.ReservedArmies)
                 {
@@ -1274,6 +1275,21 @@ namespace bot
                     atm.Armies += narmies;
                     armyCount += narmies;
                 }
+
+                // subtract any armies that have already been used up to now
+                foreach (AttackTransferMove atmcheck in attackTransferMoves)
+                {
+                    if (atmcheck == atm) break; // does c# compare successfully 2 objects?
+
+                    Region fromcheck = state.FullMap.GetRegion(atmcheck.FromRegion.Id);
+
+                    if (fromcheck.Id == from.Id)
+                    {
+                        armyCount -= atmcheck.Armies;
+                    }
+                }
+                //todo: test this
+
 
                 //todo: remove potential excessive armies used (due to the finish region +1 bug/feature)
 
@@ -1284,6 +1300,7 @@ namespace bot
 
                     // if army count is lower then estimated: remove attack from schedule
                     int nstackcount = 0;
+                    // check neighbours stack to have better estimate
                     foreach (Region reg in to.Neighbors)
                     {
                         Region regn = state.FullMap.GetRegion(reg.Id);
@@ -1292,11 +1309,10 @@ namespace bot
                             nstackcount += regn.Armies - 1;
                         }
                     }
-
                     if (armyCount <= to.Armies + state.EstimatedOpponentIncome + nstackcount) attack = false;
-
-                    // if armies are the same and there was no deployortransfer: keep attack scheduled
-                    if ((armyCount > 1) && (armyCount > to.Armies * 2) && (to.Armies == to.PreviousTurnArmies) && (!to.DeployedOrTransferedThisTurn)) attack = true;
+                    
+                    // if armies are the same and there was no deployortransfer and it's not just 1 enemyborder: keep attack scheduled
+                    if ((armyCount > 1) && (armyCount > to.Armies * 2) && (to.Armies == to.PreviousTurnArmies) && (!to.DeployedOrTransferedThisTurn) && (state.EnemyBorders.Count > 1)) attack = true;
 
                     // if priority is higher then 8: keep attack scheduled
                     if (atm.Priority >= 8) attack = true;

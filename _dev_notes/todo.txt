@@ -1,4 +1,8 @@
 
+when stuck in SA, only expanding into NA when stack is over 180, not 50
+http://theaigames.com/competitions/warlight-ai-challenge/games/53723e744b5ab26e84c7fd13/dump
+also, should have moved stack to defensive position in north africa
+
 improve OZBased strategy: if enemy is stacking in north africa, either take stack through europe or go to alaska
 
 if we don't have eyes on SA and are stacking in the middle of Africa, take the stack to north africa (finish implementing)
@@ -11,7 +15,9 @@ if spotting a failed enemy attack from an unknown region to a neutral, set it as
 
 if we have a last action attack (priority>=9) then try to break down the lower priority moves into delayer unit moves, only for leftover moves that will not border an opponent 
 
+if going for a "enemy had the same armies in two latest deployments attack, it's important to not attack with just 2 or 4 if the enemyborders is now only 1
 
+pick on south africa is not so good, might aswell give priority to europe
 
 debug -1 on deploying to finish superregion
 
