@@ -576,10 +576,11 @@ namespace bot
 
             bool finishableSuperRegion = false;
             SuperRegion targetSR = state.FullMap.GetSuperRegion(state.ExpansionTargets[0].Id);
-            if (state.ExpansionTargets.Count > 0)
+            if (state.ExpansionTargets.Count > 1)
             {
                 finishableSuperRegion = targetSR.IsFinishable(armiesLeft, myName);
             }
+
             // it might be finishable but is it safe to finish without being a waste of armies?
             if (finishableSuperRegion)
             {
@@ -588,6 +589,31 @@ namespace bot
                 // africa without a foot in north africa is never safe to finish
                 if ((targetSR.Id == 4) && !state.FullMap.GetRegion(21).OwnedByPlayer(myName)) finishableSuperRegion = false;
             }
+
+            // the second expansion target might be finishable while the first is not
+            if ((!finishableSuperRegion) && (state.ExpansionTargets.Count > 2))
+            {
+                targetSR = state.FullMap.GetSuperRegion(state.ExpansionTargets[1].Id);
+                finishableSuperRegion = targetSR.IsFinishable(armiesLeft, myName);
+
+                if (finishableSuperRegion)
+                {
+                    // swap expansiontarget 1 with 0
+                    SuperRegion tmp = state.ExpansionTargets[0];
+                    state.ExpansionTargets[0] = state.ExpansionTargets[1];
+                    state.ExpansionTargets[1] = tmp;
+                }
+
+                // it might be finishable but is it safe to finish without being a waste of armies?
+                if (finishableSuperRegion)
+                {
+                    if (!targetSR.IsSafeToFinish(state)) finishableSuperRegion = false;
+
+                    // africa without a foot in north africa is never safe to finish
+                    if ((targetSR.Id == 4) && !state.FullMap.GetRegion(21).OwnedByPlayer(myName)) finishableSuperRegion = false;
+                }
+            }
+
 
             return finishableSuperRegion;
         }
@@ -1385,8 +1411,8 @@ namespace bot
 
                 //todo: remove potential excessive armies used (due to the finish region +1 bug/feature)
 
-                // prevent from hitting a wall against opponent or neutral
-                if (!to.OwnedByPlayer(myName))
+                // prevent from hitting a wall against opponent
+                if (to.OwnedByPlayer(opponentName))
                 {
                     bool attack = true;
 
@@ -1411,6 +1437,21 @@ namespace bot
 
                     // if armycount is 2: keep attack scheduled
                     if ((armyCount == 2) && (to.Armies == 1)) attack = true;
+
+                    if (!attack)
+                    {
+                        Console.Error.WriteLine("prevent hitting a wall from " + from.Id + " to " + to.Id + " with " + armyCount + " armies on round " + state.RoundNumber);
+                        atmRemove.Add(atm);
+                    }
+                }
+
+                // prevent from hitting a wall against neutral
+                if (to.OwnedByPlayer("neutral"))
+                {
+                    bool attack = true;
+
+                    // if army count is lower then estimated: remove attack from schedule                
+                    if (armyCount <= to.Armies) attack = false;
 
                     if (!attack)
                     {
