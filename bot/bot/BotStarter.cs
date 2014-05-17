@@ -1057,7 +1057,14 @@ namespace bot
                             {
                                 if (reg.Id == state.HotStackZone)
                                 {
-                                    attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, state.FullMap.GetRegion(reg.Id), armiesLeft, 6));
+                                    // low priority on leftovers
+                                    // some of these we might have deployed this turn on territories of 1
+                                    // and enemy bots that schedule attacks of 2 will bump into them and fail
+                                    int priority = 6;
+                                    // high priority on anything substantial
+                                    if (armiesLeft > 3) priority = 2;
+                                    if (armiesLeft >= 15) priority = 1;
+                                    attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, state.FullMap.GetRegion(reg.Id), armiesLeft, priority));
                                     fromRegion.ReservedArmies += armiesLeft;
                                     armiesLeft = 0;
                                 }
