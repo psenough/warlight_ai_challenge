@@ -605,9 +605,9 @@ namespace bot
 
             if (enemySighted)
             {
-                
-                // on first rounds, attack any enemies on sight, unless we can finish a super region
-                if ((state.RoundNumber < 5) && !finishableSuperRegion)
+
+                // on first rounds, attack any enemies on sight, unless we can finish a super region or have already attacked neutrals
+                if ((state.RoundNumber < 5) && !finishableSuperRegion && !state.AttackedOneNeutral)
                 {
                     // if we have atleast 2 enemy sightings, pick one and hit it hard
                     List<DeployArmies> deploy = AttackHard(state, armiesLeft);
@@ -1111,11 +1111,17 @@ namespace bot
                             int needed = (int)Math.Ceiling((enm.Armies + estimatedOpponentIncome + nstackcount) * 1.15f);
                             int max = (int)Math.Ceiling((enm.Armies + estimatedOpponentIncome + nstackcount) * 2.0f);
 
+                            if (state.RoundNumber == 11)
+                            {
+                                Console.Error.WriteLine("debug");
+                            }
+
                             // if it's bordering a suspected superregion
                             // or there is only one enemyborder
+                            // or it's north africa and we have no sight to SA
                             // we should be hitting it and it alone fullforce
                             //todo: unless the border to super region is actually a double border (like middle east)
-                            if (state.FullMap.RegionBelongsToEnemySuperRegion(enm.Id, myName) || (enemyBorders.Count == 1))
+                            if (state.FullMap.RegionBelongsToEnemySuperRegion(enm.Id, myName) || ((enm.Id == 21) && state.FullMap.SuperRegionCouldBelongToOpponent(2, opponentName)) || (enemyBorders.Count == 1))
                             {
                                 
                                 bool alreadyScheduled = false;
@@ -1123,15 +1129,26 @@ namespace bot
                                 // check if it's already scheduled
                                 foreach (AttackTransferMove atk in attackTransferMoves)
                                 {
-                                    // if it was already scheduled buff it to use all armies
                                     if ((atk.FromRegion.Id == fromRegion.Id) && (atk.ToRegion.Id == enm.Id)){
                                         alreadyScheduled = true;
+                                        
+                                        // buff if it up if we have anything to buff it up with
+                                        int used = armiesLeft;
+                                        // only use minimum necessary ammount of armies to reach the max
+                                        if (atk.Armies + used > max) used = (atk.Armies + armiesLeft) - max;
+                                        // maybe we should clip until this is properly tested
+                                        if (used > armiesLeft) used = armiesLeft;
+                                        if (used < 0) used = 0;
+                                        // update atk
+                                        atk.Armies += used;
+                                        atk.FromRegion.ReservedArmies += used;
+                                        armiesLeft -= used;
                                         break;
                                     }
                                 }
 
                                 // if not previously scheduled then try to schedule it with whatever we have
-                                if ((!alreadyScheduled) && (armiesLeft > 0))
+                                if ((armiesLeft > 0) &&  (!alreadyScheduled))
                                 {
                                     int used = armiesLeft;
                                     if (armiesLeft > max) armiesLeft = max;
@@ -1140,6 +1157,7 @@ namespace bot
                                     fromRegion.ReservedArmies += used;
                                     armiesLeft -= used;
                                 }
+                                
                             }
                         }
 
@@ -1156,7 +1174,6 @@ namespace bot
                                 bool alreadyScheduled = false;
                                 foreach (AttackTransferMove atk in attackTransferMoves)
                                 {
-                                    // if it was already scheduled buff it to use all armies
                                     if ((atk.FromRegion.Id == fromRegion.Id) && (atk.ToRegion.Id == enm.Id))
                                     {
                                         alreadyScheduled = true;
@@ -1334,7 +1351,6 @@ namespace bot
                 }
             }
 
-
             // buff up any scheduled attack coming from regions with armies left lying around unused
             // remove any call that might run into a wall (unless it's high priority)
             List<AttackTransferMove> atmRemove = new List<AttackTransferMove>();
@@ -1357,7 +1373,7 @@ namespace bot
                 // subtract any armies that have already been used up to now
                 foreach (AttackTransferMove atmcheck in attackTransferMoves)
                 {
-                    if (atmcheck == atm) break; // does c# compare successfully 2 objects?
+                    if (atmcheck == atm) break;
 
                     Region fromcheck = state.FullMap.GetRegion(atmcheck.FromRegion.Id);
 
@@ -1366,8 +1382,6 @@ namespace bot
                         armyCount -= atmcheck.Armies;
                     }
                 }
-                //todo: test this
-
 
                 //todo: remove potential excessive armies used (due to the finish region +1 bug/feature)
 

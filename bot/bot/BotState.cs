@@ -46,6 +46,8 @@ namespace bot
 
         private int hotStackZone;
 
+        private bool attackedOneNeutral;
+
         public BotState()
         {
             pickableStartingRegions = new List<Region>();
@@ -71,6 +73,7 @@ namespace bot
             hotStackZone = -1;
 
             roundNumber = 0;
+            attackedOneNeutral = false;
         }
 
         public void UpdateSettings(String key, String value)
@@ -716,11 +719,6 @@ namespace bot
                 return 0;
             }
 
-            if (roundNumber == 3)
-            {
-                Console.Error.WriteLine("debug");
-            }
-
             // armies needed to attack neutral
             int neededToAttack = target.Armies * 2;
             int neededToDeploy = neededToAttack - attacker.Armies - attacker.PledgedArmies + attacker.ReservedArmies + 1;
@@ -740,7 +738,9 @@ namespace bot
             usedArmies += neededToDeploy;
 
             attacker.ReservedArmies += neededToAttack;
-            scheduledAttack.Add(new Tuple<int, int ,int>(attacker.Id, target.Id, neededToAttack));     
+            scheduledAttack.Add(new Tuple<int, int ,int>(attacker.Id, target.Id, neededToAttack));
+
+            attackedOneNeutral = true;
 
             return usedArmies;
         }
@@ -825,6 +825,11 @@ namespace bot
         {
             set { hotStackZone = value; }
             get { return hotStackZone; }
+        }
+
+        public bool AttackedOneNeutral
+        {
+            get { return attackedOneNeutral; }
         }
 
     }

@@ -240,5 +240,31 @@ namespace main
             return -1; // failed to find home
         }
 
+        public bool SuperRegionBelongsTo(int id, String thisName)
+        {
+            SuperRegion thissr = GetSuperRegion(id);
+
+            foreach (Region reg in thissr.SubRegions)
+            {
+                Region rn = GetRegion(reg.Id);
+                if (!rn.OwnedByPlayer(thisName)) return false;
+            }
+
+            return true;
+        }
+
+        public bool SuperRegionCouldBelongToOpponent(int id, String opponentName)
+        {
+            SuperRegion thissr = GetSuperRegion(id);
+
+            foreach (Region reg in thissr.SubRegions)
+            {
+                Region rn = GetRegion(reg.Id);
+                if (!rn.OwnedByPlayer(opponentName) && !rn.OwnedByPlayer("unknown")) return false;
+            }
+
+            return true;
+        }
+
     }
 }
