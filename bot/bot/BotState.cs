@@ -716,9 +716,14 @@ namespace bot
                 return 0;
             }
 
+            if (roundNumber == 3)
+            {
+                Console.Error.WriteLine("debug");
+            }
+
             // armies needed to attack neutral
             int neededToAttack = target.Armies * 2;
-            int neededToDeploy = neededToAttack - attacker.Armies + attacker.PledgedArmies - attacker.ReservedArmies + 1;
+            int neededToDeploy = neededToAttack - attacker.Armies - attacker.PledgedArmies + attacker.ReservedArmies + 1;
 
             if (neededToDeploy > armiesAvailable + 1) {
                 // there must have been an error somewhere on the algo
