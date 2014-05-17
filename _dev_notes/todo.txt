@@ -1,6 +1,4 @@
 
-debug why test.txt didnt go for north africa
-
 when transfering leftovers to a non crucial enemy border with a stack nearby: dont transfer if it's doomed to fail (deploys and transfers will be less then half the estimated enemy income)
 
 improve OZBased strategy: if enemy is stacking in north africa, either take stack through europe or go to alaska

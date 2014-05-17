@@ -1385,8 +1385,8 @@ namespace bot
 
                 //todo: remove potential excessive armies used (due to the finish region +1 bug/feature)
 
-                // prevent from hitting a wall against opponent
-                if (to.OwnedByPlayer(opponentName))
+                // prevent from hitting a wall against opponent or neutral
+                if (!to.OwnedByPlayer(myName))
                 {
                     bool attack = true;
 
