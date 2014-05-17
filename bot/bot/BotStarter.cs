@@ -661,7 +661,7 @@ namespace bot
                     if ((armiesLeft > 0) && (state.ExpansionTargets.Count > 0))
                     {
                         // do minimum expansion, but only on expansiontargets that are close to being finished
-                        // or we know the game has been stalled for a while (stacks bigger then, lets say 50)
+                        // or we know the game has been stalled for a while (stacks bigger then, lets say 60)
                         // or we have no superregion at all, so we really need one
                         //todo: and we are fairly certain the target sr is not already being bordered by enemy
 
@@ -675,8 +675,8 @@ namespace bot
 
                         bool issafe = true;
                         // check if there are any estimated opponentstartingregions in or bordering this superregion
-                        // only check for south america and australia, rest can be considered safe by default
-                        if (state.ExpansionTargets[0].ArmiesReward < 3) { 
+                        // only check for south america, australia and africa, rest can be considered safe by default
+                        if (state.ExpansionTargets[0].ArmiesReward <= 3) { 
                             foreach (Region border in state.OpponentStartRegions)
                             {
                                 foreach (Region n in border.Neighbors)
@@ -693,23 +693,68 @@ namespace bot
                         {
                             if (reg.OwnedByPlayer(myName))
                             {
-                                if (reg.Armies > 50)
+                                if (reg.Armies > 60)
                                 {
                                     bigstack = true;
-                                    
-                                    //todo: test this below...
-                                    // check if we are building a bigstack in middle of africa without having eyes on SA
-                                    if (state.FullMap.GetRegion(12).OwnedByPlayer("unknown") && state.FullMap.GetRegion(21).OwnedByPlayer(opponentName))
-                                    {
-                                        //todo: find the shortest neutral / unknown / low enemy army count path there, needs to be less then 3 steps max
 
-                                        //todo: schedule our way there
+                                    // todo: refactor code below to find best path without region hardcoded logic
+                                    
+                                    // check if we are building a bigstack in middle of africa without having eyes on SA and northafrica doesnt belong to the enemy
+                                    Region northafrica = state.FullMap.GetRegion(21);
+                                    if ((reg.SuperRegion.Id == 4) && state.FullMap.GetRegion(12).OwnedByPlayer("unknown") && !northafrica.OwnedByPlayer(opponentName))
+                                    {
+                                        int nextstep = -1;
+                                        if (northafrica.OwnedByPlayer("neutral")) nextstep = 21;
+
+                                        if (northafrica.OwnedByPlayer("unknown"))
+                                        {
+                                            // go through east africa
+                                            nextstep = 23;
+                                            Region ea = state.FullMap.GetRegion(23);
+
+                                            // if ea is taken by enemy, rethink
+                                            if (ea.OwnedByPlayer(opponentName)) {
+                                                // if congo is neutral, go through congo
+                                                if (state.FullMap.GetRegion(24).OwnedByPlayer("neutral"))
+                                                {
+                                                    nextstep = 24;
+                                                }
+                                                // if congo is unknown then i guess we're stuck in madagascar and have to flank through south africa
+                                                if (state.FullMap.GetRegion(24).OwnedByPlayer("unknown"))
+                                                {
+                                                    nextstep = 25;
+                                                }
+                                            }
+                                        }
+                                            
+                                        if (nextstep != -1)
+                                        {
+                                            Region region = state.FullMap.GetRegion(nextstep);
+
+                                            // find our neighbour with highest available armies
+                                            foreach (Region a in region.Neighbors)
+                                            {
+                                                int aArmies = a.Armies + a.PledgedArmies - a.ReservedArmies;
+                                                if (aArmies < 0) aArmies = 0;
+                                                if (!a.OwnedByPlayer(myName)) aArmies = -1;
+                                                a.tempSortValue = aArmies;
+                                            }
+                                            var lst = region.Neighbors.OrderByDescending(p => p.tempSortValue).ToList();
+                                            Region neigh = state.FullMap.GetRegion(lst[0].Id);
+                                            if (neigh.OwnedByPlayer(myName))
+                                            {
+                                                deployArmies.Add(new DeployArmies(myName, neigh, armiesLeft));
+                                                state.ScheduleAttack(neigh, region, armiesLeft, neigh.Armies + armiesLeft - 1);
+                                                armiesLeft = 0;
+                                            }
+                                        }
+                                        
                                     }
                                 }
                             }
                         }
 
-                        // do minimum expansion
+                        // do minimum expansion only when we have a big stack and have safe superregions
                         if ((armiesLeft > 0) && issafe) {
                             if ((count > state.ExpansionTargets[0].SubRegions.Count * 0.5) || (bigstack) || (state.StartingArmies == 5))
                             {
