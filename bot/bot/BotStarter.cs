@@ -1065,9 +1065,10 @@ namespace bot
                                 {
                                     if (armiesLeft > en.Armies * 2)
                                     {
-                                        attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, en, en.Armies * 2, 3));
-                                        armiesLeft -= en.Armies * 2;
-                                        fromRegion.ReservedArmies += en.Armies * 2;
+                                        int used = en.Armies * 2;
+                                        attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, en, used, 3));
+                                        fromRegion.ReservedArmies += used;
+                                        armiesLeft -= used;
                                     }
                                 }
                             }
@@ -1167,7 +1168,8 @@ namespace bot
                                         if (used < 0) used = 0;
                                         // update atk
                                         atk.Armies += used;
-                                        atk.FromRegion.ReservedArmies += used;
+                                        Region from = state.FullMap.GetRegion(atk.FromRegion.Id);
+                                        from.ReservedArmies += used;
                                         armiesLeft -= used;
                                         break;
                                     }
@@ -1255,7 +1257,8 @@ namespace bot
                                             }
 
                                             atk.Armies += deploy;
-                                            atk.FromRegion.ReservedArmies += deploy;
+                                            Region from = state.FullMap.GetRegion(atk.FromRegion.Id);
+                                            from.ReservedArmies += deploy;
                                             armiesLeft -= deploy;
 
                                             if (atk.Armies >= max) atk.Locked = true;
@@ -1299,7 +1302,8 @@ namespace bot
                                         // why not use them to make sure we get the neutral?
                                         if ((armiesLeft > 0) && (atm.FromRegion.Id == fromRegion.Id) && (atm.ToRegion.Id == an.Id))
                                         {
-                                            atm.FromRegion.ReservedArmies++;
+                                            Region from = state.FullMap.GetRegion(atm.FromRegion.Id);
+                                            from.ReservedArmies++;
                                             atm.Armies++;
                                             armiesLeft--;
                                         }
@@ -1366,8 +1370,9 @@ namespace bot
                                 Region dest = state.FullMap.GetRegion(lst[0].Id);
                                 if (dest.OwnedByPlayer(state.MyPlayerName) && (!eborder))
                                 {
-                                    attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, dest, armiesLeft, 1));
-                                    fromRegion.ReservedArmies += armiesLeft;
+                                    attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, dest, armiesLeft, 5));
+                                    Region from = state.FullMap.GetRegion(fromRegion.Id);
+                                    from.ReservedArmies += armiesLeft;
                                     armiesLeft = 0;
                                 }
                             }
@@ -1386,7 +1391,7 @@ namespace bot
                 Region to = state.FullMap.GetRegion(atm.ToRegion.Id);
                 int armyCount = atm.Armies;
 
-                // if we have orders to in region with some unused troops, use them to buff up the attack
+                // if we have orders from a region with some unused troops, use them to buff up the attack
                 int armiesAvail = from.Armies + from.PledgedArmies - 1;
                 if (armiesAvail > from.ReservedArmies)
                 {
@@ -1394,19 +1399,6 @@ namespace bot
                     from.ReservedArmies += narmies;
                     atm.Armies += narmies;
                     armyCount += narmies;
-                }
-
-                // subtract any armies that have already been used up to now
-                foreach (AttackTransferMove atmcheck in attackTransferMoves)
-                {
-                    if (atmcheck == atm) break;
-
-                    Region fromcheck = state.FullMap.GetRegion(atmcheck.FromRegion.Id);
-
-                    if (fromcheck.Id == from.Id)
-                    {
-                        armyCount -= atmcheck.Armies;
-                    }
                 }
 
                 //todo: remove potential excessive armies used (due to the finish region +1 bug/feature)
@@ -1464,7 +1456,10 @@ namespace bot
             {
                 attackTransferMoves.Remove(atm);
             }
-
+            if (state.RoundNumber == 5)
+            {
+                Console.Error.WriteLine("debug");
+            }
             List<AttackTransferMove> sorted = attackTransferMoves.OrderByDescending(p => p.Armies).OrderBy(p => p.Priority).ToList();
            
             return sorted;
