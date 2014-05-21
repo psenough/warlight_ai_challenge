@@ -1075,11 +1075,6 @@ namespace bot
 
                         }
 
-                        if ((state.RoundNumber == 9))
-                        {
-                            Console.Error.WriteLine("debug");
-                        }
-
                         // move any remaining armies to hotzonestack
                         // this will make sure you're moving stacks back to important defensive position
                         // and also help merge stacks when double bordering enemy
@@ -1092,10 +1087,10 @@ namespace bot
                                     // low priority on leftovers
                                     // some of these we might have deployed this turn on territories of 1
                                     // and enemy bots that schedule attacks of 2 will bump into them and fail
-                                    int priority = 6;
+                                    int priority = 2;
                                     // high priority on anything substantial
-                                    if (armiesLeft > 3) priority = 2;
-                                    if (armiesLeft >= 15) priority = 1;
+                                    if (armiesLeft > 3) priority = 1;
+                                    if (armiesLeft >= 10) priority = 0;
                                     attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, state.FullMap.GetRegion(reg.Id), armiesLeft, priority));
                                     fromRegion.ReservedArmies += armiesLeft;
                                     armiesLeft = 0;
@@ -1373,7 +1368,14 @@ namespace bot
                                 Region dest = state.FullMap.GetRegion(lst[0].Id);
                                 if (dest.OwnedByPlayer(state.MyPlayerName) && (!eborder))
                                 {
-                                    attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, dest, armiesLeft, 5));
+                                    int priority = 5;
+                                    if (dest.Id == state.HotStackZone) {
+                                        priority = 2;
+                                        // high priority on anything substantial
+                                        if (armiesLeft > 3) priority = 1;
+                                        if (armiesLeft >= 10) priority = 0;
+                                    }
+                                    attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, dest, armiesLeft, priority));
                                     Region from = state.FullMap.GetRegion(fromRegion.Id);
                                     from.ReservedArmies += armiesLeft;
                                     armiesLeft = 0;
@@ -1459,10 +1461,7 @@ namespace bot
             {
                 attackTransferMoves.Remove(atm);
             }
-            if (state.RoundNumber == 5)
-            {
-                Console.Error.WriteLine("debug");
-            }
+
             List<AttackTransferMove> sorted = attackTransferMoves.OrderByDescending(p => p.Armies).OrderBy(p => p.Priority).ToList();
            
             return sorted;
