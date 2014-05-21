@@ -1058,7 +1058,7 @@ namespace bot
                             // or target hasn't changed it's income on last turn and didn't receive any deploys/transfers either
                             // or it's in another superregion
 
-                            if ((enemyBorders.Count > 2) || ((en.Armies == en.PreviousTurnArmies) && (!en.DeployedOrTransferedThisTurn) && (enemyBorders.Count > 2)))
+                            if ((enemyBorders.Count > 2) || ((en.Armies == en.PreviousTurnArmies) && (!en.DeployedOrTransferedThisTurn) && (state.EnemyBorders.Count > 2)))
                             {
                                 // attack small armies with little armies
                                 if ((en.Armies == 1) || (en.Armies == 2))
@@ -1075,6 +1075,11 @@ namespace bot
 
                         }
 
+                        if ((state.RoundNumber == 9))
+                        {
+                            Console.Error.WriteLine("debug");
+                        }
+
                         // move any remaining armies to hotzonestack
                         // this will make sure you're moving stacks back to important defensive position
                         // and also help merge stacks when double bordering enemy
@@ -1082,7 +1087,7 @@ namespace bot
                         {
                             foreach (Region reg in fromRegion.Neighbors)
                             {
-                                if (reg.Id == state.HotStackZone)
+                                if ((reg.Id == state.HotStackZone) && (armiesLeft > 0))
                                 {
                                     // low priority on leftovers
                                     // some of these we might have deployed this turn on territories of 1
@@ -1104,9 +1109,12 @@ namespace bot
                         {
                             foreach (Region reg in fromRegion.Neighbors)
                             {
+                                //Region regFM = state.FullMap.GetRegion(reg.Id);
+                                if (!state.FullMap.GetRegion(reg.Id).OwnedByPlayer(myName)) continue;
+
                                 foreach (Region reg2 in reg.Neighbors)
                                 {
-                                    if (reg2.Id == state.HotStackZone)
+                                    if ((reg2.Id == state.HotStackZone) && (armiesLeft > 0))
                                     {
                                         attackTransferMoves.Add(new AttackTransferMove(myName, fromRegion, state.FullMap.GetRegion(reg.Id), armiesLeft, 6));
                                         fromRegion.ReservedArmies += armiesLeft;
@@ -1135,13 +1143,8 @@ namespace bot
                                 }
                             }
                             enm.tempSortValue = nstackcount; // store this value, we will use it further down on another enemyBorders cycle
-                            int needed = (int)Math.Ceiling((enm.Armies + estimatedOpponentIncome + nstackcount) * 1.15f);
+                            int needed = (int)Math.Ceiling((enm.Armies + estimatedOpponentIncome + nstackcount) * 1.17f);
                             int max = (int)Math.Ceiling((enm.Armies + estimatedOpponentIncome + nstackcount) * 2.0f);
-
-                            if (state.RoundNumber == 11)
-                            {
-                                Console.Error.WriteLine("debug");
-                            }
 
                             // if it's bordering a suspected superregion
                             // or there is only one enemyborder
@@ -1232,7 +1235,7 @@ namespace bot
 
                                     // determine how much is needed to not hit a wall
                                     int nstackcount = enm.tempSortValue;
-                                    int needed = (int)Math.Ceiling((enm.Armies + estimatedOpponentIncome + nstackcount) * 1.15f);
+                                    int needed = (int)Math.Ceiling((enm.Armies + estimatedOpponentIncome + nstackcount) * 1.17f);
                                     int max = (int)Math.Ceiling((enm.Armies + estimatedOpponentIncome + nstackcount) * 2.0f);
  
                                     // divide it equally amongst the different targets
@@ -1247,11 +1250,11 @@ namespace bot
                                     {
                                         // buff it to use more armies until it's reached max
                                         // don't buff if it's a small army attack (which always has priority of 3)
-                                        if ((atk.FromRegion.Id == fromRegion.Id) && (atk.ToRegion.Id == enm.Id) && (atk.Priority != 3) && (!atk.Locked)){
+                                        if ((armiesLeft > 0) && (atk.FromRegion.Id == fromRegion.Id) && (atk.ToRegion.Id == enm.Id) && (atk.Priority != 3) && (!atk.Locked)){
 
                                             int deploy = 1;
-                                            if (biggestenemystack == needed) deploy = 5;
-                                            if (armiesLeft > 1)
+                                            if ((biggestenemystack == needed) && (armiesLeft > 4)) deploy = 5;
+                                            if (armiesLeft > 0)
                                             {
                                                 deploy = 1;
                                             }
