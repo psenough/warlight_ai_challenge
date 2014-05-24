@@ -645,6 +645,29 @@ namespace bot
                     
                 }
 
+                // if we are SABased, northafrica is ours, enemy is in africa, NA is not finished and enemy is not in NA,             
+                Region northafrica = state.FullMap.GetRegion(21);
+                SuperRegion africa = state.FullMap.GetSuperRegion(northafrica.SuperRegion.Id);
+                SuperRegion na = state.FullMap.GetSuperRegion(1);
+                
+                if (state.SABased && northafrica.OwnedByPlayer(myName) && africa.HasPlayer(state.FullMap, opponentName) &&
+                    !na.HasPlayer(state.FullMap, opponentName) && (na.OwnedByPlayer(state.FullMap) != myName) &&
+                    state.ExpansionTargets.Count > 0)
+                {
+                    // do minimum expansion (should be NA or australia)
+                    List<DeployArmies> deploy = ExpandMinimum(state, armiesLeft);
+                    foreach (DeployArmies da in deploy)
+                    {
+                        deployArmies.Add(da);
+                        armiesLeft -= da.Armies;
+                    }
+
+                    // deploy all else on northafrica
+                    deployArmies.Add(new DeployArmies(myName, northafrica, armiesLeft));
+                    armiesLeft = 0;
+                }
+
+
                 // if game is stuck with high stacks expand to get more income
                 if (armiesLeft > 0)
                 {
@@ -726,7 +749,7 @@ namespace bot
                                     // todo: refactor code below to find best path without region hardcoded logic
                                     
                                     // check if we are building a bigstack in middle of africa without having eyes on SA and northafrica doesnt belong to the enemy
-                                    Region northafrica = state.FullMap.GetRegion(21);
+                                    //Region northafrica = state.FullMap.GetRegion(21);
                                     if ((reg.SuperRegion.Id == 4) && state.FullMap.GetRegion(12).OwnedByPlayer("unknown") && !northafrica.OwnedByPlayer(opponentName))
                                     {
                                         int nextstep = -1;
@@ -1470,8 +1493,8 @@ namespace bot
         public static void Main(String[] args)
         {
             BotParser parser = new BotParser(new BotStarter());
-            //parser.Run(null);
-            try
+            parser.Run(null);
+            /*try
             {
                 string[] lines = System.IO.File.ReadAllLines(@"C:\Users\filipecruz\Documents\warlight_ai_challenge\bot\test.txt");
                 parser.Run(lines);
@@ -1479,7 +1502,7 @@ namespace bot
             catch (Exception e) { 
                 Console.Error.WriteLine("running null parser due to " + e.ToString());
                 parser.Run(null);
-            }
+            }*/
         }
 
     }

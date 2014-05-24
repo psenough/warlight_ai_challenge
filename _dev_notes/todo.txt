@@ -1,11 +1,13 @@
 
+when bordering mutiple enemyborders, dont attack smaller stack if it doesnt leave enough armies for defense against bigger stack
+
 when transfering leftovers to a non crucial enemy border with a stack nearby: dont transfer if it's doomed to fail (deploys and transfers will be less then half the estimated enemy income)
 
 improve OZBased strategy: if enemy is stacking in north africa, either take stack through europe or go to alaska
 
 if spotting a failed enemy attack from an unknown region to a neutral, set it as target for hard hit next turn
 
-
+never move leftover to a worse place (where it doesnt neighbor any neutrals for example)
 
 clean up attack transfer moves of 0 armies (no need to show them to opponent) - think this is fixed already...
 

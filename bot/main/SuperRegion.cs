@@ -199,6 +199,17 @@ namespace main
                 if (!map.GetRegion(reg.Id).OwnedByPlayer("unknown")) inSight = true;
             }
         }
+
+        public bool HasPlayer(Map map, string playerName)
+        {
+            foreach (Region region in subRegions)
+            {
+                Region mapr = map.GetRegion(region.Id);
+                if (playerName == mapr.PlayerName)
+                    return true;
+            }
+            return false;
+        }
     }
 
 }
